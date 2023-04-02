@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import {
   decodeString,
   DeserializeOptions,
@@ -37,12 +36,15 @@ export class CategoryInfo extends Serializable {
 
   /** Finds the category with the given unique ID. */
   getCategoryByUniqId(uniqId: number): Category | null {
-    return _.find(this.categories, ['categoryUniqId', uniqId]) ?? null;
+    // return _.find(this.categories, ['categoryUniqId', uniqId]) ?? null;
+    return (
+      this.categories.find((category) => category.uniqId === uniqId) ?? null
+    );
   }
 
   /** Finds the category with the given label. */
   getCategoryByLabel(label: string): Category | null {
-    return _.find(this.categories, ['categoryLabel', label]) ?? null;
+    return this.categories.find((category) => category.label === label) ?? null;
   }
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {

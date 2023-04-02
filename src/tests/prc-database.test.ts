@@ -12,7 +12,10 @@ describe('PrcDatabase', function () {
     const db = new RawPrcDatabase();
     db.deserialize(buffer);
 
-    const recordsByType = _.groupBy(db.records, 'metadata.type');
+    const recordsByType = _.groupBy(
+      db.records,
+      'metadata.type'
+    ) as _.Dictionary<Array<PrcSBufferRecord>>;
     for (const [type, resourceIds] of [
       // Obtained from Simulator > View > Databases.
       ['code', [0, 1, 2]],
