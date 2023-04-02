@@ -24,40 +24,40 @@ export class TypeId extends SString.ofLength(4) {
 /** PDB database header, a.k.a DatabaseHdrType. */
 export class DatabaseHeader extends SObject {
   /** Database name (max 31 bytes). */
-  @field.as(SStringNT.ofLength(32))
+  @field(SStringNT.ofLength(32))
   name: string = '';
   /** Database attribute flags. */
-  @field
+  @field()
   attributes: DatabaseAttrs = new DatabaseAttrs();
   /** Database version (integer). */
-  @field.as(SUInt16BE)
+  @field(SUInt16BE)
   version: number = 0;
   /** Database creation timestamp. */
-  @field
+  @field()
   creationDate = new DatabaseTimestamp();
   /** Database modification timestamp. */
-  @field
+  @field()
   modificationDate = new DatabaseTimestamp();
   /** Last backup timestamp. */
-  @field
+  @field()
   lastBackupDate: DatabaseTimestamp = epochDatabaseTimestamp;
   /** Modification number (integer). */
-  @field.as(SUInt32BE)
+  @field(SUInt32BE)
   modificationNumber: number = 0;
   /** Offset to AppInfo block. */
-  @field.as(SUInt32BE)
+  @field(SUInt32BE)
   appInfoId: number = 0;
   /** Offset to SortInfo block. */
-  @field.as(SUInt32BE)
+  @field(SUInt32BE)
   sortInfoId: number = 0;
   /** Database type identifier (max 4 bytes). */
-  @field.as(TypeId)
+  @field(TypeId)
   type: string = '';
   /** Database creator identifier (max 4 bytes). */
-  @field.as(TypeId)
+  @field(TypeId)
   creator: string = '';
   /** Seed for generating record IDs. */
-  @field.as(SUInt32BE)
+  @field(SUInt32BE)
   uniqueIdSeed: number = 0;
 }
 
@@ -109,11 +109,11 @@ export class RecordMetadataList
   implements RecordOrResourceMetadataList<RecordMetadata>
 {
   /** Offset of next RecordMetadataList structure. Unsupported - must be 0. */
-  @field.as(SUInt32BE)
+  @field(SUInt32BE)
   private nextListId = 0;
 
   /** Array of record metadata. */
-  @field.as(
+  @field(
     class extends SDynamicArray<SUInt16BE, RecordMetadata> {
       lengthType = SUInt16BE;
       valueType = RecordMetadata;
@@ -121,22 +121,22 @@ export class RecordMetadataList
   )
   values: Array<RecordMetadata> = [];
 
-  @field.as(SUInt16BE)
+  @field(SUInt16BE)
   private padding1 = 0;
 }
 
 /** Resource metadata for PRC files, a.k.a. RsrcEntryType. */
 export class ResourceMetadata extends SObject {
   /** Resource type identifier (max 4 bytes). */
-  @field.as(TypeId)
+  @field(TypeId)
   type = '';
 
   /** Resource ID. */
-  @field.as(SUInt16BE)
+  @field(SUInt16BE)
   resourceId = 0;
 
   /** Offset to raw record data. */
-  @field.as(SUInt32BE)
+  @field(SUInt32BE)
   localChunkId = 0;
 }
 
@@ -146,11 +146,11 @@ export class ResourceMetadataList
   implements RecordOrResourceMetadataList<ResourceMetadata>
 {
   /** Offset of next ResourceMetadataList structure. Unsupported - must be 0. */
-  @field.as(SUInt32BE)
+  @field(SUInt32BE)
   private nextListId = 0;
 
   /** Array of resource metadata. */
-  @field.as(
+  @field(
     class extends SDynamicArray<SUInt16BE, ResourceMetadata> {
       lengthType = SUInt16BE;
       valueType = ResourceMetadata;
@@ -158,7 +158,7 @@ export class ResourceMetadataList
   )
   values: Array<ResourceMetadata> = [];
 
-  @field.as(SUInt16BE)
+  @field(SUInt16BE)
   private padding1 = 0;
 }
 
@@ -168,62 +168,62 @@ export class ResourceMetadataList
  *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DataMgr.h
  *   - https://github.com/madsen/Palm-PDB/blob/master/lib/Palm/PDB.pm
  */
-export class DatabaseAttrs extends SBitmask.as(SUInt16BE) {
+export class DatabaseAttrs extends SBitmask.of(SUInt16BE) {
   /** Database not closed properly. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   open: boolean = false;
   @bitfield(3)
   private unused1 = 0;
   /** This database (resource or record) is associated with the application
    * with the same creator. It will be beamed and copied along with the
    * application. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   bundle: boolean = false;
   /** This database (resource or record) is recyclable: it will be deleted Real
    * Soon Now, generally the next time the database is closed. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   recyclable: boolean = false;
   /** This data database (not applicable for executables) can be "launched" by
    * passing its name to it's owner app ('appl' database with same creator)
    * using the sysAppLaunchCmdOpenNamedDB action code. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   launchableData: boolean = false;
   /** This database should generally be hidden from view.
    *
    * Used to hide some apps from the main view of the launcher for example. For
    * data (non-resource) databases, this hides the record count within the
    * launcher info screen. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   hidden: boolean = false;
   /** This database is used for file stream implementation. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   stream: boolean = false;
   /** This database should not be copied to */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   copyPrevention: boolean = false;
   /** Device requires a reset after this database is installed. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   resetAfterInstall: boolean = false;
   /** This tells the backup conduit that it's OK for it to install a newer version
    * of this database with a different name if the current database is open. This
    * mechanism is used to update the Graffiti Shortcuts database, for example.
    */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   okToInstallNewer: boolean = false;
   /** Set if database should be backed up to PC if no app-specific synchronization
    * conduit has been supplied. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   backup: boolean = false;
   /** Set if Application Info block is dirty.
    *
    * Optionally supported by an App's conduit. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   appInfoDirty: boolean = false;
   /** Read Only database. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   readOnly: boolean = false;
   /** Whether this is a resource database (i.e. PRC). */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   resDB: boolean = false;
 }
 
@@ -234,18 +234,18 @@ export class DatabaseAttrs extends SBitmask.as(SUInt16BE) {
  *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DataMgr.h
  *   - https://metacpan.org/release/Palm-PDB/source/lib/Palm/PDB.pm
  */
-export class RecordAttrs extends SBitmask.as(SUInt8) {
+export class RecordAttrs extends SBitmask.of(SUInt8) {
   /** Delete this record next sync */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   delete: boolean = false;
   /** Archive this record next sync */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   dirty: boolean = false;
   /** Record currently in use */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   busy: boolean = false;
   /** "Secret" record - password protected */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   secret: boolean = false;
   @bitfield(4)
   private lowest4bits = 0;

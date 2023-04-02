@@ -42,15 +42,15 @@ export class DatebookDatabase extends PdbDatabase<
 
 /** DatebookDB AppInfo block. */
 export class DatebookAppInfo extends SObject {
-  @field
+  @field()
   categoryInfo = new CategoryInfo();
 
   /** Day of the week to start the week on. Not sure what the format is
    * ¯\_(ツ)_/¯ */
-  @field.as(SUInt8)
+  @field(SUInt8)
   startOfWeek = 0;
 
-  @field.as(SUInt8)
+  @field(SUInt8)
   padding1 = 0;
 }
 
@@ -194,23 +194,23 @@ export class DatebookRecord implements PdbRecord {
 }
 
 /** Datebook record attribute flags. */
-export class DatebookRecordAttrs extends SBitmask.as(SUInt8) {
+export class DatebookRecordAttrs extends SBitmask.of(SUInt8) {
   @bitfield(1)
   private unused1 = 0;
   /** Whether this event should sound an alarm before the start time. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   hasAlarmSettings: boolean = false;
   /** Whether this event repeats. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   hasRepetitionSettings: boolean = false;
   /** Whether this event has an additional note. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   hasNote: boolean = false;
   /** Whether this event has repetition exceptions. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   hasExceptionDates: boolean = false;
   /** Whether this event has a description. */
-  @bitfield(1, Boolean)
+  @bitfield(1)
   hasDescription: boolean = false;
   @bitfield(2)
   private unused2 = 0;

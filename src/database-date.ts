@@ -17,7 +17,7 @@ export class DatabaseDate extends SObject {
   /** Day of the month (1st = 1). */
   dayOfMonth: number = 1;
 
-  @field.as(SUInt16BE)
+  @field(SUInt16BE)
   get value() {
     if (this.year < epochTimestamp.getUTCFullYear()) {
       throw new Error(`Invalid year: ${this.year}`);

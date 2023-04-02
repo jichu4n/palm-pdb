@@ -34,21 +34,21 @@ export class ToDoDatabase extends PdbDatabase<ToDoRecord, ToDoAppInfo> {
 
 /** ToDoDB AppInfo block. */
 export class ToDoAppInfo extends SObject {
-  @field
+  @field()
   categoryInfo = new CategoryInfo();
 
   /** Not sure what this is ¯\_(ツ)_/¯ */
-  @field.as(SUInt16BE)
+  @field(SUInt16BE)
   dirty = 0;
 
   /** Item sort order.
    *
    * 0 = manual, 1 = sort by priority.
    */
-  @field.as(SUInt8)
+  @field(SUInt8)
   sortOrder = 0;
 
-  @field.as(SUInt8)
+  @field(SUInt8)
   padding1 = 0;
 
   serialize(opts?: SerializeOptions) {
@@ -64,11 +64,11 @@ export class ToDoRecord extends SObject implements PdbRecord {
   metadata: RecordMetadata = new RecordMetadata();
 
   /** Due date of the item (may be empty if there is no due date). */
-  @field
+  @field()
   dueDate: OptionalDatabaseDate = new OptionalDatabaseDate();
 
   /** Attributes byte. */
-  @field.as(SUInt8)
+  @field(SUInt8)
   private attrs = 0;
 
   /** Whether the item is completed. Stored inside attrs. */
@@ -78,11 +78,11 @@ export class ToDoRecord extends SObject implements PdbRecord {
   priority: number = 0;
 
   /** Main description. */
-  @field.as(SStringNT)
+  @field(SStringNT)
   description: string = '';
 
   /** Additional note. */
-  @field.as(SStringNT)
+  @field(SStringNT)
   note: string = '';
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {

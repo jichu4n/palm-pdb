@@ -32,20 +32,20 @@ export class MemoDatabase extends PdbDatabase<MemoRecord, MemoAppInfo> {
 
 /** MemoDB AppInfo block. */
 export class MemoAppInfo extends SObject {
-  @field
+  @field()
   categoryInfo = new CategoryInfo();
 
-  @field.as(SUInt16BE)
+  @field(SUInt16BE)
   padding1 = 0;
 
   /** Memo sort order.
    *
    * New for 2.0 memo application. 0 = manual, 1 = alphabetical.
    */
-  @field.as(SUInt8)
+  @field(SUInt8)
   sortOrder = 0;
 
-  @field.as(SUInt8)
+  @field(SUInt8)
   padding2 = 0;
 
   serialize(opts?: SerializeOptions) {
@@ -61,6 +61,6 @@ export class MemoRecord extends SObject implements PdbRecord {
   metadata: RecordMetadata = new RecordMetadata();
 
   /** Memo content. */
-  @field.as(SStringNT)
+  @field(SStringNT)
   value: string = '';
 }
