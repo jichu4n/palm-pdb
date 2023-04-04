@@ -2,6 +2,7 @@
 
 import {program} from 'commander';
 import fs from 'fs-extra';
+import iconv from 'iconv-lite';
 import path from 'path';
 import {DEFAULT_ENCODING, PalmDoc} from '..';
 // Not using resolveJsonModule because it causes the output to be generated
@@ -63,9 +64,9 @@ if (require.main === module) {
       .action(async (inputFilePath: string, opts: any) => {
         const doc = new PalmDoc();
         try {
-          doc.text = await fs.readFile(
-            inputFilePath,
-            opts.inputEncoding as string
+          doc.text = iconv.decode(
+            await fs.readFile(inputFilePath),
+            opts.inputEncoding
           );
         } catch (e: any) {
           console.error(`Could not open '${inputFilePath}': ${e.message}`);
