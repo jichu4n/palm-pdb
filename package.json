@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "build:docs": "rm -rf ./docs/ && typedoc",
+    "build:docs": "rm -rf ./docs/ && typedoc && cp 'Palm File Format Specification.pdf' ./docs/assets/",
     "lint": "prettier --check .",
     "test": "jest",
     "prepack": "npm run lint && npm run build && npm test && rm -r ./dist/tests"
