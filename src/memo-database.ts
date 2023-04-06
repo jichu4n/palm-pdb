@@ -8,10 +8,10 @@ import {
 } from 'serio';
 import {
   CategoryInfo,
-  DatabaseHeader,
+  DatabaseHdrType,
   PdbDatabase,
   PdbRecord,
-  RecordMetadata,
+  RecordEntryType,
 } from '.';
 
 /** MemoDB database. */
@@ -20,7 +20,7 @@ export class MemoDatabase extends PdbDatabase<MemoRecord, MemoAppInfo> {
   appInfoType = MemoAppInfo;
 
   get defaultHeader() {
-    const header = new DatabaseHeader();
+    const header = new DatabaseHdrType();
     header.name = 'MemoDB';
     header.type = 'DATA';
     header.creator = 'memo';
@@ -58,7 +58,7 @@ export class MemoAppInfo extends SObject {
 
 /** A MemoDB record. */
 export class MemoRecord extends SObject implements PdbRecord {
-  metadata: RecordMetadata = new RecordMetadata();
+  metadata: RecordEntryType = new RecordEntryType();
 
   /** Memo content. */
   @field(SStringNT)

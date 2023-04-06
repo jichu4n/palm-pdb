@@ -6,7 +6,7 @@ import {
   SerializeOptions,
 } from 'serio';
 import {SmartBuffer} from 'smart-buffer';
-import {DatabaseHeader, PdbDatabase, PdbSBufferRecord} from '.';
+import {DatabaseHdrType, PdbDatabase, PdbSBufferRecord} from '.';
 
 /** PalmDOC document. */
 export class PalmDoc extends Serializable {
@@ -315,7 +315,7 @@ export class PalmDocDatabase extends PdbDatabase<PdbSBufferRecord> {
   recordType = PdbSBufferRecord;
 
   get defaultHeader() {
-    const header = new DatabaseHeader();
+    const header = new DatabaseHdrType();
     header.name = 'Document';
     header.type = 'TEXt';
     header.creator = 'REAd';

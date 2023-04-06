@@ -2,6 +2,7 @@ import {
   bitfield,
   DeserializeOptions,
   field,
+  SArray,
   SBitmask,
   Serializable,
   SerializeOptions,
@@ -15,13 +16,19 @@ import {SmartBuffer} from 'smart-buffer';
 import {
   DatabaseTimestamp,
   epochDatabaseTimestamp,
+  LocalId,
   SDynamicArray,
   TypeId,
 } from '.';
 
-/** PDB database header, a.k.a DatabaseHdrType. */
-export class DatabaseHeader extends SObject {
-  /** Database name (max 31 bytes). */
+/** Database header.
+ *
+ * Sources:
+ *   - https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf
+ *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataPrv.h#L67
+ */
+export class DatabaseHdrType extends SObject {
+  /** Database name (max 31 bytes + terminating NUL byte). */
   @field(SStringNT.ofLength(32))
   name: string = '';
   /** Database attribute flags. */
@@ -43,10 +50,10 @@ export class DatabaseHeader extends SObject {
   @field(SUInt32BE)
   modificationNumber: number = 0;
   /** Offset to AppInfo block. */
-  @field(SUInt32BE)
+  @field(LocalId)
   appInfoId: number = 0;
   /** Offset to SortInfo block. */
-  @field(SUInt32BE)
+  @field(LocalId)
   sortInfoId: number = 0;
   /** Database type identifier (max 4 bytes). */
   @field(TypeId)
@@ -61,50 +68,62 @@ export class DatabaseHeader extends SObject {
 
 /** Record or resource metadata list. */
 export interface RecordOrResourceMetadataList<
-  MetadataT extends RecordMetadata | ResourceMetadata
+  MetadataT extends RecordEntryType | RsrcEntryType
 > extends Serializable {
   values: Array<MetadataT>;
 }
 
-/** Record metadata for PDB files, a.k.a. RecordEntryType. */
-export class RecordMetadata {
+/** Record metadata for PDB files.
+ *
+ * Sources:
+ *   - https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf
+ *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataPrv.h#L23
+ */
+export class RecordEntryType extends SObject {
   /** Offset to raw record data. */
-  localChunkId: number = 0;
+  @field(LocalId)
+  localChunkId = 0;
   /** Record attributes. */
-  attributes: RecordAttrs = new RecordAttrs();
-  /** Record ID (3 bytes). */
-  uniqueId: number = 0;
+  @field()
+  attributes = new RecordAttrs();
+  /** Unique ID of record (3 bytes). Should not be all zero for a valid record. */
+  @field(SArray.of(SUInt8))
+  uniqueId = Array(3).fill(0);
 
-  deserialize(buffer: Buffer, opts?: DeserializeOptions) {
-    const reader = SmartBuffer.fromBuffer(buffer);
-    this.localChunkId = reader.readUInt32BE();
-    this.attributes.deserialize(reader.readBuffer(1), opts);
-    this.uniqueId =
-      (reader.readUInt8() << 16) |
-      (reader.readUInt8() << 8) |
-      reader.readUInt8();
-    return reader.readOffset;
+  override deserialize(buffer: Buffer, opts?: DeserializeOptions) {
+    this.checkUniqueIdLength();
+    return super.deserialize(buffer, opts);
   }
 
-  serialize(opts?: SerializeOptions) {
-    const writer = new SmartBuffer();
-    writer.writeUInt32BE(this.localChunkId);
-    writer.writeBuffer(this.attributes.serialize(opts));
-    writer.writeUInt8((this.uniqueId >> 16) & 0xff);
-    writer.writeUInt8((this.uniqueId >> 8) & 0xff);
-    writer.writeUInt8(this.uniqueId & 0xff);
-    return writer.toBuffer();
+  override serialize(opts?: SerializeOptions) {
+    this.checkUniqueIdLength();
+    return super.serialize(opts);
   }
 
-  getSerializedLength(opts?: SerializeOptions) {
-    return 8;
+  override getSerializedLength(opts?: SerializeOptions) {
+    this.checkUniqueIdLength();
+    return super.getSerializedLength(opts);
+  }
+
+  private checkUniqueIdLength() {
+    if (this.uniqueId.length !== 3) {
+      throw new Error(
+        'RecordEntryType.uniqueId must have length of 3, ' +
+          `but actual length is ${this.uniqueId.length}`
+      );
+    }
   }
 }
 
-/** Record metadata list for PDB databases, a.k.a RecordListType. */
-export class RecordMetadataList
+/** Record metadata list for PDB databases.
+ *
+ * Sources:
+ *   - https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf
+ *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataPrv.h#L51
+ */
+export class RecordListType
   extends SObject
-  implements RecordOrResourceMetadataList<RecordMetadata>
+  implements RecordOrResourceMetadataList<RecordEntryType>
 {
   /** Offset of next RecordMetadataList structure. Unsupported - must be 0. */
   @field(SUInt32BE)
@@ -112,19 +131,24 @@ export class RecordMetadataList
 
   /** Array of record metadata. */
   @field(
-    class extends SDynamicArray<SUInt16BE, RecordMetadata> {
+    class extends SDynamicArray<SUInt16BE, RecordEntryType> {
       lengthType = SUInt16BE;
-      valueType = RecordMetadata;
+      valueType = RecordEntryType;
     }
   )
-  values: Array<RecordMetadata> = [];
+  values: Array<RecordEntryType> = [];
 
   @field(SUInt16BE)
   private padding1 = 0;
 }
 
-/** Resource metadata for PRC files, a.k.a. RsrcEntryType. */
-export class ResourceMetadata extends SObject {
+/** Resource metadata for PRC files.
+ *
+ * Sources:
+ *   - https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf
+ *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataPrv.h#L36
+ */
+export class RsrcEntryType extends SObject {
   /** Resource type identifier (max 4 bytes). */
   @field(TypeId)
   type = '';
@@ -134,27 +158,27 @@ export class ResourceMetadata extends SObject {
   resourceId = 0;
 
   /** Offset to raw record data. */
-  @field(SUInt32BE)
+  @field(LocalId)
   localChunkId = 0;
 }
 
 /** Resource metadata list for PRC databases. */
 export class ResourceMetadataList
   extends SObject
-  implements RecordOrResourceMetadataList<ResourceMetadata>
+  implements RecordOrResourceMetadataList<RsrcEntryType>
 {
   /** Offset of next ResourceMetadataList structure. Unsupported - must be 0. */
-  @field(SUInt32BE)
-  private nextListId = 0;
+  @field(LocalId)
+  private nextRecordListId = 0;
 
   /** Array of resource metadata. */
   @field(
-    class extends SDynamicArray<SUInt16BE, ResourceMetadata> {
+    class extends SDynamicArray<SUInt16BE, RsrcEntryType> {
       lengthType = SUInt16BE;
-      valueType = ResourceMetadata;
+      valueType = RsrcEntryType;
     }
   )
-  values: Array<ResourceMetadata> = [];
+  values: Array<RsrcEntryType> = [];
 
   @field(SUInt16BE)
   private padding1 = 0;

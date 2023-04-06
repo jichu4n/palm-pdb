@@ -14,11 +14,11 @@ import {SmartBuffer} from 'smart-buffer';
 import {
   CategoryInfo,
   DatabaseDate,
-  DatabaseHeader,
+  DatabaseHdrType,
   OptionalDatabaseDate,
   PdbDatabase,
   PdbRecord,
-  RecordMetadata,
+  RecordEntryType,
 } from '.';
 
 /** DatebookDB database. */
@@ -30,7 +30,7 @@ export class DatebookDatabase extends PdbDatabase<
   appInfoType = DatebookAppInfo;
 
   get defaultHeader() {
-    const header = new DatabaseHeader();
+    const header = new DatabaseHdrType();
     header.name = 'DatebookDB';
     header.type = 'DATA';
     header.creator = 'date';
@@ -56,7 +56,7 @@ export class DatebookAppInfo extends SObject {
 
 /** A DatebookDB record. */
 export class DatebookRecord implements PdbRecord {
-  metadata: RecordMetadata = new RecordMetadata();
+  metadata: RecordEntryType = new RecordEntryType();
 
   /** Date of the event. */
   date: DatabaseDate = new DatabaseDate();

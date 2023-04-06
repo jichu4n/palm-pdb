@@ -7,21 +7,21 @@ import {
 } from 'serio';
 import {SmartBuffer} from 'smart-buffer';
 import {
-  DatabaseHeader,
+  DatabaseHdrType,
   PdbSBufferRecord,
   PrcSBufferRecord,
   Record,
-  RecordMetadata,
-  RecordMetadataList,
+  RecordEntryType,
+  RecordListType,
   RecordOrResourceMetadataList,
-  ResourceMetadata,
+  RsrcEntryType,
   ResourceMetadataList,
 } from '.';
 
 /** Representation of a Palm OS database file. */
 export abstract class Database<
   /** MetadataList type. */
-  MetadataT extends RecordMetadata | ResourceMetadata,
+  MetadataT extends RecordEntryType | RsrcEntryType,
   /** Record type. */
   RecordT extends Record<MetadataT>,
   /** AppInfo type. */
@@ -34,7 +34,7 @@ export abstract class Database<
    * Note that some fields in the header are recomputed based on other
    * properties during serialization. See `serialize()` for details.
    */
-  header: DatabaseHeader = this.defaultHeader;
+  header: DatabaseHdrType = this.defaultHeader;
   /** AppInfo value. */
   appInfo: AppInfoT | null = null;
   /** SortInfo value. */
@@ -53,7 +53,7 @@ export abstract class Database<
 
   /** Generates the default header for a new database. */
   protected get defaultHeader() {
-    return new DatabaseHeader();
+    return new DatabaseHdrType();
   }
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
@@ -162,29 +162,29 @@ export abstract class Database<
 /** PDB databases. */
 export abstract class PdbDatabase<
   /** Record type. */
-  RecordT extends Record<RecordMetadata>,
+  RecordT extends Record<RecordEntryType>,
   /** AppInfo type. */
   AppInfoT extends Serializable = SBuffer,
   /** SortInfo type. */
   SortInfoT extends Serializable = SBuffer
-> extends Database<RecordMetadata, RecordT, AppInfoT, SortInfoT> {
+> extends Database<RecordEntryType, RecordT, AppInfoT, SortInfoT> {
   constructor() {
     super();
     this.header.attributes.resDB = false;
   }
 
-  metadataListType = RecordMetadataList;
+  metadataListType = RecordListType;
 }
 
 /** PRC databases. */
 export abstract class PrcDatabase<
   /** Record type. */
-  RecordT extends Record<ResourceMetadata>,
+  RecordT extends Record<RsrcEntryType>,
   /** AppInfo type. */
   AppInfoT extends Serializable = SBuffer,
   /** SortInfo type. */
   SortInfoT extends Serializable = SBuffer
-> extends Database<ResourceMetadata, RecordT, AppInfoT, SortInfoT> {
+> extends Database<RsrcEntryType, RecordT, AppInfoT, SortInfoT> {
   constructor() {
     super();
     this.header.attributes.resDB = true;

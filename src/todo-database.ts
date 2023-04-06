@@ -9,11 +9,11 @@ import {
 } from 'serio';
 import {
   CategoryInfo,
-  DatabaseHeader,
+  DatabaseHdrType,
   OptionalDatabaseDate,
   PdbDatabase,
   PdbRecord,
-  RecordMetadata,
+  RecordEntryType,
 } from '.';
 
 /** ToDoDB database. */
@@ -22,7 +22,7 @@ export class ToDoDatabase extends PdbDatabase<ToDoRecord, ToDoAppInfo> {
   appInfoType = ToDoAppInfo;
 
   get defaultHeader() {
-    const header = new DatabaseHeader();
+    const header = new DatabaseHdrType();
     header.name = 'ToDoDB';
     header.type = 'DATA';
     header.creator = 'todo';
@@ -61,7 +61,7 @@ export class ToDoAppInfo extends SObject {
 
 /** A ToDoDB record. */
 export class ToDoRecord extends SObject implements PdbRecord {
-  metadata: RecordMetadata = new RecordMetadata();
+  metadata: RecordEntryType = new RecordEntryType();
 
   /** Due date of the item (may be empty if there is no due date). */
   @field()

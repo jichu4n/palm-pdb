@@ -46,4 +46,4 @@ export class TypeId extends SString.ofLength(4) {
 }
 
 /** Memory offset, i.e. "local (card relative) chunk ID" according to the SDK. */
-export type LocalID = SUInt32BE;
+export const LocalId = SUInt32BE;
