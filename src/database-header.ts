@@ -6,20 +6,18 @@ import {
   Serializable,
   SerializeOptions,
   SObject,
-  SString,
   SStringNT,
   SUInt16BE,
   SUInt32BE,
   SUInt8,
 } from 'serio';
 import {SmartBuffer} from 'smart-buffer';
-import {DatabaseTimestamp, epochDatabaseTimestamp} from '.';
-import {SDynamicArray} from './serializable';
-
-/** Serializable wrapper for a 32-bit type ID mapped to a 4-character string. */
-export class TypeId extends SString.ofLength(4) {
-  value = 'AAAA';
-}
+import {
+  DatabaseTimestamp,
+  epochDatabaseTimestamp,
+  SDynamicArray,
+  TypeId,
+} from '.';
 
 /** PDB database header, a.k.a DatabaseHdrType. */
 export class DatabaseHeader extends SObject {

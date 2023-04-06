@@ -2,6 +2,8 @@ import _ from 'lodash';
 import {
   DeserializeOptions,
   SArray,
+  SString,
+  SUInt32BE,
   Serializable,
   SerializableWrapper,
   SerializeOptions,
@@ -37,3 +39,11 @@ export abstract class SDynamicArray<
     return length.getSerializedLength(opts) + super.getSerializedLength(opts);
   }
 }
+
+/** Serializable wrapper for a 32-bit type ID mapped to a 4-character string. */
+export class TypeId extends SString.ofLength(4) {
+  value = 'AAAA';
+}
+
+/** Memory offset, i.e. "local (card relative) chunk ID" according to the SDK. */
+export type LocalID = SUInt32BE;
