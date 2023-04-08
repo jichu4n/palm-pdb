@@ -1,18 +1,15 @@
 import {
   bitfield,
-  DeserializeOptions,
   field,
   SArray,
   SBitmask,
   Serializable,
-  SerializeOptions,
   SObject,
   SStringNT,
   SUInt16BE,
   SUInt32BE,
   SUInt8,
 } from 'serio';
-import {SmartBuffer} from 'smart-buffer';
 import {
   DatabaseTimestamp,
   epochDatabaseTimestamp,
@@ -87,32 +84,8 @@ export class RecordEntryType extends SObject {
   @field()
   attributes = new RecordAttrs();
   /** Unique ID of record (3 bytes). Should not be all zero for a valid record. */
-  @field(SArray.of(SUInt8))
-  uniqueId = Array(3).fill(0);
-
-  override deserialize(buffer: Buffer, opts?: DeserializeOptions) {
-    this.checkUniqueIdLength();
-    return super.deserialize(buffer, opts);
-  }
-
-  override serialize(opts?: SerializeOptions) {
-    this.checkUniqueIdLength();
-    return super.serialize(opts);
-  }
-
-  override getSerializedLength(opts?: SerializeOptions) {
-    this.checkUniqueIdLength();
-    return super.getSerializedLength(opts);
-  }
-
-  private checkUniqueIdLength() {
-    if (this.uniqueId.length !== 3) {
-      throw new Error(
-        'RecordEntryType.uniqueId must have length of 3, ' +
-          `but actual length is ${this.uniqueId.length}`
-      );
-    }
-  }
+  @field(SArray.of(SUInt8).ofLength(3))
+  uniqueId = [0, 0, 0];
 }
 
 /** Record metadata list for PDB databases.
@@ -259,16 +232,16 @@ export class DatabaseAttrs extends SBitmask.of(SUInt16BE) {
 export class RecordAttrs extends SBitmask.of(SUInt8) {
   /** Delete this record next sync */
   @bitfield(1)
-  delete: boolean = false;
+  delete = false;
   /** Archive this record next sync */
   @bitfield(1)
-  dirty: boolean = false;
+  dirty = false;
   /** Record currently in use */
   @bitfield(1)
-  busy: boolean = false;
+  busy = false;
   /** "Secret" record - password protected */
   @bitfield(1)
-  secret: boolean = false;
+  secret = false;
   @bitfield(4)
   private lowest4bits = 0;
 
