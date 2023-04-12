@@ -6,13 +6,7 @@ import {
   SUInt16BE,
   SUInt8,
 } from 'serio';
-import {
-  CategoryInfo,
-  DatabaseHdrType,
-  PdbDatabase,
-  PdbRecord,
-  RecordEntryType,
-} from '.';
+import {CategoryInfo, DatabaseHdrType, PdbDatabase, PdbRecord} from '.';
 
 /** MemoDB database. */
 export class MemoDatabase extends PdbDatabase<MemoRecord, MemoAppInfo> {
@@ -36,7 +30,7 @@ export class MemoAppInfo extends SObject {
   categoryInfo = new CategoryInfo();
 
   @field(SUInt16BE)
-  padding1 = 0;
+  private padding1 = 0;
 
   /** Memo sort order.
    *
@@ -46,7 +40,7 @@ export class MemoAppInfo extends SObject {
   sortOrder = 0;
 
   @field(SUInt8)
-  padding2 = 0;
+  private padding2 = 0;
 
   serialize(opts?: SerializeOptions) {
     if (this.sortOrder < 0 || this.sortOrder > 1) {
@@ -57,10 +51,8 @@ export class MemoAppInfo extends SObject {
 }
 
 /** A MemoDB record. */
-export class MemoRecord extends SObject implements PdbRecord {
-  entry: RecordEntryType = new RecordEntryType();
-
+export class MemoRecord extends PdbRecord {
   /** Memo content. */
   @field(SStringNT)
-  value: string = '';
+  value = '';
 }

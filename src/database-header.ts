@@ -34,7 +34,7 @@ export const dmDbNameLength = 32;
 export class DatabaseHdrType extends SObject {
   /** Database name. */
   @field(SStringNT.ofLength(dmDbNameLength))
-  name: string = '';
+  name = '';
 
   /** Database attribute flags. */
   @field()
@@ -42,7 +42,7 @@ export class DatabaseHdrType extends SObject {
 
   /** Database version (integer). */
   @field(SUInt16BE)
-  version: number = 0;
+  version = 0;
 
   /** Database creation timestamp. */
   @field()
@@ -58,27 +58,27 @@ export class DatabaseHdrType extends SObject {
 
   /** Modification number (integer). */
   @field(SUInt32BE)
-  modificationNumber: number = 0;
+  modificationNumber = 0;
 
   /** Offset to AppInfo block. */
   @field(LocalId)
-  appInfoId: number = 0;
+  appInfoId = 0;
 
   /** Offset to SortInfo block. */
   @field(LocalId)
-  sortInfoId: number = 0;
+  sortInfoId = 0;
 
   /** Database type identifier (max 4 bytes). */
   @field(TypeId)
-  type: string = '';
+  type = '';
 
   /** Database creator identifier (max 4 bytes). */
   @field(TypeId)
-  creator: string = '';
+  creator = '';
 
   /** Seed for generating record IDs. */
   @field(SUInt32BE)
-  uniqueIdSeed: number = 0;
+  uniqueIdSeed = 0;
 }
 
 /** Record entry in PDB files.
@@ -189,60 +189,60 @@ export class PrcRecordListType
 export class DatabaseAttrs extends SBitmask.of(SUInt16BE) {
   /** Database not closed properly. */
   @bitfield(1)
-  open: boolean = false;
+  open = false;
   @bitfield(3)
   private unused1 = 0;
   /** This database (resource or record) is associated with the application
    * with the same creator. It will be beamed and copied along with the
    * application. */
   @bitfield(1)
-  bundle: boolean = false;
+  bundle = false;
   /** This database (resource or record) is recyclable: it will be deleted Real
    * Soon Now, generally the next time the database is closed. */
   @bitfield(1)
-  recyclable: boolean = false;
+  recyclable = false;
   /** This data database (not applicable for executables) can be "launched" by
    * passing its name to it's owner app ('appl' database with same creator)
    * using the sysAppLaunchCmdOpenNamedDB action code. */
   @bitfield(1)
-  launchableData: boolean = false;
+  launchableData = false;
   /** This database should generally be hidden from view.
    *
    * Used to hide some apps from the main view of the launcher for example. For
    * data (non-resource) databases, this hides the record count within the
    * launcher info screen. */
   @bitfield(1)
-  hidden: boolean = false;
+  hidden = false;
   /** This database is used for file stream implementation. */
   @bitfield(1)
-  stream: boolean = false;
+  stream = false;
   /** This database should not be copied to */
   @bitfield(1)
-  copyPrevention: boolean = false;
+  copyPrevention = false;
   /** Device requires a reset after this database is installed. */
   @bitfield(1)
-  resetAfterInstall: boolean = false;
+  resetAfterInstall = false;
   /** This tells the backup conduit that it's OK for it to install a newer version
    * of this database with a different name if the current database is open. This
    * mechanism is used to update the Graffiti Shortcuts database, for example.
    */
   @bitfield(1)
-  okToInstallNewer: boolean = false;
+  okToInstallNewer = false;
   /** Set if database should be backed up to PC if no app-specific synchronization
    * conduit has been supplied. */
   @bitfield(1)
-  backup: boolean = false;
+  backup = false;
   /** Set if Application Info block is dirty.
    *
    * Optionally supported by an App's conduit. */
   @bitfield(1)
-  appInfoDirty: boolean = false;
+  appInfoDirty = false;
   /** Read Only database. */
   @bitfield(1)
-  readOnly: boolean = false;
+  readOnly = false;
   /** Whether this is a resource database (i.e. PRC). */
   @bitfield(1)
-  resDB: boolean = false;
+  resDB = false;
 }
 
 /** Record attribute flags.

@@ -18,7 +18,6 @@ import {
   OptionalDatabaseDate,
   PdbDatabase,
   PdbRecord,
-  RecordEntryType,
 } from '.';
 
 /** DatebookDB database. */
@@ -55,9 +54,7 @@ export class DatebookAppInfo extends SObject {
 }
 
 /** A DatebookDB record. */
-export class DatebookRecord implements PdbRecord {
-  entry: RecordEntryType = new RecordEntryType();
-
+export class DatebookRecord extends PdbRecord {
   /** Date of the event. */
   date: DatabaseDate = new DatabaseDate();
   /** Start time of event. */
@@ -71,9 +68,9 @@ export class DatebookRecord implements PdbRecord {
   /** Dates on which to skip repetitions. */
   exceptionDates: Array<DatabaseDate> = [];
   /** Main description. */
-  description: string = '';
+  description = '';
   /** Additional note. */
-  note: string = '';
+  note = '';
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     const reader = SmartBuffer.fromBuffer(buffer);
@@ -199,19 +196,19 @@ export class DatebookRecordAttrs extends SBitmask.of(SUInt8) {
   private unused1 = 0;
   /** Whether this event should sound an alarm before the start time. */
   @bitfield(1)
-  hasAlarmSettings: boolean = false;
+  hasAlarmSettings = false;
   /** Whether this event repeats. */
   @bitfield(1)
-  hasRepetitionSettings: boolean = false;
+  hasRepetitionSettings = false;
   /** Whether this event has an additional note. */
   @bitfield(1)
-  hasNote: boolean = false;
+  hasNote = false;
   /** Whether this event has repetition exceptions. */
   @bitfield(1)
-  hasExceptionDates: boolean = false;
+  hasExceptionDates = false;
   /** Whether this event has a description. */
   @bitfield(1)
-  hasDescription: boolean = false;
+  hasDescription = false;
   @bitfield(2)
   private unused2 = 0;
 }
@@ -272,7 +269,7 @@ export class AlarmSettings extends Serializable {
   /** Time unit for expressing when the alarm should fire. */
   unit: 'minutes' | 'hours' | 'days' = 'minutes';
   /** Number of time units before the event start time to fire the alarm. */
-  value: number = 0;
+  value = 0;
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     const reader = SmartBuffer.fromBuffer(buffer);
@@ -362,7 +359,7 @@ export class RepetitionSettings extends Serializable {
   /** How the event should repeat. */
   repetitionSpec: RepetitionSpec = {type: 'daily'};
   /** Frequency of repetition (every N days / weeks / months / years). */
-  frequency: number = 1;
+  frequency = 1;
   /** Repetition end date. */
   endDate: OptionalDatabaseDate = new OptionalDatabaseDate();
 

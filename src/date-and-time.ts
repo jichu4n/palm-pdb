@@ -70,11 +70,11 @@ epochDatabaseTimestamp.value.setTime(epochTimestamp.getTime());
 /** A date (year, month, DOM) encoded as a 16-bit integer. */
 export class DatabaseDate extends SObject {
   /** Year. */
-  year: number = epochTimestamp.getUTCFullYear();
+  year = epochTimestamp.getUTCFullYear();
   /** Month (Jan = 1, Dec = 12). */
-  month: number = 1;
+  month = 1;
   /** Day of the month (1st = 1). */
-  dayOfMonth: number = 1;
+  dayOfMonth = 1;
 
   @field(SUInt16BE)
   get value() {

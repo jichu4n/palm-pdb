@@ -13,7 +13,6 @@ import {
   OptionalDatabaseDate,
   PdbDatabase,
   PdbRecord,
-  RecordEntryType,
 } from '.';
 
 /** ToDoDB database. */
@@ -23,9 +22,9 @@ export class ToDoDatabase extends PdbDatabase<ToDoRecord, ToDoAppInfo> {
 
   get defaultHeader() {
     return DatabaseHdrType.with({
-    name : 'ToDoDB',
-    type : 'DATA',
-    creator : 'todo',
+      name: 'ToDoDB',
+      type: 'DATA',
+      creator: 'todo',
     });
   }
 
@@ -60,9 +59,7 @@ export class ToDoAppInfo extends SObject {
 }
 
 /** A ToDoDB record. */
-export class ToDoRecord extends SObject implements PdbRecord {
-  entry: RecordEntryType = new RecordEntryType();
-
+export class ToDoRecord extends PdbRecord {
   /** Due date of the item (may be empty if there is no due date). */
   @field()
   dueDate: OptionalDatabaseDate = new OptionalDatabaseDate();
@@ -72,18 +69,18 @@ export class ToDoRecord extends SObject implements PdbRecord {
   private attrs = 0;
 
   /** Whether the item is completed. Stored inside attrs. */
-  isCompleted: boolean = false;
+  isCompleted = false;
 
   /** Priority of the item (max 127). Stored inside attrs. */
-  priority: number = 0;
+  priority = 0;
 
   /** Main description. */
   @field(SStringNT)
-  description: string = '';
+  description = '';
 
   /** Additional note. */
   @field(SStringNT)
-  note: string = '';
+  note = '';
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     const readOffset = super.deserialize(buffer, opts);

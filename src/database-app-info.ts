@@ -32,7 +32,7 @@ export class CategoryInfo extends Serializable {
   /** Array of category information (max 16 elements). */
   categories: Array<Category> = [];
   /** The last unique category ID assigned. */
-  lastUniqId: number = 0;
+  lastUniqId = 0;
 
   /** Finds the category with the given unique ID. */
   getCategoryByUniqId(uniqId: number): Category | null {

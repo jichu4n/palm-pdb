@@ -11,9 +11,9 @@ import {DatabaseHdrType, PdbDatabase, PdbSBufferRecord} from '.';
 /** PalmDOC document. */
 export class PalmDoc extends Serializable {
   /** Document name (typically the file name). */
-  name: string = 'doc.txt';
+  name = 'doc.txt';
   /** Text content. */
-  text: string = '';
+  text = '';
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     const numBytes = this.db.deserialize(buffer, opts);
@@ -80,7 +80,7 @@ export class PalmDoc extends Serializable {
    */
   private readonly db = new PalmDocDatabase();
   /** Text corresponding to db. */
-  private textInDb: string = '';
+  private textInDb = '';
   /** Metadata stored in the first record of a PalmDOC database. */
   private metadata: PalmDocMetadata = new PalmDocMetadata();
 
@@ -257,13 +257,13 @@ const PALM_DOC_RECORD_SIZE = 4096;
 /** Metadata stored in the first record of a PalmDOC database. */
 export class PalmDocMetadata extends Serializable {
   /** Whether the text is compressed. */
-  isCompressed: boolean = true;
+  isCompressed = true;
   /** Uncompressed length of the text. */
-  textLength: number = 0;
+  textLength = 0;
   /** Number of records used for storing text. */
-  numRecords: number = 0;
+  numRecords = 0;
   /** Current reading position, as an offset into the uncompressed text. */
-  position: number = 0;
+  position = 0;
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     const reader = SmartBuffer.fromBuffer(buffer);
