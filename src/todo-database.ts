@@ -15,22 +15,6 @@ import {
   PdbRecord,
 } from '.';
 
-/** ToDoDB database. */
-export class ToDoDatabase extends PdbDatabase<ToDoRecord, ToDoAppInfo> {
-  recordType = ToDoRecord;
-  appInfoType = ToDoAppInfo;
-
-  get defaultHeader() {
-    return DatabaseHdrType.with({
-      name: 'ToDoDB',
-      type: 'DATA',
-      creator: 'todo',
-    });
-  }
-
-  appInfo = new ToDoAppInfo();
-}
-
 /** ToDoDB AppInfo block. */
 export class ToDoAppInfo extends SObject {
   @field()
@@ -98,5 +82,16 @@ export class ToDoRecord extends PdbRecord {
       this.attrs |= 0x80;
     }
     return super.serialize(opts);
+  }
+}
+
+/** ToDoDB database. */
+export class ToDoDatabase extends PdbDatabase.of(ToDoRecord, ToDoAppInfo) {
+  get defaultHeader() {
+    return DatabaseHdrType.with({
+      name: 'ToDoDB',
+      type: 'DATA',
+      creator: 'todo',
+    });
   }
 }

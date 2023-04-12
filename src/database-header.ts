@@ -10,13 +10,8 @@ import {
   SUInt32BE,
   SUInt8,
 } from 'serio';
-import {
-  DatabaseTimestamp,
-  epochDatabaseTimestamp,
-  LocalId,
-  SDynamicArray,
-  TypeId,
-} from '.';
+import {DatabaseTimestamp, epochDatabaseTimestamp} from './date-time-types';
+import {LocalId, SDynamicArray, TypeId} from './utility-types';
 
 /** Maximum length of database names - 31 chars + 1 NUL byte.
  *

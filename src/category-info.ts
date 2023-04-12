@@ -25,7 +25,7 @@ export interface Category {
 }
 
 /** Length of standard category data. */
-export const STANDARD_APP_INFO_LENGTH = 276;
+const CATEGORY_INFO_LENGTH = 276;
 
 /** AppInfo block for standard category data, a.k.a AppInfoType. */
 export class CategoryInfo extends Serializable {
@@ -121,6 +121,6 @@ export class CategoryInfo extends Serializable {
   }
 
   getSerializedLength(opts?: SerializeOptions) {
-    return STANDARD_APP_INFO_LENGTH;
+    return CATEGORY_INFO_LENGTH;
   }
 }

@@ -1,5 +1,5 @@
 import {SBuffer, Serializable, SObject} from 'serio';
-import {RecordEntryType, RsrcEntryType} from '.';
+import {RecordEntryType, RsrcEntryType} from './database-header';
 
 /** Interface of database records. */
 export interface Record<EntryT extends RecordEntryType | RsrcEntryType>

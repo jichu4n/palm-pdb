@@ -20,7 +20,7 @@ describe('MemoDatabase', function () {
   test('serialize', async function () {
     // Create db1.
     const db1 = new MemoDatabase();
-    db1.appInfo.categoryInfo.categories = [
+    db1.appInfo!.categoryInfo.categories = [
       {label: 'Unfiled', uniqId: 0, isRenamed: false},
       {label: 'Personal', uniqId: 1, isRenamed: false},
     ];
@@ -37,7 +37,7 @@ describe('MemoDatabase', function () {
 
     // Check db2 contents.
     expect(db2.appInfo?.categoryInfo.categories).toStrictEqual(
-      db1.appInfo.categoryInfo.categories
+      db1.appInfo?.categoryInfo.categories
     );
     expect(db2.records.length).toStrictEqual(db1.records.length);
     for (let i = 0; i < db1.records.length; ++i) {

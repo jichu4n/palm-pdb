@@ -20,25 +20,6 @@ import {
   PdbRecord,
 } from '.';
 
-/** DatebookDB database. */
-export class DatebookDatabase extends PdbDatabase<
-  DatebookRecord,
-  DatebookAppInfo
-> {
-  recordType = DatebookRecord;
-  appInfoType = DatebookAppInfo;
-
-  get defaultHeader() {
-    return DatabaseHdrType.with({
-      name: 'DatebookDB',
-      type: 'DATA',
-      creator: 'date',
-    });
-  }
-
-  appInfo = new DatebookAppInfo();
-}
-
 /** DatebookDB AppInfo block. */
 export class DatebookAppInfo extends SObject {
   @field()
@@ -483,4 +464,18 @@ export class RepetitionSettings extends Serializable {
     'monthlyByDate',
     'yearly',
   ];
+}
+
+/** DatebookDB database. */
+export class DatebookDatabase extends PdbDatabase.of(
+  DatebookRecord,
+  DatebookAppInfo
+) {
+  get defaultHeader() {
+    return DatabaseHdrType.with({
+      name: 'DatebookDB',
+      type: 'DATA',
+      creator: 'date',
+    });
+  }
 }

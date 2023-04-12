@@ -8,22 +8,6 @@ import {
 } from 'serio';
 import {CategoryInfo, DatabaseHdrType, PdbDatabase, PdbRecord} from '.';
 
-/** MemoDB database. */
-export class MemoDatabase extends PdbDatabase<MemoRecord, MemoAppInfo> {
-  recordType = MemoRecord;
-  appInfoType = MemoAppInfo;
-
-  get defaultHeader() {
-    return DatabaseHdrType.with({
-      name: 'MemoDB',
-      type: 'DATA',
-      creator: 'memo',
-    });
-  }
-
-  appInfo = new MemoAppInfo();
-}
-
 /** MemoDB AppInfo block. */
 export class MemoAppInfo extends SObject {
   @field()
@@ -55,4 +39,15 @@ export class MemoRecord extends PdbRecord {
   /** Memo content. */
   @field(SStringNT)
   value = '';
+}
+
+/** MemoDB database. */
+export class MemoDatabase extends PdbDatabase.of(MemoRecord, MemoAppInfo) {
+  get defaultHeader() {
+    return DatabaseHdrType.with({
+      name: 'MemoDB',
+      type: 'DATA',
+      creator: 'memo',
+    });
+  }
 }

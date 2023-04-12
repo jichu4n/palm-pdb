@@ -95,7 +95,7 @@ describe('DatebookDatabase', function () {
 
     // Check db2 contents.
     expect(db2.appInfo?.categoryInfo.categories).toStrictEqual(
-      db1.appInfo.categoryInfo.categories
+      db1.appInfo?.categoryInfo.categories
     );
     expect(db2.records.length).toStrictEqual(db1.records.length);
     for (let i = 0; i < db1.records.length; ++i) {

@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import {
   DeserializeOptions,
   SBuffer,
@@ -9,14 +8,12 @@ import {SmartBuffer} from 'smart-buffer';
 import {
   DatabaseHdrType,
   PdbRecordListType,
-  PdbSBufferRecord,
   PrcRecordListType,
-  PrcSBufferRecord,
-  Record,
   RecordEntryType,
   RecordListType,
   RsrcEntryType,
-} from '.';
+} from './database-header';
+import {PdbSBufferRecord, PrcSBufferRecord, Record} from './record';
 
 /** Representation of a Palm OS database file. */
 export abstract class Database<
@@ -29,6 +26,15 @@ export abstract class Database<
   /** SortInfo type. */
   SortInfoT extends Serializable = SBuffer
 > extends Serializable {
+  /** Record list constructor, to be provided by child classes. */
+  protected abstract readonly recordListType: new () => RecordListType<EntryT>;
+  /** Record type constructor, to be provided by child classes. */
+  protected abstract readonly recordType: new () => RecordT;
+  /** AppInfo type constructor, to be provided by child classes. */
+  protected readonly appInfoType: (new () => AppInfoT) | null = null;
+  /** SortInfo type constructor, to be provided by child classes. */
+  protected readonly sortInfoType: (new () => SortInfoT) | null = null;
+
   /** Database header.
    *
    * Note that some fields in the header are recomputed based on other
@@ -36,24 +42,23 @@ export abstract class Database<
    */
   header: DatabaseHdrType = this.defaultHeader;
   /** AppInfo value. */
-  appInfo: AppInfoT | null = null;
+  appInfo: AppInfoT | null = this.defaultAppInfo;
   /** SortInfo value. */
-  sortInfo: SortInfoT | null = null;
+  sortInfo: SortInfoT | null = this.defaultSortInfo;
   /** Record values. */
   records: Array<RecordT> = [];
 
-  /** Record list constructor, to be provided by child classes. */
-  protected abstract readonly recordListType: new () => RecordListType<EntryT>;
-  /** Record type constructor, to be provided by child classes. */
-  protected abstract readonly recordType: new () => RecordT;
-  /** AppInfo type constructor, to be provided by child classes. */
-  protected readonly appInfoType?: new () => AppInfoT;
-  /** SortInfo type constructor, to be provided by child classes. */
-  protected readonly sortInfoType?: new () => SortInfoT;
-
   /** Generates the default header for a new database. */
-  protected get defaultHeader() {
+  get defaultHeader() {
     return new DatabaseHdrType();
+  }
+  /** Generates the default AppInfo for a new database. */
+  get defaultAppInfo(): AppInfoT | null {
+    return null;
+  }
+  /** Generates the default SortInfo for a new database. */
+  get defaultSortInfo(): SortInfoT | null {
+    return null;
   }
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
@@ -70,7 +75,9 @@ export abstract class Database<
         (recordList.values.length > 0
           ? recordList.values[0].localChunkId
           : buffer.length);
-      this.appInfo = new this.appInfoType();
+      if (!this.appInfo) {
+        this.appInfo = new this.appInfoType();
+      }
       this.appInfo.deserialize(
         buffer.slice(this.header.appInfoId, appInfoEnd),
         opts
@@ -84,7 +91,9 @@ export abstract class Database<
         recordList.values.length > 0
           ? recordList.values[0].localChunkId
           : buffer.length;
-      this.sortInfo = new this.sortInfoType();
+      if (!this.sortInfo) {
+        this.sortInfo = new this.sortInfoType();
+      }
       this.sortInfo.deserialize(
         buffer.slice(this.header.sortInfoId, sortInfoEnd),
         opts
@@ -174,6 +183,29 @@ export abstract class PdbDatabase<
   }
 
   recordListType = PdbRecordListType;
+
+  /** Constructs a PdbDatabase class with the given parameters. */
+  static of<
+    RecordT extends Record<RecordEntryType>,
+    AppInfoT extends Serializable = SBuffer,
+    SortInfoT extends Serializable = SBuffer
+  >(
+    recordType: new () => RecordT,
+    appInfoType?: new () => AppInfoT,
+    sortInfoType?: new () => SortInfoT
+  ) {
+    return class extends PdbDatabase<RecordT, AppInfoT, SortInfoT> {
+      recordType = recordType;
+      appInfoType = appInfoType ?? null;
+      sortInfoType = sortInfoType ?? null;
+      get defaultAppInfo() {
+        return appInfoType ? new appInfoType() : null;
+      }
+      get defaultSortInfo() {
+        return sortInfoType ? new sortInfoType() : null;
+      }
+    };
+  }
 }
 
 /** PRC databases. */
@@ -189,28 +221,42 @@ export abstract class PrcDatabase<
     super();
     this.header.attributes.resDB = true;
   }
-
   recordListType = PrcRecordListType;
+
+  /** Constructs a PrcDatabase class with the given parameters. */
+  static of<
+    RecordT extends Record<RsrcEntryType>,
+    AppInfoT extends Serializable = SBuffer,
+    SortInfoT extends Serializable = SBuffer
+  >(
+    recordType: new () => RecordT,
+    appInfoType?: new () => AppInfoT,
+    sortInfoType?: new () => SortInfoT
+  ) {
+    return class extends PrcDatabase<RecordT, AppInfoT, SortInfoT> {
+      recordType = recordType;
+      appInfoType = appInfoType ?? null;
+      sortInfoType = sortInfoType ?? null;
+      get defaultAppInfo() {
+        return appInfoType ? new appInfoType() : null;
+      }
+      get defaultSortInfo() {
+        return sortInfoType ? new sortInfoType() : null;
+      }
+    };
+  }
 }
 
 /** PDB database providing records, AppInfo and SortInfo as raw buffers. */
-export class RawPdbDatabase extends PdbDatabase<
+export class RawPdbDatabase extends PdbDatabase.of(
   PdbSBufferRecord,
   SBuffer,
   SBuffer
-> {
-  recordType = PdbSBufferRecord;
-  appInfoType = SBuffer;
-  sortInfoType = SBuffer;
-}
+) {}
 
 /** PRC database providing records, AppInfo and SortInfo as raw buffers. */
-export class RawPrcDatabase extends PrcDatabase<
+export class RawPrcDatabase extends PrcDatabase.of(
   PrcSBufferRecord,
   SBuffer,
   SBuffer
-> {
-  recordType = PrcSBufferRecord;
-  appInfoType = SBuffer;
-  sortInfoType = SBuffer;
-}
+) {}
