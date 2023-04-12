@@ -315,10 +315,10 @@ export class PalmDocDatabase extends PdbDatabase<PdbSBufferRecord> {
   recordType = PdbSBufferRecord;
 
   get defaultHeader() {
-    const header = new DatabaseHdrType();
-    header.name = 'Document';
-    header.type = 'TEXt';
-    header.creator = 'REAd';
-    return header;
+    return DatabaseHdrType.with({
+      name: 'Document',
+      type: 'TEXt',
+      creator: 'REAd',
+    });
   }
 }

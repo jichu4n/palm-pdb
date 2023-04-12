@@ -22,11 +22,11 @@ export class ToDoDatabase extends PdbDatabase<ToDoRecord, ToDoAppInfo> {
   appInfoType = ToDoAppInfo;
 
   get defaultHeader() {
-    const header = new DatabaseHdrType();
-    header.name = 'ToDoDB';
-    header.type = 'DATA';
-    header.creator = 'todo';
-    return header;
+    return DatabaseHdrType.with({
+    name : 'ToDoDB',
+    type : 'DATA',
+    creator : 'todo',
+    });
   }
 
   appInfo = new ToDoAppInfo();

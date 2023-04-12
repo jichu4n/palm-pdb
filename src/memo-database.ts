@@ -20,11 +20,11 @@ export class MemoDatabase extends PdbDatabase<MemoRecord, MemoAppInfo> {
   appInfoType = MemoAppInfo;
 
   get defaultHeader() {
-    const header = new DatabaseHdrType();
-    header.name = 'MemoDB';
-    header.type = 'DATA';
-    header.creator = 'memo';
-    return header;
+    return DatabaseHdrType.with({
+      name: 'MemoDB',
+      type: 'DATA',
+      creator: 'memo',
+    });
   }
 
   appInfo = new MemoAppInfo();

@@ -30,11 +30,11 @@ export class DatebookDatabase extends PdbDatabase<
   appInfoType = DatebookAppInfo;
 
   get defaultHeader() {
-    const header = new DatabaseHdrType();
-    header.name = 'DatebookDB';
-    header.type = 'DATA';
-    header.creator = 'date';
-    return header;
+    return DatabaseHdrType.with({
+      name: 'DatebookDB',
+      type: 'DATA',
+      creator: 'date',
+    });
   }
 
   appInfo = new DatebookAppInfo();
