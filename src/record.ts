@@ -2,10 +2,10 @@ import {SBuffer, Serializable} from 'serio';
 import {RecordEntryType, RsrcEntryType} from '.';
 
 /** Interface of database records. */
-export interface Record<MetadataT extends RecordEntryType | RsrcEntryType>
+export interface Record<EntryT extends RecordEntryType | RsrcEntryType>
   extends Serializable {
-  /** Metadata corresponding to this record. */
-  metadata: MetadataT;
+  /** Record entry stored in the database header. */
+  entry: EntryT;
 }
 
 /** A record in a PDB database. */
@@ -19,10 +19,10 @@ export class PdbSBufferRecord
   extends SBuffer
   implements Record<RecordEntryType>
 {
-  metadata: RecordEntryType = new RecordEntryType();
+  entry = new RecordEntryType();
 }
 
 /** No-op PRC database record implementation that serializes record to / from Buffers. */
 export class PrcSBufferRecord extends SBuffer implements Record<RsrcEntryType> {
-  metadata: RsrcEntryType = new RsrcEntryType();
+  entry = new RsrcEntryType();
 }

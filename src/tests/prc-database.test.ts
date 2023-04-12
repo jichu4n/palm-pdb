@@ -12,10 +12,9 @@ describe('PrcDatabase', function () {
     const db = new RawPrcDatabase();
     db.deserialize(buffer);
 
-    const recordsByType = _.groupBy(
-      db.records,
-      'metadata.type'
-    ) as _.Dictionary<Array<PrcSBufferRecord>>;
+    const recordsByType = _.groupBy(db.records, 'entry.type') as _.Dictionary<
+      Array<PrcSBufferRecord>
+    >;
     for (const [type, resourceIds] of [
       // Obtained from Simulator > View > Databases.
       ['code', [0, 1, 2]],
@@ -30,7 +29,7 @@ describe('PrcDatabase', function () {
     ] as const) {
       expect(recordsByType).toHaveProperty(type);
       expect(
-        _.map(recordsByType[type], 'metadata.resourceId').sort()
+        _.map(recordsByType[type], 'entry.resourceId').sort()
       ).toStrictEqual(resourceIds);
     }
     expect(
@@ -50,8 +49,8 @@ describe('PrcDatabase', function () {
     db1.header.creator = 'TSt1';
     for (let i = 0; i < 10; ++i) {
       const record = new PrcSBufferRecord();
-      record.metadata.type = 'code';
-      record.metadata.resourceId = i;
+      record.entry.type = 'code';
+      record.entry.resourceId = i;
       record.value = new SmartBuffer().writeUInt32BE(i).toBuffer();
       db1.records.push(record);
     }

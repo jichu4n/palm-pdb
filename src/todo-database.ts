@@ -61,7 +61,7 @@ export class ToDoAppInfo extends SObject {
 
 /** A ToDoDB record. */
 export class ToDoRecord extends SObject implements PdbRecord {
-  metadata: RecordEntryType = new RecordEntryType();
+  entry: RecordEntryType = new RecordEntryType();
 
   /** Due date of the item (may be empty if there is no due date). */
   @field()

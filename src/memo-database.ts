@@ -58,7 +58,7 @@ export class MemoAppInfo extends SObject {
 
 /** A MemoDB record. */
 export class MemoRecord extends SObject implements PdbRecord {
-  metadata: RecordEntryType = new RecordEntryType();
+  entry: RecordEntryType = new RecordEntryType();
 
   /** Memo content. */
   @field(SStringNT)

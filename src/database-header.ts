@@ -18,61 +18,72 @@ import {
   TypeId,
 } from '.';
 
+/** Maximum length of database names - 31 chars + 1 NUL byte.
+ *
+ * References:
+ *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataMgr.h#L72
+ */
+export const dmDbNameLength = 32;
+
 /** Database header.
  *
- * Sources:
+ * References:
  *   - https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf
  *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataPrv.h#L67
  */
 export class DatabaseHdrType extends SObject {
-  /** Database name (max 31 bytes + terminating NUL byte). */
-  @field(SStringNT.ofLength(32))
+  /** Database name. */
+  @field(SStringNT.ofLength(dmDbNameLength))
   name: string = '';
+
   /** Database attribute flags. */
   @field()
   attributes: DatabaseAttrs = new DatabaseAttrs();
+
   /** Database version (integer). */
   @field(SUInt16BE)
   version: number = 0;
+
   /** Database creation timestamp. */
   @field()
   creationDate = new DatabaseTimestamp();
+
   /** Database modification timestamp. */
   @field()
   modificationDate = new DatabaseTimestamp();
+
   /** Last backup timestamp. */
   @field()
   lastBackupDate: DatabaseTimestamp = epochDatabaseTimestamp;
+
   /** Modification number (integer). */
   @field(SUInt32BE)
   modificationNumber: number = 0;
+
   /** Offset to AppInfo block. */
   @field(LocalId)
   appInfoId: number = 0;
+
   /** Offset to SortInfo block. */
   @field(LocalId)
   sortInfoId: number = 0;
+
   /** Database type identifier (max 4 bytes). */
   @field(TypeId)
   type: string = '';
+
   /** Database creator identifier (max 4 bytes). */
   @field(TypeId)
   creator: string = '';
+
   /** Seed for generating record IDs. */
   @field(SUInt32BE)
   uniqueIdSeed: number = 0;
 }
 
-/** Record or resource metadata list. */
-export interface RecordOrResourceMetadataList<
-  MetadataT extends RecordEntryType | RsrcEntryType
-> extends Serializable {
-  values: Array<MetadataT>;
-}
-
-/** Record metadata for PDB files.
+/** Record entry in PDB files.
  *
- * Sources:
+ * References:
  *   - https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf
  *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataPrv.h#L23
  */
@@ -80,44 +91,19 @@ export class RecordEntryType extends SObject {
   /** Offset to raw record data. */
   @field(LocalId)
   localChunkId = 0;
+
   /** Record attributes. */
   @field()
   attributes = new RecordAttrs();
+
   /** Unique ID of record (3 bytes). Should not be all zero for a valid record. */
   @field(SArray.of(SUInt8).ofLength(3))
   uniqueId = [0, 0, 0];
 }
 
-/** Record metadata list for PDB databases.
+/** Resource entry in PRC files.
  *
- * Sources:
- *   - https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf
- *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataPrv.h#L51
- */
-export class RecordListType
-  extends SObject
-  implements RecordOrResourceMetadataList<RecordEntryType>
-{
-  /** Offset of next RecordMetadataList structure. Unsupported - must be 0. */
-  @field(SUInt32BE)
-  private nextListId = 0;
-
-  /** Array of record metadata. */
-  @field(
-    class extends SDynamicArray<SUInt16BE, RecordEntryType> {
-      lengthType = SUInt16BE;
-      valueType = RecordEntryType;
-    }
-  )
-  values: Array<RecordEntryType> = [];
-
-  @field(SUInt16BE)
-  private padding1 = 0;
-}
-
-/** Resource metadata for PRC files.
- *
- * Sources:
+ * References:
  *   - https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf
  *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataPrv.h#L36
  */
@@ -135,31 +121,68 @@ export class RsrcEntryType extends SObject {
   localChunkId = 0;
 }
 
-/** Resource metadata list for PRC databases. */
-export class ResourceMetadataList
-  extends SObject
-  implements RecordOrResourceMetadataList<RsrcEntryType>
-{
-  /** Offset of next ResourceMetadataList structure. Unsupported - must be 0. */
-  @field(LocalId)
-  private nextRecordListId = 0;
+/** Record or resource entry list. */
+export interface RecordListType<EntryT extends RecordEntryType | RsrcEntryType>
+  extends Serializable {
+  /** Array of record or resource entries. */
+  values: Array<EntryT>;
+}
 
-  /** Array of resource metadata. */
-  @field(
-    class extends SDynamicArray<SUInt16BE, RsrcEntryType> {
-      lengthType = SUInt16BE;
-      valueType = RsrcEntryType;
-    }
-  )
+/** Record entry list in PDB databases.
+ *
+ * References:
+ *   - https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf
+ *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataPrv.h#L51
+ */
+export class PdbRecordListType
+  extends SObject
+  implements RecordListType<RecordEntryType>
+{
+  /** Offset of next PdbRecordListType structure.
+   *
+   * We don't support multiple RecordListTypes, so this must always be 0. See
+   * page 17 of the Palm File Format Specification for more details.
+   */
+  @field(SUInt32BE)
+  private readonly nextListId = 0;
+
+  /** Array of record entries. */
+  @field(SDynamicArray.of(SUInt16BE, RecordEntryType))
+  values: Array<RecordEntryType> = [];
+
+  @field(SUInt16BE)
+  private readonly padding1 = 0;
+}
+
+/** Resource entry list in PRC databases.
+ *
+ * References:
+ *   - https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf
+ *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataPrv.h#L51
+ */
+export class PrcRecordListType
+  extends SObject
+  implements RecordListType<RsrcEntryType>
+{
+  /** Offset of next PrcRecordListType structure.
+   *
+   * We don't support multiple RecordListTypes, so this must always be 0. See
+   * page 17 of the Palm File Format Specification for more details.
+   */
+  @field(SUInt32BE)
+  private readonly nextListId = 0;
+
+  /** Array of resource entries. */
+  @field(SDynamicArray.of(SUInt16BE, RsrcEntryType))
   values: Array<RsrcEntryType> = [];
 
   @field(SUInt16BE)
-  private padding1 = 0;
+  private readonly padding1 = 0;
 }
 
 /** Database attribute flags.
  *
- * Sources:
+ * References:
  *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DataMgr.h
  *   - https://github.com/madsen/Palm-PDB/blob/master/lib/Palm/PDB.pm
  */

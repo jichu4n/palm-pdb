@@ -56,7 +56,7 @@ export class DatebookAppInfo extends SObject {
 
 /** A DatebookDB record. */
 export class DatebookRecord implements PdbRecord {
-  metadata: RecordEntryType = new RecordEntryType();
+  entry: RecordEntryType = new RecordEntryType();
 
   /** Date of the event. */
   date: DatabaseDate = new DatabaseDate();

@@ -8,22 +8,22 @@ import {
 import {SmartBuffer} from 'smart-buffer';
 import {
   DatabaseHdrType,
+  PdbRecordListType,
   PdbSBufferRecord,
+  PrcRecordListType,
   PrcSBufferRecord,
   Record,
   RecordEntryType,
   RecordListType,
-  RecordOrResourceMetadataList,
   RsrcEntryType,
-  ResourceMetadataList,
 } from '.';
 
 /** Representation of a Palm OS database file. */
 export abstract class Database<
-  /** MetadataList type. */
-  MetadataT extends RecordEntryType | RsrcEntryType,
+  /** Record or resource entry type. */
+  EntryT extends RecordEntryType | RsrcEntryType,
   /** Record type. */
-  RecordT extends Record<MetadataT>,
+  RecordT extends Record<EntryT>,
   /** AppInfo type. */
   AppInfoT extends Serializable = SBuffer,
   /** SortInfo type. */
@@ -42,14 +42,14 @@ export abstract class Database<
   /** Record values. */
   records: Array<RecordT> = [];
 
-  /** Metadata type constructor, to be provided by child classes. */
-  protected abstract metadataListType: new () => RecordOrResourceMetadataList<MetadataT>;
+  /** Record list constructor, to be provided by child classes. */
+  protected abstract readonly recordListType: new () => RecordListType<EntryT>;
   /** Record type constructor, to be provided by child classes. */
-  protected abstract recordType: new () => RecordT;
+  protected abstract readonly recordType: new () => RecordT;
   /** AppInfo type constructor, to be provided by child classes. */
-  protected appInfoType?: new () => AppInfoT;
+  protected readonly appInfoType?: new () => AppInfoT;
   /** SortInfo type constructor, to be provided by child classes. */
-  protected sortInfoType?: new () => SortInfoT;
+  protected readonly sortInfoType?: new () => SortInfoT;
 
   /** Generates the default header for a new database. */
   protected get defaultHeader() {
@@ -58,7 +58,7 @@ export abstract class Database<
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     this.header.deserialize(buffer, opts);
-    const recordList = new this.metadataListType();
+    const recordList = new this.recordListType();
     recordList.deserialize(
       buffer.slice(this.header.getSerializedLength(opts)),
       opts
@@ -102,7 +102,7 @@ export abstract class Database<
           ? recordList.values[i + 1].localChunkId
           : buffer.length;
       const record = new this.recordType();
-      record.metadata = recordList.values[i];
+      record.entry = recordList.values[i];
       record.deserialize(buffer.slice(recordStart, recordEnd), opts);
       this.records.push(record);
       lastRecordEnd = recordEnd;
@@ -115,8 +115,8 @@ export abstract class Database<
   //   - appInfoId
   //   - sortInfoId
   serialize(opts?: SerializeOptions) {
-    const recordList = new this.metadataListType();
-    recordList.values = _.map(this.records, 'metadata');
+    const recordList = new this.recordListType();
+    recordList.values = this.records.map(({entry}) => entry);
 
     let offset =
       this.header.getSerializedLength(opts) +
@@ -173,7 +173,7 @@ export abstract class PdbDatabase<
     this.header.attributes.resDB = false;
   }
 
-  metadataListType = RecordListType;
+  recordListType = PdbRecordListType;
 }
 
 /** PRC databases. */
@@ -190,7 +190,7 @@ export abstract class PrcDatabase<
     this.header.attributes.resDB = true;
   }
 
-  metadataListType = ResourceMetadataList;
+  recordListType = PrcRecordListType;
 }
 
 /** PDB database providing records, AppInfo and SortInfo as raw buffers. */
