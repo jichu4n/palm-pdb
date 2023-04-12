@@ -250,25 +250,34 @@ export class DatabaseAttrs extends SBitmask.of(SUInt16BE) {
  * Source:
  *
  *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DataMgr.h
+ *   - https://github.com/dwery/coldsync/blob/master/include/pdb.h
  *   - https://metacpan.org/release/Palm-PDB/source/lib/Palm/PDB.pm
  */
 export class RecordAttrs extends SBitmask.of(SUInt8) {
-  /** Delete this record next sync */
+  /** Record has been deleted. */
   @bitfield(1)
   delete = false;
-  /** Archive this record next sync */
+  /** Record has been modified. */
   @bitfield(1)
   dirty = false;
-  /** Record currently in use */
+  /** Record currently in use.
+   *
+   * This bit may also indicate the record has been deleted -- see comments in
+   * https://github.com/dwery/coldsync/blob/master/include/pdb.h .
+   */
   @bitfield(1)
   busy = false;
-  /** "Secret" record - password protected */
+  /** "Secret" record - password protected. */
   @bitfield(1)
   secret = false;
+
   @bitfield(4)
   private lowest4bits = 0;
 
-  /** Archived (if deleted or busy). */
+  /** Record is archived.
+   *
+   * Only available if deleted or busy.
+   */
   get archive() {
     if (this.delete || this.busy) {
       return Boolean(this.lowest4bits & 0b1000);
@@ -277,14 +286,21 @@ export class RecordAttrs extends SBitmask.of(SUInt8) {
     }
   }
   set archive(newValue: boolean) {
-    if (this.delete || this.busy) {
-      this.lowest4bits = newValue
-        ? this.lowest4bits | 0b1000
-        : this.lowest4bits & 0b0111;
+    if (!(this.delete || this.busy)) {
+      throw new Error(
+        `Attempting to set archive = ${newValue} ` +
+          `on record that is neither deleted nor busy`
+      );
     }
+    this.lowest4bits = newValue
+      ? this.lowest4bits | 0b1000
+      : this.lowest4bits & 0b0111;
   }
 
-  /** Record category (if not deleted or busy). */
+  /** Record category.
+   *
+   * Only available if NOT deleted or busy.
+   */
   get category() {
     if (this.delete || this.busy) {
       return 0;
@@ -294,7 +310,16 @@ export class RecordAttrs extends SBitmask.of(SUInt8) {
   }
   set category(newValue: number) {
     if (this.delete || this.busy) {
-      return;
+      const recordState =
+        this.delete && this.busy
+          ? 'deleted and busy'
+          : this.delete
+          ? 'deleted'
+          : 'busy';
+      throw new Error(
+        `Attempting to set category ${newValue} on record ` +
+          `that is currently ${recordState}`
+      );
     }
     this.lowest4bits = newValue & 0b1111;
   }
