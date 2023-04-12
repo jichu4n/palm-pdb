@@ -1,6 +1,6 @@
 export * from './utility-types';
 
-export * from './date-and-time';
+export * from './date-time-types';
 export * from './database-header';
 export * from './database-app-info';
 export * from './database';
