@@ -9,8 +9,7 @@ describe('PrcDatabase', function () {
     const buffer = await fs.readFile(
       path.join(__dirname, 'testdata', 'OnBoard.prc')
     );
-    const db = new RawPrcDatabase();
-    db.deserialize(buffer);
+    const db = RawPrcDatabase.from(buffer);
 
     const recordsByType = _.groupBy(db.records, 'entry.type') as _.Dictionary<
       Array<PrcSBufferRecord>
@@ -57,8 +56,7 @@ describe('PrcDatabase', function () {
 
     // Serialize to buffer and deserialize back into db2.
     const buffer = db1.serialize();
-    const db2 = new RawPrcDatabase();
-    db2.deserialize(buffer);
+    const db2 = RawPrcDatabase.from(buffer);
 
     // Check db2 contents.
     expect(db2.records.length).toStrictEqual(db1.records.length);

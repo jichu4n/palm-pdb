@@ -13,8 +13,7 @@ describe('DatebookDatabase', function () {
     const buffer = await fs.readFile(
       path.join(__dirname, 'testdata', 'DatebookDB.pdb')
     );
-    const db = new DatebookDatabase();
-    db.deserialize(buffer);
+    const db = DatebookDatabase.from(buffer);
 
     expect(db.records.length).toStrictEqual(3);
     for (const record of db.records) {
@@ -90,8 +89,7 @@ describe('DatebookDatabase', function () {
 
     // Serialize to buffer and deserialize back into db2.
     const buffer = db1.serialize();
-    const db2 = new DatebookDatabase();
-    db2.deserialize(buffer);
+    const db2 = DatebookDatabase.from(buffer);
 
     // Check db2 contents.
     expect(db2.appInfo?.categoryInfo.categories).toStrictEqual(

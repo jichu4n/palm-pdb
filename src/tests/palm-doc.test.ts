@@ -9,8 +9,7 @@ describe('PalmDoc', function () {
     const buffer = await fs.readFile(
       path.join(__dirname, 'testdata', 'OnBoardHeaderV40.pdb')
     );
-    const doc = new PalmDoc();
-    doc.deserialize(buffer);
+    const doc = PalmDoc.from(buffer);
 
     expect(doc.text).toContain('#define NULL 0');
   });
@@ -84,8 +83,7 @@ describe('PalmDoc', function () {
 
       // Serialize to buffer and deserialize back into doc2.
       const buffer = doc1.serialize(serializeOpts);
-      const doc2 = new PalmDoc();
-      doc2.deserialize(buffer, parseOpts);
+      const doc2 = PalmDoc.from(buffer, parseOpts);
 
       // Check doc2 contents.
       expect(doc2.name).toStrictEqual(doc1.name);

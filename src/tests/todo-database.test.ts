@@ -7,8 +7,7 @@ describe('ToDoDatabase', function () {
     const buffer = await fs.readFile(
       path.join(__dirname, 'testdata', 'ToDoDB.pdb')
     );
-    const db = new ToDoDatabase();
-    db.deserialize(buffer);
+    const db = ToDoDatabase.from(buffer);
 
     expect(db.appInfo?.categoryInfo.categories.length).toStrictEqual(3);
     expect(db.records.length).toStrictEqual(3);
@@ -47,8 +46,7 @@ describe('ToDoDatabase', function () {
 
     // Serialize to buffer and deserialize back into db2.
     const buffer = db1.serialize();
-    const db2 = new ToDoDatabase();
-    db2.deserialize(buffer);
+    const db2 = ToDoDatabase.from(buffer);
 
     // Check db2 contents.
     expect(db2.appInfo?.categoryInfo.categories).toStrictEqual(

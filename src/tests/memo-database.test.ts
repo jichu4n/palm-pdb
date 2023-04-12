@@ -7,8 +7,7 @@ describe('MemoDatabase', function () {
     const buffer = await fs.readFile(
       path.join(__dirname, 'testdata', 'MemoDB.pdb')
     );
-    const db = new MemoDatabase();
-    db.deserialize(buffer);
+    const db = MemoDatabase.from(buffer);
 
     expect(db.appInfo?.categoryInfo.categories.length).toStrictEqual(3);
     expect(db.records.length).toStrictEqual(5);
@@ -32,8 +31,7 @@ describe('MemoDatabase', function () {
 
     // Serialize to buffer and deserialize back into db2.
     const buffer = db1.serialize();
-    const db2 = new MemoDatabase();
-    db2.deserialize(buffer);
+    const db2 = MemoDatabase.from(buffer);
 
     // Check db2 contents.
     expect(db2.appInfo?.categoryInfo.categories).toStrictEqual(
