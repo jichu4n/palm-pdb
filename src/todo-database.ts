@@ -8,7 +8,7 @@ import {
   SUInt8,
 } from 'serio';
 import {
-  CategoryInfo,
+  AppInfoType,
   DatabaseHdrType,
   OptionalDatabaseDate,
   PdbDatabase,
@@ -17,8 +17,9 @@ import {
 
 /** ToDoDB AppInfo block. */
 export class ToDoAppInfo extends SObject {
+  /** Standard category info. */
   @field()
-  categoryInfo = new CategoryInfo();
+  categoryInfo = new AppInfoType();
 
   /** Not sure what this is ¯\_(ツ)_/¯ */
   @field(SUInt16BE)

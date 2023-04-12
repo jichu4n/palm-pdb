@@ -12,7 +12,7 @@ import {
 } from 'serio';
 import {SmartBuffer} from 'smart-buffer';
 import {
-  CategoryInfo,
+  AppInfoType,
   DatabaseDate,
   DatabaseHdrType,
   OptionalDatabaseDate,
@@ -22,8 +22,9 @@ import {
 
 /** DatebookDB AppInfo block. */
 export class DatebookAppInfo extends SObject {
+  /** Standard category info. */
   @field()
-  categoryInfo = new CategoryInfo();
+  categoryInfo = new AppInfoType();
 
   /** Day of the week to start the week on. Not sure what the format is
    * ¯\_(ツ)_/¯ */

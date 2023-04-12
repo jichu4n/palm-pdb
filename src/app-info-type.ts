@@ -25,10 +25,15 @@ export interface Category {
 }
 
 /** Length of standard category data. */
-const CATEGORY_INFO_LENGTH = 276;
+const APP_INFO_TYPE_LENGTH = 276;
 
-/** AppInfo block for standard category data, a.k.a AppInfoType. */
-export class CategoryInfo extends Serializable {
+/** AppInfo block for standard category data.
+ *
+ * References:
+ *   - https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf
+ *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r3/include/Core/UI/Category.h
+ */
+export class AppInfoType extends Serializable {
   /** Array of category information (max 16 elements). */
   categories: Array<Category> = [];
   /** The last unique category ID assigned. */
@@ -81,6 +86,13 @@ export class CategoryInfo extends Serializable {
   }
 
   serialize(opts?: SerializeOptions): Buffer {
+    if (this.categories.length > 16) {
+      throw new Error(
+        'Too many categories: ' +
+          `maximum is 16, found ${this.categories.length}`
+      );
+    }
+
     const writer = new SmartBuffer();
 
     let renamedCategories = 0;
@@ -121,6 +133,6 @@ export class CategoryInfo extends Serializable {
   }
 
   getSerializedLength(opts?: SerializeOptions) {
-    return CATEGORY_INFO_LENGTH;
+    return APP_INFO_TYPE_LENGTH;
   }
 }

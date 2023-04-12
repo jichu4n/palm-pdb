@@ -2,7 +2,7 @@ export * from './utility-types';
 
 export * from './date-time-types';
 export * from './database-header';
-export * from './category-info';
+export * from './app-info-type';
 export * from './database';
 export * from './database-encoding';
 export * from './record';

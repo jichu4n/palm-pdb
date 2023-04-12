@@ -6,12 +6,13 @@ import {
   SUInt16BE,
   SUInt8,
 } from 'serio';
-import {CategoryInfo, DatabaseHdrType, PdbDatabase, PdbRecord} from '.';
+import {AppInfoType, DatabaseHdrType, PdbDatabase, PdbRecord} from '.';
 
 /** MemoDB AppInfo block. */
 export class MemoAppInfo extends SObject {
+  /** Standard category info. */
   @field()
-  categoryInfo = new CategoryInfo();
+  categoryInfo = new AppInfoType();
 
   @field(SUInt16BE)
   private padding1 = 0;
