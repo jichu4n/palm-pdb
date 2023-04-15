@@ -10,7 +10,6 @@ import {
   SUInt16BE,
   SUInt8,
 } from 'serio';
-import {SmartBuffer} from 'smart-buffer';
 import {
   AppInfoType,
   DatabaseDate,
@@ -115,9 +114,11 @@ export class DatebookRecord extends PdbRecord {
     }
 
     if (this.attrs.hasRecurrenceSettings) {
-      const wrapper = new RecurrenceSettingsWrapper();
-      offset += wrapper.deserialize(buffer.subarray(offset), opts);
-      this.recurrenceSettings = wrapper.value;
+      this.recurrenceSettings = new RecurrenceSettings();
+      offset += this.recurrenceSettings.deserialize(
+        buffer.subarray(offset),
+        opts
+      );
     } else {
       this.recurrenceSettings = null;
     }
@@ -167,9 +168,7 @@ export class DatebookRecord extends PdbRecord {
       pieces.push(this.alarmSettings.serialize(opts));
     }
     if (this.recurrenceSettings) {
-      pieces.push(
-        RecurrenceSettingsWrapper.of(this.recurrenceSettings).serialize(opts)
-      );
+      pieces.push(this.recurrenceSettings.serialize(opts));
     }
     if (this.exceptionDates.length > 0) {
       pieces.push(
@@ -193,9 +192,7 @@ export class DatebookRecord extends PdbRecord {
       8 +
       (this.alarmSettings ? this.alarmSettings.getSerializedLength(opts) : 0) +
       (this.recurrenceSettings
-        ? RecurrenceSettingsWrapper.of(
-            this.recurrenceSettings
-          ).getSerializedLength(opts)
+        ? this.recurrenceSettings.getSerializedLength(opts)
         : 0) +
       (this.exceptionDates.length > 0
         ? SDynamicArray.of(SUInt16BE, DatabaseDate)
@@ -248,30 +245,26 @@ export class AlarmSettings extends SObject {
   /** Number of time units before the event start time to fire the alarm. */
   @field(SUInt8)
   value = 0;
-  @field(SUInt8)
-  private unitValue = 0;
+
   /** Time unit for expressing when the alarm should fire. */
   unit = AlarmTimeUnit.MINUTES;
-
-  deserialize(buffer: Buffer, opts?: DeserializeOptions) {
-    const offset = super.deserialize(buffer, opts);
-    this.unit = AlarmSettings.unitValues[this.unitValue];
-    return offset;
-  }
-
-  serialize(opts?: SerializeOptions) {
-    if (this.value < 0 || this.value > 0xff) {
-      throw new Error(`Invalid hour value: ${this.value}`);
-    }
-    this.unitValue = AlarmSettings.unitValues.indexOf(this.unit);
-    if (this.unitValue < 0) {
+  @field(SUInt8)
+  private get unitValue() {
+    const unitValue = AlarmSettings.unitValues.indexOf(this.unit);
+    if (unitValue < 0) {
       throw new Error(`Unknown alarm time unit: ${this.unit}`);
     }
-    return super.serialize(opts);
+    return unitValue;
+  }
+  private set unitValue(newValue: number) {
+    this.unit = AlarmSettings.unitValues[newValue];
+    if (!this.unit) {
+      throw new Error(`Unknown alarm time unit value: ${newValue}`);
+    }
   }
 
   /** Array of unit values, indexed by their numeric value when serialized. */
-  static readonly unitValues: Array<AlarmTimeUnit> = [
+  private static readonly unitValues: Array<AlarmTimeUnit> = [
     AlarmTimeUnit.MINUTES,
     AlarmTimeUnit.HOURS,
     AlarmTimeUnit.DAYS,
@@ -294,202 +287,182 @@ export enum RecurrenceFrequency {
   YEARLY = 'yearly',
 }
 
-/** Event recurrence settings. */
-export type RecurrenceSettings = (
-  | {
-      /** Don't repeat. */
-      frequency: RecurrenceFrequency.NONE;
-    }
-  | {
-      /** Repeat every N days */
-      frequency: RecurrenceFrequency.DAILY;
-    }
-  | {
-      /** Repeat every N weeks on the same days of the week. */
-      frequency: RecurrenceFrequency.WEEKLY;
-      /** Array specifying which days of the week to repeat on.
-       *
-       * Index 0 = Sunday, 1 = Monday, etc.
-       */
-      daysOfWeek: Array<boolean>;
-      /** Day the week starts on (0 for Sunday, 1 for Monday).
-       *
-       * This affects the phase of events that repeat every 2nd (or more) Sunday.
-       */
-      startOfWeek: number;
-    }
-  | {
-      /** Repeat on same week of the month every N months. */
-      frequency: RecurrenceFrequency.MONTHLY_BY_DAY;
-      /** Week number within the month.
-       *
-       * 0 = 1st week of the month
-       * 1 = 2nd week of the month
-       * ...
-       * 5 = last week of the month
-       */
-      weekOfMonth: number;
-      /** Day of week.
-       *
-       * 0 = Sunday, 1 = Monday, etc.
-       */
-      dayOfWeek: number;
-    }
-  | {
-      /** Repeat on same day of the month every N months. */
-      frequency: RecurrenceFrequency.MONTHLY_BY_DATE;
-    }
-  | {
-      /** Repeat on same day of the year every N years. */
-      frequency: RecurrenceFrequency.YEARLY;
-    }
-) & {
-  /** Frequency of repetition (every N days / weeks / months / years). */
-  interval: number;
-  /** Repetition end date. */
-  endDate: DatabaseDate | null;
-};
+/** Additional settings for events with weekly recurrence. */
+export interface WeeklyRecurrenceSettings {
+  /** Array specifying which days of the week to repeat on.
+   *
+   * Index 0 = Sunday, 1 = Monday, etc.
+   */
+  daysOfWeek: Array<boolean>;
+  /** Day the week starts on (0 for Sunday, 1 for Monday).
+   *
+   * This affects the phase of events that repeat every 2nd (or more) Sunday.
+   */
+  startOfWeek: number;
+}
 
-/** SerializableWrapper for RecurrenceSettings. */
-class RecurrenceSettingsWrapper extends SerializableWrapper<RecurrenceSettings> {
-  /** How the event should repeat. */
-  value: RecurrenceSettings = {
-    frequency: RecurrenceFrequency.DAILY,
-    interval: 1,
-    endDate: null,
-  };
+/** Additional settings for events with monthly-by-day recurrence frequency. */
+export interface MonthlyByDayRecurrenceSettings {
+  /** Week number within the month.
+   *
+   * 0 = 1st week of the month
+   * 1 = 2nd week of the month
+   * ...
+   * 5 = last week of the month
+   */
+  weekOfMonth: number;
+  /** Day of week.
+   *
+   * 0 = Sunday, 1 = Monday, etc.
+   */
+  dayOfWeek: number;
+}
+/** Event recurrence settings. */
+export class RecurrenceSettings extends SObject {
+  /** Frequency of this recurring event. */
+  frequency = RecurrenceFrequency.DAILY;
+  @field(SUInt8)
+  private get frequencyValue() {
+    const frequencyValue = RecurrenceSettings.recurringFrequencyValues.indexOf(
+      this.frequency
+    );
+    if (frequencyValue < 0) {
+      throw new Error(`Invalid recurring frequency type: ${this.frequency}`);
+    }
+    return frequencyValue;
+  }
+  private set frequencyValue(newValue: number) {
+    this.frequency = RecurrenceSettings.recurringFrequencyValues[newValue];
+    if (!this.frequency) {
+      throw new Error(`Invalid recurring frequency value: ${newValue}`);
+    }
+  }
+
+  @field(SUInt8)
+  private padding1 = 0;
+
+  /** Recurrence end date. If null, the event repeats forever. */
+  @field(OptionalDatabaseDate)
+  endDate: DatabaseDate | null = null;
+
+  /** The interval at which the event repeats (every N days / weeks / months /
+   * years). */
+  @field(SUInt8)
+  interval = 1;
+
+  /** Additional settings for WEEKLY frequency.
+   *
+   * Required if frequency is WEEKLY.
+   */
+  weekly: WeeklyRecurrenceSettings | null = null;
+
+  /** Additional settings for MONTHLY_BY_DAY frequency.
+   *
+   * Required if frequency is MONTHLY_BY_DAY.
+   */
+  monthlyByDay: MonthlyByDayRecurrenceSettings | null = null;
+
+  @field(SUInt8)
+  private arg1 = 0;
+  @field(SUInt8)
+  private arg2 = 0;
+
+  @field(SUInt8)
+  private padding2 = 0;
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
-    const reader = SmartBuffer.fromBuffer(buffer);
-
-    const rawType = reader.readUInt8();
-    const frequency =
-      RecurrenceSettingsWrapper.recurringFrequencyValues[rawType];
-    reader.readUInt8(); // Padding byte
-
-    const endDate = OptionalDatabaseDate.from(
-      reader.readBuffer(new OptionalDatabaseDate().getSerializedLength(opts)),
-      opts
-    ).value;
-
-    const interval = reader.readUInt8();
-
-    switch (frequency) {
+    const offset = super.deserialize(buffer, opts);
+    this.weekly = null;
+    this.monthlyByDay = null;
+    switch (this.frequency) {
       case RecurrenceFrequency.DAILY:
       case RecurrenceFrequency.MONTHLY_BY_DATE:
       case RecurrenceFrequency.YEARLY:
-        this.value = {frequency, endDate, interval};
         break;
       case RecurrenceFrequency.WEEKLY:
-        const rawDaysOfWeek = reader.readUInt8();
         const daysOfWeek: Array<boolean> = [];
         for (let i = 0; i < 7; ++i) {
-          daysOfWeek.push(!!(rawDaysOfWeek & (1 << i)));
+          daysOfWeek.push(!!(this.arg1 & (1 << i)));
         }
-        const startOfWeek = reader.readUInt8();
-        this.value = {frequency, interval, endDate, daysOfWeek, startOfWeek};
+        const startOfWeek = this.arg2;
+        this.weekly = {daysOfWeek, startOfWeek};
         break;
       case RecurrenceFrequency.MONTHLY_BY_DAY:
-        const rawDayOfMonth = reader.readUInt8();
-        const weekOfMonth = Math.floor(rawDayOfMonth / 7);
-        const dayOfWeek = rawDayOfMonth % 7;
-        this.value = {frequency, interval, endDate, weekOfMonth, dayOfWeek};
+        const weekOfMonth = Math.floor(this.arg1 / 7);
+        const dayOfWeek = this.arg1 % 7;
+        this.monthlyByDay = {weekOfMonth, dayOfWeek};
         break;
       default:
-        throw new Error(`Invalid recurring frequency type: ${frequency}`);
+        throw new Error(`Invalid recurring frequency type: ${this.frequency}`);
     }
 
-    return this.getSerializedLength(opts);
+    return offset;
   }
 
   serialize(opts?: SerializeOptions) {
-    const writer = new SmartBuffer();
-
-    const frequencyValueIndex =
-      RecurrenceSettingsWrapper.recurringFrequencyValues.indexOf(
-        this.value.frequency
-      );
-    if (frequencyValueIndex < 0) {
-      throw new Error(
-        `Invalid recurring frequency type: ${this.value.frequency}`
-      );
-    }
-    writer.writeUInt8(frequencyValueIndex);
-    writer.writeUInt8(0); // Padding byte
-
-    writer.writeBuffer(
-      OptionalDatabaseDate.of(this.value.endDate).serialize(opts)
-    );
-
-    if (this.value.interval < 0 || this.value.interval > 0xff) {
-      throw new Error(
-        'Invalid interval: expected number between 0 and 255, ' +
-          `found ${this.value.interval}`
-      );
-    }
-    writer.writeUInt8(this.value.interval);
-
-    switch (this.value.frequency) {
+    switch (this.frequency) {
       case RecurrenceFrequency.DAILY:
       case RecurrenceFrequency.MONTHLY_BY_DATE:
       case RecurrenceFrequency.YEARLY:
-        writer.writeUInt16BE(0);
+        this.arg1 = 0;
+        this.arg2 = 0;
         break;
       case RecurrenceFrequency.WEEKLY:
-        const {daysOfWeek, startOfWeek} = this.value;
+        if (!this.weekly) {
+          throw new Error(
+            `weeklySettings must be set when frequency is WEEKLY`
+          );
+        }
+        const {daysOfWeek, startOfWeek} = this.weekly;
         if (daysOfWeek.length !== 7) {
           throw new Error(
             'Days of week array must have exactly 7 elements ' +
               `(found ${daysOfWeek.length})`
           );
         }
-        let rawDaysOfWeek = 0;
+        this.arg1 = 0;
         for (let i = 0; i < 7; ++i) {
           if (daysOfWeek[i]) {
-            rawDaysOfWeek |= 1 << i;
+            this.arg1 |= 1 << i;
           }
         }
-        writer.writeUInt8(rawDaysOfWeek);
         if (startOfWeek < 0 || startOfWeek > 1) {
           throw new Error(`Invalid start of week: ${startOfWeek}`);
         }
-        writer.writeUInt8(startOfWeek);
+        this.arg2 = startOfWeek;
         break;
       case RecurrenceFrequency.MONTHLY_BY_DAY:
-        const {weekOfMonth, dayOfWeek} = this.value;
+        if (!this.monthlyByDay) {
+          throw new Error(
+            `monthlyByDaySettings must be set when frequency is MONTHLY_BY_DAY`
+          );
+        }
+        const {weekOfMonth, dayOfWeek} = this.monthlyByDay;
         if (weekOfMonth < 0 || weekOfMonth > 5) {
           throw new Error(`Invalid week of month: ${weekOfMonth}`);
         }
         if (dayOfWeek < 0 || dayOfWeek > 7) {
           throw new Error(`Invalid day of week: ${dayOfWeek}`);
         }
-        const rawDayOfMonth = weekOfMonth * 7 + dayOfWeek;
-        writer.writeUInt8(rawDayOfMonth);
-        writer.writeUInt8(0);
+        this.arg1 = weekOfMonth * 7 + dayOfWeek;
+        this.arg2 = 0;
         break;
       default:
-        throw new Error(
-          `Invalid recurring frequency type: ${this.value.frequency}`
-        );
+        throw new Error(`Invalid recurring frequency type: ${this.frequency}`);
     }
-    writer.writeUInt8(0); // Padding byte
-
-    return writer.toBuffer();
-  }
-
-  getSerializedLength(opts?: SerializeOptions) {
-    return 8;
+    return super.serialize(opts);
   }
 
   /** Array of repetition frequency values, indexed by their numeric value when serialized. */
-  static readonly recurringFrequencyValues: Array<RecurrenceFrequency> = [
-    RecurrenceFrequency.NONE,
-    RecurrenceFrequency.DAILY,
-    RecurrenceFrequency.WEEKLY,
-    RecurrenceFrequency.MONTHLY_BY_DAY,
-    RecurrenceFrequency.MONTHLY_BY_DATE,
-    RecurrenceFrequency.YEARLY,
-  ];
+  private static readonly recurringFrequencyValues: Array<RecurrenceFrequency> =
+    [
+      RecurrenceFrequency.NONE,
+      RecurrenceFrequency.DAILY,
+      RecurrenceFrequency.WEEKLY,
+      RecurrenceFrequency.MONTHLY_BY_DAY,
+      RecurrenceFrequency.MONTHLY_BY_DATE,
+      RecurrenceFrequency.YEARLY,
+    ];
 }
 
 /** DatebookDB database.

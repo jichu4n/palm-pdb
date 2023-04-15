@@ -7,8 +7,8 @@ import {
   DatebookDatabase,
   DatebookRecord,
   EventTime,
-  OptionalDatabaseDate,
   RecurrenceFrequency,
+  RecurrenceSettings,
 } from '..';
 
 describe('DatebookDatabase', function () {
@@ -28,15 +28,15 @@ describe('DatebookDatabase', function () {
       expect(record.endTime?.minute).toStrictEqual(0);
       expect(record.description.length).toBeGreaterThan(1);
     }
-    expect(db.records[0].recurrenceSettings).toStrictEqual({
+    expect(db.records[0].recurrenceSettings).toMatchObject({
       frequency: RecurrenceFrequency.WEEKLY,
-      daysOfWeek: [false, false, false, false, false, false, true],
-      startOfWeek: 0,
+      weekly: {
+        daysOfWeek: [false, false, false, false, false, false, true],
+        startOfWeek: 0,
+      },
       interval: 1,
       endDate: null,
     });
-    expect(db.records[0].recurrenceSettings?.interval).toStrictEqual(1);
-    expect(db.records[0].recurrenceSettings?.endDate).toBeNull();
   });
 
   test('serialize', async function () {
@@ -61,24 +61,28 @@ describe('DatebookDatabase', function () {
         record.recurrenceSettings = null;
       } else {
         if (i < 7) {
-          record.recurrenceSettings = {
+          record.recurrenceSettings = RecurrenceSettings.with({
             frequency: RecurrenceFrequency.WEEKLY,
-            daysOfWeek: [false, false, false, false, false, false, false],
-            startOfWeek: 0,
+            weekly: {
+              daysOfWeek: [false, false, false, false, false, false, false],
+              startOfWeek: 0,
+            },
             interval: 1,
             endDate: null,
-          };
+          });
           for (let j = 0; j < i; j += 2) {
-            record.recurrenceSettings.daysOfWeek[j] = true;
+            record.recurrenceSettings.weekly!.daysOfWeek[j] = true;
           }
         } else if (i < 15) {
-          record.recurrenceSettings = {
+          record.recurrenceSettings = RecurrenceSettings.with({
             frequency: RecurrenceFrequency.MONTHLY_BY_DAY,
-            weekOfMonth: i % 6,
-            dayOfWeek: i % 7,
+            monthlyByDay: {
+              weekOfMonth: i % 6,
+              dayOfWeek: i % 7,
+            },
             interval: 1,
             endDate: null,
-          };
+          });
         } else {
           const frequencies = [
             RecurrenceFrequency.DAILY,
@@ -86,11 +90,11 @@ describe('DatebookDatabase', function () {
             RecurrenceFrequency.YEARLY,
           ] as const;
           const frequency = frequencies[i % frequencies.length];
-          record.recurrenceSettings = {
+          record.recurrenceSettings = RecurrenceSettings.with({
             frequency,
             interval: i,
             endDate: null,
-          };
+          });
         }
         if (i % 4 && record.recurrenceSettings) {
           record.recurrenceSettings.endDate = DatabaseDate.of(
