@@ -31,8 +31,8 @@ describe('DatebookDatabase', function () {
     expect(db.records[0].recurrenceSettings).toMatchObject({
       frequency: RecurrenceFrequency.WEEKLY,
       weekly: {
-        daysOfWeek: [false, false, false, false, false, false, true],
-        startOfWeek: 0,
+        days: [false, false, false, false, false, false, true],
+        firstDayOfWeek: 0,
       },
       interval: 1,
       endDate: null,
@@ -64,14 +64,14 @@ describe('DatebookDatabase', function () {
           record.recurrenceSettings = RecurrenceSettings.with({
             frequency: RecurrenceFrequency.WEEKLY,
             weekly: {
-              daysOfWeek: [false, false, false, false, false, false, false],
-              startOfWeek: 0,
+              days: [false, false, false, false, false, false, false],
+              firstDayOfWeek: 0,
             },
             interval: 1,
             endDate: null,
           });
           for (let j = 0; j < i; j += 2) {
-            record.recurrenceSettings.weekly!.daysOfWeek[j] = true;
+            record.recurrenceSettings.weekly!.days[j] = true;
           }
         } else if (i < 15) {
           record.recurrenceSettings = RecurrenceSettings.with({

@@ -1,3 +1,4 @@
+import times from 'lodash/times';
 import {
   bitfield,
   DeserializeOptions,
@@ -69,7 +70,7 @@ export class DatebookAppInfo extends SObject {
   /** Day of the week to start the week on. Not sure what the format is
    * ¯\_(ツ)_/¯ */
   @field(SUInt8)
-  startOfWeek = 0;
+  firstDayOfWeek = 0;
 
   @field(SUInt8)
   private padding1 = 0;
@@ -289,16 +290,19 @@ export enum RecurrenceFrequency {
 
 /** Additional settings for events with weekly recurrence. */
 export interface WeeklyRecurrenceSettings {
-  /** Array specifying which days of the week to repeat on.
+  /** Array of 7 booleans specifying which days of the week the event recurs on.
    *
-   * Index 0 = Sunday, 1 = Monday, etc.
-   */
-  daysOfWeek: Array<boolean>;
-  /** Day the week starts on (0 for Sunday, 1 for Monday).
+   * Index 0 = Sunday, 1 = Monday, etc. For example, the following indicates an
+   * event that recurs on Monday, Wednesday and Friday:
    *
-   * This affects the phase of events that repeat every 2nd (or more) Sunday.
+   *   [false, true, false, true, false, true, false]
    */
-  startOfWeek: number;
+  days: [boolean, boolean, boolean, boolean, boolean, boolean, boolean];
+  /** Day of the week that weeks start on - 0 for Sunday, 1 for Monday.
+   *
+   * This affects events that repeat every 2nd Sunday (or higher interval).
+   */
+  firstDayOfWeek: number;
 }
 
 /** Additional settings for events with monthly-by-day recurrence frequency. */
@@ -380,12 +384,12 @@ export class RecurrenceSettings extends SObject {
       case RecurrenceFrequency.YEARLY:
         break;
       case RecurrenceFrequency.WEEKLY:
-        const daysOfWeek: Array<boolean> = [];
-        for (let i = 0; i < 7; ++i) {
-          daysOfWeek.push(!!(this.arg1 & (1 << i)));
-        }
-        const startOfWeek = this.arg2;
-        this.weekly = {daysOfWeek, startOfWeek};
+        const days = times(
+          7,
+          (i) => !!(this.arg1 & (1 << i))
+        ) as WeeklyRecurrenceSettings['days'];
+        const firstDayOfWeek = this.arg2;
+        this.weekly = {days, firstDayOfWeek};
         break;
       case RecurrenceFrequency.MONTHLY_BY_DAY:
         const weekOfMonth = Math.floor(this.arg1 / 7);
@@ -409,32 +413,30 @@ export class RecurrenceSettings extends SObject {
         break;
       case RecurrenceFrequency.WEEKLY:
         if (!this.weekly) {
-          throw new Error(
-            `weeklySettings must be set when frequency is WEEKLY`
-          );
+          throw new Error('`weekly` must be set when frequency is WEEKLY');
         }
-        const {daysOfWeek, startOfWeek} = this.weekly;
-        if (daysOfWeek.length !== 7) {
+        const {days, firstDayOfWeek} = this.weekly;
+        if (days.length !== 7) {
           throw new Error(
             'Days of week array must have exactly 7 elements ' +
-              `(found ${daysOfWeek.length})`
+              `(found ${days.length})`
           );
         }
         this.arg1 = 0;
         for (let i = 0; i < 7; ++i) {
-          if (daysOfWeek[i]) {
+          if (days[i]) {
             this.arg1 |= 1 << i;
           }
         }
-        if (startOfWeek < 0 || startOfWeek > 1) {
-          throw new Error(`Invalid start of week: ${startOfWeek}`);
+        if (firstDayOfWeek < 0 || firstDayOfWeek > 1) {
+          throw new Error(`Invalid first day of week: ${firstDayOfWeek}`);
         }
-        this.arg2 = startOfWeek;
+        this.arg2 = firstDayOfWeek;
         break;
       case RecurrenceFrequency.MONTHLY_BY_DAY:
         if (!this.monthlyByDay) {
           throw new Error(
-            `monthlyByDaySettings must be set when frequency is MONTHLY_BY_DAY`
+            '`monthlyByDay` must be set when frequency is MONTHLY_BY_DAY'
           );
         }
         const {weekOfMonth, dayOfWeek} = this.monthlyByDay;
