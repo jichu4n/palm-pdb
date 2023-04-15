@@ -86,7 +86,12 @@ export class ToDoRecord extends PdbRecord {
   }
 }
 
-/** ToDoDB database. */
+/** ToDoDB database.
+ *
+ * References:
+ *   - https://github.com/jichu4n/pilot-link/blob/master/libpisock/todo.c
+ *   - https://github.com/madsen/p5-Palm/blob/master/lib/Palm/ToDo.pm
+ */
 export class ToDoDatabase extends PdbDatabase.of(ToDoRecord, ToDoAppInfo) {
   get defaultHeader() {
     return DatabaseHdrType.with({

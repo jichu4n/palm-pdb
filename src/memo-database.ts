@@ -42,7 +42,12 @@ export class MemoRecord extends PdbRecord {
   value = '';
 }
 
-/** MemoDB database. */
+/** MemoDB database.
+ *
+ * References:
+ *   - https://github.com/jichu4n/pilot-link/blob/master/libpisock/memo.c
+ *   - https://github.com/madsen/p5-Palm/blob/master/lib/Palm/Memo.pm
+ */
 export class MemoDatabase extends PdbDatabase.of(MemoRecord, MemoAppInfo) {
   get defaultHeader() {
     return DatabaseHdrType.with({

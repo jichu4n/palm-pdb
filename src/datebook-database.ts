@@ -6,6 +6,7 @@ import {
   field,
   SBitmask,
   Serializable,
+  SerializableWrapper,
   SerializeOptions,
   SObject,
   SUInt8,
@@ -45,8 +46,8 @@ export class DatebookRecord extends PdbRecord {
   endTime: OptionalEventTime = new OptionalEventTime();
   /** Alarm settings, or null if no alarm configured. */
   alarmSettings: AlarmSettings | null = null;
-  /** Repetition settings, or null if the event is not repeated. */
-  repetitionSettings: RepetitionSettings | null = null;
+  /** Recurrence settings, or null if the event is not recurring. */
+  recurrenceSettings: RecurrenceSettings | null = null;
   /** Dates on which to skip repetitions. */
   exceptionDates: Array<DatabaseDate> = [];
   /** Main description. */
@@ -75,23 +76,23 @@ export class DatebookRecord extends PdbRecord {
     reader.readUInt8(); // Padding byte
 
     if (attrs.hasAlarmSettings) {
-      this.alarmSettings = new AlarmSettings();
-      this.alarmSettings.deserialize(
-        reader.readBuffer(this.alarmSettings.getSerializedLength(opts)),
+      this.alarmSettings = AlarmSettingsWrapper.from(
+        reader.readBuffer(new AlarmSettingsWrapper().getSerializedLength(opts)),
         opts
-      );
+      ).value;
     } else {
       this.alarmSettings = null;
     }
 
-    if (attrs.hasRepetitionSettings) {
-      this.repetitionSettings = new RepetitionSettings();
-      this.repetitionSettings.deserialize(
-        reader.readBuffer(this.repetitionSettings.getSerializedLength(opts)),
+    if (attrs.hasRecurrenceSettings) {
+      this.recurrenceSettings = RecurrenceSettingsWrapper.from(
+        reader.readBuffer(
+          new RecurrenceSettingsWrapper().getSerializedLength(opts)
+        ),
         opts
-      );
+      ).value;
     } else {
-      this.repetitionSettings = null;
+      this.recurrenceSettings = null;
     }
 
     this.exceptionDates.length = 0;
@@ -124,7 +125,7 @@ export class DatebookRecord extends PdbRecord {
 
     const attrs = new DatebookRecordAttrs();
     attrs.hasAlarmSettings = !!this.alarmSettings;
-    attrs.hasRepetitionSettings = !!this.repetitionSettings;
+    attrs.hasRecurrenceSettings = !!this.recurrenceSettings;
     attrs.hasExceptionDates = this.exceptionDates.length > 0;
     attrs.hasDescription = !!this.description;
     attrs.hasNote = !!this.note;
@@ -132,11 +133,15 @@ export class DatebookRecord extends PdbRecord {
     writer.writeUInt8(0); // Padding byte
 
     if (this.alarmSettings) {
-      writer.writeBuffer(this.alarmSettings.serialize(opts));
+      writer.writeBuffer(
+        AlarmSettingsWrapper.of(this.alarmSettings).serialize(opts)
+      );
     }
 
-    if (this.repetitionSettings) {
-      writer.writeBuffer(this.repetitionSettings.serialize(opts));
+    if (this.recurrenceSettings) {
+      writer.writeBuffer(
+        RecurrenceSettingsWrapper.of(this.recurrenceSettings).serialize(opts)
+      );
     }
 
     if (this.exceptionDates.length > 0) {
@@ -159,8 +164,14 @@ export class DatebookRecord extends PdbRecord {
   getSerializedLength(opts?: SerializeOptions) {
     return (
       8 +
-      (this.alarmSettings?.getSerializedLength(opts) ?? 0) +
-      (this.repetitionSettings?.getSerializedLength(opts) ?? 0) +
+      (this.alarmSettings
+        ? AlarmSettingsWrapper.of(this.alarmSettings).getSerializedLength(opts)
+        : 0) +
+      (this.recurrenceSettings
+        ? RecurrenceSettingsWrapper.of(
+            this.recurrenceSettings
+          ).getSerializedLength(opts)
+        : 0) +
       (this.exceptionDates.length > 0
         ? 2 +
           this.exceptionDates.length *
@@ -179,9 +190,9 @@ export class DatebookRecordAttrs extends SBitmask.of(SUInt8) {
   /** Whether this event should sound an alarm before the start time. */
   @bitfield(1)
   hasAlarmSettings = false;
-  /** Whether this event repeats. */
+  /** Whether this event is recurring. */
   @bitfield(1)
-  hasRepetitionSettings = false;
+  hasRecurrenceSettings = false;
   /** Whether this event has an additional note. */
   @bitfield(1)
   hasNote = false;
@@ -241,34 +252,48 @@ export class OptionalEventTime extends Serializable {
   }
 }
 
+/** Time unit for describing when the alarm should fire. */
+export enum AlarmTimeUnit {
+  MINUTES = 'minutes',
+  HOURS = 'hours',
+  DAYS = 'days',
+}
+
 /** Event alarm settings.
  *
  * The time when the alarm will fire is specified by the combination of `unit`
  * and `value`. For example, `{unit: 'minutes', value: 10}` means the alarm will
  * fire 10 minutes before the event.
  */
-export class AlarmSettings extends Serializable {
+export interface AlarmSettings {
   /** Time unit for expressing when the alarm should fire. */
-  unit: 'minutes' | 'hours' | 'days' = 'minutes';
+  unit: AlarmTimeUnit;
   /** Number of time units before the event start time to fire the alarm. */
-  value = 0;
+  value: number;
+}
+
+/** SerializableWrapper for AlarmSettings. */
+export class AlarmSettingsWrapper extends SerializableWrapper<AlarmSettings> {
+  value = {unit: AlarmTimeUnit.MINUTES, value: 0};
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     const reader = SmartBuffer.fromBuffer(buffer);
-    this.value = reader.readUInt8();
-    this.unit = AlarmSettings.unitValues[reader.readUInt8()];
+    this.value.value = reader.readUInt8();
+    this.value.unit = AlarmSettingsWrapper.unitValues[reader.readUInt8()];
     return reader.readOffset;
   }
 
   serialize(opts?: SerializeOptions) {
     const writer = new SmartBuffer();
-    if (this.value < 0 || this.value > 0xff) {
-      throw new Error(`Invalid hour value: ${this.value}`);
+    if (this.value.value < 0 || this.value.value > 0xff) {
+      throw new Error(`Invalid hour value: ${this.value.value}`);
     }
-    writer.writeUInt8(this.value);
-    const unitValueIndex = AlarmSettings.unitValues.indexOf(this.unit);
+    writer.writeUInt8(this.value.value);
+    const unitValueIndex = AlarmSettingsWrapper.unitValues.indexOf(
+      this.value.unit
+    );
     if (unitValueIndex < 0) {
-      throw new Error(`Unknown unit: ${this.unit}`);
+      throw new Error(`Unknown alarm time unit: ${this.value.unit}`);
     }
     writer.writeUInt8(unitValueIndex);
     return writer.toBuffer();
@@ -279,26 +304,42 @@ export class AlarmSettings extends Serializable {
   }
 
   /** Array of unit values, indexed by their numeric value when serialized. */
-  static unitValues: Array<AlarmSettings['unit']> = [
-    'minutes',
-    'hours',
-    'days',
+  static readonly unitValues: Array<AlarmTimeUnit> = [
+    AlarmTimeUnit.MINUTES,
+    AlarmTimeUnit.HOURS,
+    AlarmTimeUnit.DAYS,
   ];
 }
 
-/** Specifies how the event should repeat. */
-type RepetitionSpec =
+/** Frequency of a recurring event. */
+export enum RecurrenceFrequency {
+  /** Don't repeat. */
+  NONE = 'none',
+  /** Repeat every N days */
+  DAILY = 'daily',
+  /** Repeat every N weeks on the same days of the week. */
+  WEEKLY = 'weekly',
+  /** Repeat on same week of the month every N months. */
+  MONTHLY_BY_DAY = 'monthlyByDay',
+  /** Repeat on same day of the month every N months. */
+  MONTHLY_BY_DATE = 'monthlyByDate',
+  /** Repeat on same day of the year every N years. */
+  YEARLY = 'yearly',
+}
+
+/** Event recurrence settings. */
+export type RecurrenceSettings = (
   | {
       /** Don't repeat. */
-      type: 'none';
+      frequency: RecurrenceFrequency.NONE;
     }
   | {
       /** Repeat every N days */
-      type: 'daily';
+      frequency: RecurrenceFrequency.DAILY;
     }
   | {
       /** Repeat every N weeks on the same days of the week. */
-      type: 'weekly';
+      frequency: RecurrenceFrequency.WEEKLY;
       /** Array specifying which days of the week to repeat on.
        *
        * Index 0 = Sunday, 1 = Monday, etc.
@@ -312,7 +353,7 @@ type RepetitionSpec =
     }
   | {
       /** Repeat on same week of the month every N months. */
-      type: 'monthlyByDay';
+      frequency: RecurrenceFrequency.MONTHLY_BY_DAY;
       /** Week number within the month.
        *
        * 0 = 1st week of the month
@@ -329,59 +370,66 @@ type RepetitionSpec =
     }
   | {
       /** Repeat on same day of the month every N months. */
-      type: 'monthlyByDate';
+      frequency: RecurrenceFrequency.MONTHLY_BY_DATE;
     }
   | {
       /** Repeat on same day of the year every N years. */
-      type: 'yearly';
-    };
-
-/** Event repetition settings. */
-export class RepetitionSettings extends Serializable {
-  /** How the event should repeat. */
-  repetitionSpec: RepetitionSpec = {type: 'daily'};
+      frequency: RecurrenceFrequency.YEARLY;
+    }
+) & {
   /** Frequency of repetition (every N days / weeks / months / years). */
-  frequency = 1;
+  interval: number;
   /** Repetition end date. */
-  endDate: OptionalDatabaseDate = new OptionalDatabaseDate();
+  endDate: OptionalDatabaseDate;
+};
+
+/** SerializableWrapper for RecurrenceSettings. */
+class RecurrenceSettingsWrapper extends SerializableWrapper<RecurrenceSettings> {
+  /** How the event should repeat. */
+  value: RecurrenceSettings = {
+    frequency: RecurrenceFrequency.DAILY,
+    interval: 1,
+    endDate: new OptionalDatabaseDate(),
+  };
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     const reader = SmartBuffer.fromBuffer(buffer);
 
     const rawType = reader.readUInt8();
-    const type = RepetitionSettings.typeValues[rawType];
+    const frequency =
+      RecurrenceSettingsWrapper.recurringFrequencyValues[rawType];
     reader.readUInt8(); // Padding byte
 
-    this.endDate.deserialize(
-      reader.readBuffer(this.endDate.getSerializedLength(opts)),
+    const endDate = OptionalDatabaseDate.from(
+      reader.readBuffer(this.value.endDate.getSerializedLength(opts)),
       opts
     );
 
-    this.frequency = reader.readUInt8();
+    const interval = reader.readUInt8();
 
-    switch (type) {
-      case 'daily':
-      case 'monthlyByDate':
-      case 'yearly':
-        this.repetitionSpec = {type};
+    switch (frequency) {
+      case RecurrenceFrequency.DAILY:
+      case RecurrenceFrequency.MONTHLY_BY_DATE:
+      case RecurrenceFrequency.YEARLY:
+        this.value = {frequency, endDate, interval};
         break;
-      case 'weekly':
+      case RecurrenceFrequency.WEEKLY:
         const rawDaysOfWeek = reader.readUInt8();
         const daysOfWeek: Array<boolean> = [];
         for (let i = 0; i < 7; ++i) {
           daysOfWeek.push(!!(rawDaysOfWeek & (1 << i)));
         }
         const startOfWeek = reader.readUInt8();
-        this.repetitionSpec = {type, daysOfWeek, startOfWeek};
+        this.value = {frequency, interval, endDate, daysOfWeek, startOfWeek};
         break;
-      case 'monthlyByDay':
+      case RecurrenceFrequency.MONTHLY_BY_DAY:
         const rawDayOfMonth = reader.readUInt8();
         const weekOfMonth = Math.floor(rawDayOfMonth / 7);
         const dayOfWeek = rawDayOfMonth % 7;
-        this.repetitionSpec = {type, weekOfMonth, dayOfWeek};
+        this.value = {frequency, interval, endDate, weekOfMonth, dayOfWeek};
         break;
       default:
-        throw new Error(`Invalid repetition type: ${rawType}`);
+        throw new Error(`Invalid recurring frequency type: ${frequency}`);
     }
 
     return this.getSerializedLength(opts);
@@ -390,30 +438,36 @@ export class RepetitionSettings extends Serializable {
   serialize(opts?: SerializeOptions) {
     const writer = new SmartBuffer();
 
-    const typeValueIndex = RepetitionSettings.typeValues.indexOf(
-      this.repetitionSpec.type
-    );
-    if (typeValueIndex < 0) {
-      throw new Error(`Unknown type: ${this.repetitionSpec.type}`);
+    const frequencyValueIndex =
+      RecurrenceSettingsWrapper.recurringFrequencyValues.indexOf(
+        this.value.frequency
+      );
+    if (frequencyValueIndex < 0) {
+      throw new Error(
+        `Invalid recurring frequency type: ${this.value.frequency}`
+      );
     }
-    writer.writeUInt8(typeValueIndex);
+    writer.writeUInt8(frequencyValueIndex);
     writer.writeUInt8(0); // Padding byte
 
-    writer.writeBuffer(this.endDate.serialize(opts));
+    writer.writeBuffer(this.value.endDate.serialize(opts));
 
-    if (this.frequency < 0 || this.frequency > 0xff) {
-      throw new Error(`Invalid frequency: ${this.frequency}`);
+    if (this.value.interval < 0 || this.value.interval > 0xff) {
+      throw new Error(
+        'Invalid interval: expected number between 0 and 255, ' +
+          `found ${this.value.interval}`
+      );
     }
-    writer.writeUInt8(this.frequency);
+    writer.writeUInt8(this.value.interval);
 
-    switch (this.repetitionSpec.type) {
-      case 'daily':
-      case 'monthlyByDate':
-      case 'yearly':
+    switch (this.value.frequency) {
+      case RecurrenceFrequency.DAILY:
+      case RecurrenceFrequency.MONTHLY_BY_DATE:
+      case RecurrenceFrequency.YEARLY:
         writer.writeUInt16BE(0);
         break;
-      case 'weekly':
-        const {daysOfWeek, startOfWeek} = this.repetitionSpec;
+      case RecurrenceFrequency.WEEKLY:
+        const {daysOfWeek, startOfWeek} = this.value;
         if (daysOfWeek.length !== 7) {
           throw new Error(
             'Days of week array must have exactly 7 elements ' +
@@ -432,8 +486,8 @@ export class RepetitionSettings extends Serializable {
         }
         writer.writeUInt8(startOfWeek);
         break;
-      case 'monthlyByDay':
-        const {weekOfMonth, dayOfWeek} = this.repetitionSpec;
+      case RecurrenceFrequency.MONTHLY_BY_DAY:
+        const {weekOfMonth, dayOfWeek} = this.value;
         if (weekOfMonth < 0 || weekOfMonth > 5) {
           throw new Error(`Invalid week of month: ${weekOfMonth}`);
         }
@@ -445,7 +499,9 @@ export class RepetitionSettings extends Serializable {
         writer.writeUInt8(0);
         break;
       default:
-        throw new Error(`Invalid repetition type: ${this.repetitionSpec.type}`);
+        throw new Error(
+          `Invalid recurring frequency type: ${this.value.frequency}`
+        );
     }
     writer.writeUInt8(0); // Padding byte
 
@@ -456,18 +512,23 @@ export class RepetitionSettings extends Serializable {
     return 8;
   }
 
-  /** Array of repetition type values, indexed by their numeric value when serialized. */
-  static typeValues: Array<RepetitionSpec['type']> = [
-    'none',
-    'daily',
-    'weekly',
-    'monthlyByDay',
-    'monthlyByDate',
-    'yearly',
+  /** Array of repetition frequency values, indexed by their numeric value when serialized. */
+  static readonly recurringFrequencyValues: Array<RecurrenceFrequency> = [
+    RecurrenceFrequency.NONE,
+    RecurrenceFrequency.DAILY,
+    RecurrenceFrequency.WEEKLY,
+    RecurrenceFrequency.MONTHLY_BY_DAY,
+    RecurrenceFrequency.MONTHLY_BY_DATE,
+    RecurrenceFrequency.YEARLY,
   ];
 }
 
-/** DatebookDB database. */
+/** DatebookDB database.
+ *
+ * References:
+ *   - https://github.com/jichu4n/pilot-link/blob/master/libpisock/datebook.c
+ *   - https://github.com/madsen/p5-Palm/blob/master/lib/Palm/Datebook.pm
+ */
 export class DatebookDatabase extends PdbDatabase.of(
   DatebookRecord,
   DatebookAppInfo

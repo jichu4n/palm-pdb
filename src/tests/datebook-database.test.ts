@@ -5,7 +5,10 @@ import {
   DatabaseDate,
   DatebookDatabase,
   DatebookRecord,
-  RepetitionSettings,
+  OptionalDatabaseDate,
+  RecurrenceSettings,
+  RecurrenceFrequency,
+  AlarmTimeUnit,
 } from '..';
 
 describe('DatebookDatabase', function () {
@@ -25,13 +28,15 @@ describe('DatebookDatabase', function () {
       expect(record.endTime.value?.minute).toStrictEqual(0);
       expect(record.description.length).toBeGreaterThan(1);
     }
-    expect(db.records[0].repetitionSettings?.repetitionSpec).toStrictEqual({
-      type: 'weekly',
+    expect(db.records[0].recurrenceSettings).toStrictEqual({
+      frequency: RecurrenceFrequency.WEEKLY,
       daysOfWeek: [false, false, false, false, false, false, true],
       startOfWeek: 0,
+      interval: 1,
+      endDate: new OptionalDatabaseDate(),
     });
-    expect(db.records[0].repetitionSettings?.frequency).toStrictEqual(1);
-    expect(db.records[0].repetitionSettings?.endDate.value).toBeNull();
+    expect(db.records[0].recurrenceSettings?.interval).toStrictEqual(1);
+    expect(db.records[0].recurrenceSettings?.endDate.value).toBeNull();
   });
 
   test('serialize', async function () {
@@ -47,39 +52,45 @@ describe('DatebookDatabase', function () {
         record.endTime.value = {hour: i % 24, minute: 30};
       }
       if (i % 3) {
-        record.alarmSettings = new AlarmSettings();
-        record.alarmSettings.unit = 'minutes';
-        record.alarmSettings.value = i;
+        record.alarmSettings = {unit: AlarmTimeUnit.MINUTES, value: i};
       }
       if (i % 10 === 0) {
-        record.repetitionSettings = null;
+        record.recurrenceSettings = null;
       } else {
         if (i < 7) {
-          record.repetitionSettings = new RepetitionSettings();
-          record.repetitionSettings.repetitionSpec = {
-            type: 'weekly',
+          record.recurrenceSettings = {
+            frequency: RecurrenceFrequency.WEEKLY,
             daysOfWeek: [false, false, false, false, false, false, false],
             startOfWeek: 0,
+            interval: 1,
+            endDate: new OptionalDatabaseDate(),
           };
           for (let j = 0; j < i; j += 2) {
-            record.repetitionSettings.repetitionSpec.daysOfWeek[j] = true;
+            record.recurrenceSettings.daysOfWeek[j] = true;
           }
         } else if (i < 15) {
-          record.repetitionSettings = new RepetitionSettings();
-          record.repetitionSettings.repetitionSpec = {
-            type: 'monthlyByDay',
+          record.recurrenceSettings = {
+            frequency: RecurrenceFrequency.MONTHLY_BY_DAY,
             weekOfMonth: i % 6,
             dayOfWeek: i % 7,
+            interval: 1,
+            endDate: new OptionalDatabaseDate(),
           };
         } else {
-          const types = ['daily', 'monthlyByDate', 'yearly'] as const;
-          const type = types[i % types.length];
-          record.repetitionSettings = new RepetitionSettings();
-          record.repetitionSettings.repetitionSpec = {type};
-          record.repetitionSettings.frequency = i;
+          const frequencies = [
+            RecurrenceFrequency.DAILY,
+            RecurrenceFrequency.MONTHLY_BY_DATE,
+            RecurrenceFrequency.YEARLY,
+          ] as const;
+          const frequency = frequencies[i % frequencies.length];
+          record.recurrenceSettings = {
+            frequency,
+            interval: i,
+            endDate: new OptionalDatabaseDate(),
+          };
         }
-        if (i % 4) {
-          record.repetitionSettings.endDate.value = DatabaseDate.with({
+        if (i % 4 && record.recurrenceSettings) {
+          record.recurrenceSettings.endDate.value = DatabaseDate.with({
             year: 2001 + i,
           });
         }
