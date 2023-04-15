@@ -19,7 +19,7 @@ describe('ToDoDatabase', function () {
 
     let dueDate0 = db.records[0].dueDate;
     expect(dueDate0?.year).toStrictEqual(2021);
-    expect(dueDate0?.month).toStrictEqual(2);
+    expect(dueDate0?.month).toStrictEqual(1);
     expect(dueDate0?.dayOfMonth).toStrictEqual(21);
 
     expect(db.records[2].dueDate).toBeNull();
@@ -39,7 +39,7 @@ describe('ToDoDatabase', function () {
       record.priority = i + 1;
       record.isCompleted = !!(i % 2);
       if (i % 3) {
-        record.dueDate = DatabaseDate.with({year: 2000 + i});
+        record.dueDate = DatabaseDate.of(new Date(2000 + i, 0, 1));
       }
       db1.records.push(record);
     }

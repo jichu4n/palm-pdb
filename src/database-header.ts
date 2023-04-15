@@ -10,7 +10,7 @@ import {
   SUInt32BE,
   SUInt8,
 } from 'serio';
-import {DatabaseTimestamp, epochDatabaseTimestamp} from './date-time-types';
+import {DatabaseTimestamp, EpochTimestamp} from './date-time-types';
 import {LocalId, SDynamicArray, TypeId} from './utility-types';
 
 /** Maximum length of database names - 31 chars + 1 NUL byte.
@@ -49,7 +49,7 @@ export class DatabaseHdrType extends SObject {
 
   /** Last backup timestamp. */
   @field()
-  lastBackupDate: DatabaseTimestamp = epochDatabaseTimestamp;
+  lastBackupDate: DatabaseTimestamp = EpochTimestamp;
 
   /** Modification number (integer). */
   @field(SUInt32BE)

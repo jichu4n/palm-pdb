@@ -21,7 +21,7 @@ describe('DatebookDatabase', function () {
     expect(db.records.length).toStrictEqual(3);
     for (const record of db.records) {
       expect(record.date.year).toStrictEqual(2021);
-      expect(record.date.month).toStrictEqual(2);
+      expect(record.date.month).toStrictEqual(1);
       expect(record.startTime?.hour).toBeGreaterThan(0);
       expect(record.startTime?.minute).toStrictEqual(0);
       expect(record.endTime?.hour).toBeGreaterThan(0);
@@ -93,9 +93,9 @@ describe('DatebookDatabase', function () {
           };
         }
         if (i % 4 && record.recurrenceSettings) {
-          record.recurrenceSettings.endDate = DatabaseDate.with({
-            year: 2001 + i,
-          });
+          record.recurrenceSettings.endDate = DatabaseDate.of(
+            new Date(2001 + i, 0, 1)
+          );
         }
       }
       db1.records.push(record);

@@ -1,25 +1,35 @@
 import {
   DeserializeOptions,
-  SObject,
   SUInt16BE,
   SerializableWrapper,
   SerializeOptions,
-  field,
 } from 'serio';
 
-/** Epoch for PDB timestamps. */
-export const epochTimestamp = new Date('1904-01-01T00:00:00.000Z');
+/** Standard epoch on Palm OS -- 1904/1/1. */
+export const PdbEpoch = new Date('1904-01-01T00:00:00.000Z');
+/** Standard epoch on Palm OS -- 1904/1/1. */
+export const UnixEpoch = new Date(0);
 
-/** Wrapper around a `Date` value with PDB-specific attributes. */
+/** Epoch that a DatabaseTimestamp value is based on. */
+export enum EpochType {
+  /** Standard epoch on Palm OS -- 1904/1/1. */
+  PDB = 'pdb',
+  /** UNIX epoch -- 1970/1/1. */
+  UNIX = 'unix',
+}
+
+/** A timestamp value.
+ *
+ * References:
+ *   - https://wiki.mobileread.com/wiki/PDB#PDB_Times
+ */
 export class DatabaseTimestamp extends SerializableWrapper<Date> {
   /** JavaScript Date value corresponding to the time. */
   value: Date = new Date();
   /** The epoch to use when serializing this date. */
-  epochType: 'pdb' | 'unix' = 'pdb';
+  epochType = EpochType.PDB;
 
   /** Parses a PDB timestamp.
-   *
-   * From https://wiki.mobileread.com/wiki/PDB#PDB_Times:
    *
    * If the time has the top bit set, it's an unsigned 32-bit number counting
    * from 1st Jan 1904.
@@ -30,10 +40,10 @@ export class DatabaseTimestamp extends SerializableWrapper<Date> {
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     let ts = buffer.readUInt32BE();
     if (ts === 0 || ts & (1 << 31)) {
-      this.epochType = 'pdb';
-      this.value.setTime(epochTimestamp.getTime() + ts * 1000);
+      this.epochType = EpochType.PDB;
+      this.value.setTime(PdbEpoch.getTime() + ts * 1000);
     } else {
-      this.epochType = 'unix';
+      this.epochType = EpochType.UNIX;
       ts = buffer.readInt32BE();
       this.value.setTime(ts * 1000);
     }
@@ -44,12 +54,12 @@ export class DatabaseTimestamp extends SerializableWrapper<Date> {
   serialize(opts?: SerializeOptions) {
     const buffer = Buffer.alloc(4);
     switch (this.epochType) {
-      case 'pdb':
+      case EpochType.PDB:
         buffer.writeUInt32BE(
-          (this.value.getTime() - epochTimestamp.getTime()) / 1000
+          (this.value.getTime() - PdbEpoch.getTime()) / 1000
         );
         break;
-      case 'unix':
+      case EpochType.UNIX:
         buffer.writeInt32BE(this.value.getTime() / 1000);
         break;
       default:
@@ -64,48 +74,66 @@ export class DatabaseTimestamp extends SerializableWrapper<Date> {
 }
 
 /** DatabaseTimestamp corresponding to epochDate. */
-export const epochDatabaseTimestamp = new DatabaseTimestamp();
-epochDatabaseTimestamp.value.setTime(epochTimestamp.getTime());
+export const EpochTimestamp = DatabaseTimestamp.of(PdbEpoch);
 
-/** A date (year, month, DOM) encoded as a 16-bit integer. */
-export class DatabaseDate extends SObject {
+/** A date (year, month, DOM) encoded as a 16-bit integer.
+ *
+ * There is no timezone information in the serialized form, so we assume UTC
+ * when converting to / from JavaScript Date objects.
+ */
+export class DatabaseDate extends SerializableWrapper<Date> {
   /** Year. */
-  year = epochTimestamp.getUTCFullYear();
-  /** Month (Jan = 1, Dec = 12). */
-  month = 1;
+  year = PdbEpoch.getUTCFullYear();
+  /** Month (Jan = 0, Dec = 11). */
+  month = 0;
   /** Day of the month (1st = 1). */
   dayOfMonth = 1;
 
-  @field(SUInt16BE)
   get value() {
-    if (this.year < epochTimestamp.getUTCFullYear()) {
+    return new Date(Date.UTC(this.year, this.month, this.dayOfMonth));
+  }
+  set value(newValue: Date) {
+    this.year = newValue.getUTCFullYear();
+    this.month = newValue.getUTCMonth();
+    this.dayOfMonth = newValue.getUTCDate();
+  }
+
+  serialize(opts?: SerializeOptions) {
+    if (this.year < PdbEpoch.getUTCFullYear()) {
       throw new Error(`Invalid year: ${this.year}`);
     }
-    if (this.month < 1 || this.month > 12) {
+    if (this.month < 0 || this.month > 11) {
       throw new Error(`Invalid month: ${this.month}`);
     }
     if (this.dayOfMonth < 1 || this.dayOfMonth > 31) {
       throw new Error(`Invalid day of month: ${this.dayOfMonth}`);
     }
-    return (
-      ((this.year - epochTimestamp.getUTCFullYear()) << 9) |
-      (this.month << 5) |
-      this.dayOfMonth
-    );
+    return SUInt16BE.of(
+      ((this.year - PdbEpoch.getUTCFullYear()) << 9) |
+        ((this.month + 1) << 5) |
+        this.dayOfMonth
+    ).serialize();
   }
-  set value(newValue: number) {
+
+  deserialize(buffer: Buffer, opts?: DeserializeOptions) {
+    const {value: v} = SUInt16BE.from(buffer, opts);
+
     // upper 7 bits => year since 1904
-    this.year = ((newValue >> 9) & 0x7f) + epochTimestamp.getUTCFullYear();
+    this.year = ((v >> 9) & 0x7f) + PdbEpoch.getUTCFullYear();
     // 4 bits => month
-    this.month = (newValue >> 5) & 0x0f;
+    this.month = ((v >> 5) & 0x0f) - 1;
     // 5 bits => date
-    this.dayOfMonth = newValue & 0x1f;
+    this.dayOfMonth = v & 0x1f;
+
+    return this.getSerializedLength(opts);
+  }
+
+  getSerializedLength(opts?: SerializeOptions) {
+    return 2;
   }
 
   toJSON() {
-    return new Date(this.year, this.month - 1, this.dayOfMonth)
-      .toISOString()
-      .split('T')[0];
+    return this.value.toISOString();
   }
 }
 
