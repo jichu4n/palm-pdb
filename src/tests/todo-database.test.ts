@@ -17,12 +17,12 @@ describe('ToDoDatabase', function () {
       expect(record.isCompleted).toStrictEqual(false);
     }
 
-    let dueDate0 = db.records[0].dueDate.value;
+    let dueDate0 = db.records[0].dueDate;
     expect(dueDate0?.year).toStrictEqual(2021);
     expect(dueDate0?.month).toStrictEqual(2);
     expect(dueDate0?.dayOfMonth).toStrictEqual(21);
 
-    expect(db.records[2].dueDate.value).toBeNull();
+    expect(db.records[2].dueDate).toBeNull();
   });
 
   test('serialize', async function () {
@@ -39,7 +39,7 @@ describe('ToDoDatabase', function () {
       record.priority = i + 1;
       record.isCompleted = !!(i % 2);
       if (i % 3) {
-        record.dueDate.value = DatabaseDate.with({year: 2000 + i});
+        record.dueDate = DatabaseDate.with({year: 2000 + i});
       }
       db1.records.push(record);
     }

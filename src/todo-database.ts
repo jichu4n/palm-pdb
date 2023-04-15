@@ -9,6 +9,7 @@ import {
 } from 'serio';
 import {
   AppInfoType,
+  DatabaseDate,
   DatabaseHdrType,
   OptionalDatabaseDate,
   PdbDatabase,
@@ -46,8 +47,8 @@ export class ToDoAppInfo extends SObject {
 /** A ToDoDB record. */
 export class ToDoRecord extends PdbRecord {
   /** Due date of the item (may be empty if there is no due date). */
-  @field()
-  dueDate: OptionalDatabaseDate = new OptionalDatabaseDate();
+  @field(OptionalDatabaseDate)
+  dueDate: DatabaseDate | null = null;
 
   /** Attributes byte. */
   @field(SUInt8)

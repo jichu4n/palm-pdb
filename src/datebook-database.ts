@@ -1,14 +1,13 @@
 import {
   bitfield,
-  decodeString,
   DeserializeOptions,
-  encodeString,
   field,
   SBitmask,
-  Serializable,
   SerializableWrapper,
   SerializeOptions,
   SObject,
+  SStringNT,
+  SUInt16BE,
   SUInt8,
 } from 'serio';
 import {SmartBuffer} from 'smart-buffer';
@@ -19,7 +18,48 @@ import {
   OptionalDatabaseDate,
   PdbDatabase,
   PdbRecord,
+  SDynamicArray,
 } from '.';
+
+/** Event start / end time. */
+export class EventTime extends SObject {
+  /** Hour of day (0 to 23). */
+  @field(SUInt8)
+  hour = 0;
+  /** Minute (0-59). */
+  @field(SUInt8)
+  minute = 0;
+
+  serialize(opts?: SerializeOptions) {
+    if (this.hour < 0 || this.hour > 23) {
+      throw new Error(`Invalid hour value: ${this.hour}`);
+    }
+    if (this.minute < 0 || this.minute > 59) {
+      throw new Error(`Invalid minute value: ${this.minute}`);
+    }
+    return super.serialize(opts);
+  }
+}
+
+/** Event start / end time. */
+export class OptionalEventTime extends SerializableWrapper<EventTime | null> {
+  /** Time value, or null if not specified. */
+  value: EventTime | null = null;
+
+  deserialize(buffer: Buffer, opts?: DeserializeOptions) {
+    this.value =
+      buffer.readUInt16BE() === 0xffff ? null : EventTime.from(buffer, opts);
+    return this.getSerializedLength(opts);
+  }
+
+  serialize(opts?: SerializeOptions) {
+    return this.value ? this.value.serialize(opts) : Buffer.of(0xff, 0xff);
+  }
+
+  getSerializedLength(opts?: SerializeOptions) {
+    return 2;
+  }
+}
 
 /** DatebookDB AppInfo block. */
 export class DatebookAppInfo extends SObject {
@@ -33,17 +73,26 @@ export class DatebookAppInfo extends SObject {
   startOfWeek = 0;
 
   @field(SUInt8)
-  padding1 = 0;
+  private padding1 = 0;
 }
 
 /** A DatebookDB record. */
 export class DatebookRecord extends PdbRecord {
-  /** Date of the event. */
-  date: DatabaseDate = new DatabaseDate();
   /** Start time of event. */
-  startTime: OptionalEventTime = new OptionalEventTime();
+  @field(OptionalEventTime)
+  startTime: EventTime | null = null;
   /** End time of event. */
-  endTime: OptionalEventTime = new OptionalEventTime();
+  @field(OptionalEventTime)
+  endTime: EventTime | null = null;
+  /** Date of the event. */
+  @field()
+  date = new DatabaseDate();
+  /** Attributes field. */
+  @field()
+  private attrs = new DatebookRecordAttrs();
+  @field(SUInt8)
+  private padding1 = 0;
+
   /** Alarm settings, or null if no alarm configured. */
   alarmSettings: AlarmSettings | null = null;
   /** Recurrence settings, or null if the event is not recurring. */
@@ -56,126 +105,102 @@ export class DatebookRecord extends PdbRecord {
   note = '';
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
-    const reader = SmartBuffer.fromBuffer(buffer);
+    let offset = super.deserialize(buffer, opts);
 
-    this.startTime.deserialize(
-      reader.readBuffer(this.startTime.getSerializedLength(opts)),
-      opts
-    );
-    this.endTime.deserialize(
-      reader.readBuffer(this.endTime.getSerializedLength(opts)),
-      opts
-    );
-    this.date.deserialize(
-      reader.readBuffer(this.date.getSerializedLength(opts)),
-      opts
-    );
-
-    const attrs = new DatebookRecordAttrs();
-    attrs.deserialize(reader.readBuffer(attrs.getSerializedLength(opts)), opts);
-    reader.readUInt8(); // Padding byte
-
-    if (attrs.hasAlarmSettings) {
-      this.alarmSettings = AlarmSettingsWrapper.from(
-        reader.readBuffer(new AlarmSettingsWrapper().getSerializedLength(opts)),
-        opts
-      ).value;
+    if (this.attrs.hasAlarmSettings) {
+      this.alarmSettings = new AlarmSettings();
+      offset += this.alarmSettings.deserialize(buffer.subarray(offset), opts);
     } else {
       this.alarmSettings = null;
     }
 
-    if (attrs.hasRecurrenceSettings) {
-      this.recurrenceSettings = RecurrenceSettingsWrapper.from(
-        reader.readBuffer(
-          new RecurrenceSettingsWrapper().getSerializedLength(opts)
-        ),
-        opts
-      ).value;
+    if (this.attrs.hasRecurrenceSettings) {
+      const wrapper = new RecurrenceSettingsWrapper();
+      offset += wrapper.deserialize(buffer.subarray(offset), opts);
+      this.recurrenceSettings = wrapper.value;
     } else {
       this.recurrenceSettings = null;
     }
 
-    this.exceptionDates.length = 0;
-    if (attrs.hasExceptionDates) {
-      const numExceptions = reader.readUInt16BE();
-      for (let i = 0; i < numExceptions; ++i) {
-        const exceptionDate = new DatabaseDate();
-        exceptionDate.deserialize(
-          reader.readBuffer(exceptionDate.getSerializedLength(opts)),
-          opts
-        );
-        this.exceptionDates.push(exceptionDate);
-      }
+    if (this.attrs.hasExceptionDates) {
+      const wrapper = new (SDynamicArray.of(SUInt16BE, DatabaseDate))();
+      offset += wrapper.deserialize(buffer.subarray(offset), opts);
+      this.exceptionDates.splice(
+        0,
+        this.exceptionDates.length,
+        ...wrapper.value
+      );
+    } else {
+      this.exceptionDates.length = 0;
     }
 
-    this.description = attrs.hasDescription
-      ? decodeString(reader.readBufferNT(), opts)
-      : '';
-    this.note = attrs.hasNote ? decodeString(reader.readBufferNT(), opts) : '';
+    if (this.attrs.hasDescription) {
+      const wrapper = new SStringNT();
+      offset += wrapper.deserialize(buffer.subarray(offset), opts);
+      this.description = wrapper.value;
+    } else {
+      this.description = '';
+    }
+
+    if (this.attrs.hasNote) {
+      const wrapper = new SStringNT();
+      offset += wrapper.deserialize(buffer.subarray(offset), opts);
+      this.note = wrapper.value;
+    } else {
+      this.note = '';
+    }
 
     return buffer.length;
   }
 
   serialize(opts?: SerializeOptions) {
-    const writer = new SmartBuffer();
+    const pieces: Array<Buffer> = [];
 
-    writer.writeBuffer(this.startTime.serialize(opts));
-    writer.writeBuffer(this.endTime.serialize(opts));
-    writer.writeBuffer(this.date.serialize(opts));
-
-    const attrs = new DatebookRecordAttrs();
-    attrs.hasAlarmSettings = !!this.alarmSettings;
-    attrs.hasRecurrenceSettings = !!this.recurrenceSettings;
-    attrs.hasExceptionDates = this.exceptionDates.length > 0;
-    attrs.hasDescription = !!this.description;
-    attrs.hasNote = !!this.note;
-    writer.writeBuffer(attrs.serialize(opts));
-    writer.writeUInt8(0); // Padding byte
+    this.attrs.hasAlarmSettings = !!this.alarmSettings;
+    this.attrs.hasRecurrenceSettings = !!this.recurrenceSettings;
+    this.attrs.hasExceptionDates = this.exceptionDates.length > 0;
+    this.attrs.hasDescription = !!this.description;
+    this.attrs.hasNote = !!this.note;
+    pieces.push(super.serialize(opts));
 
     if (this.alarmSettings) {
-      writer.writeBuffer(
-        AlarmSettingsWrapper.of(this.alarmSettings).serialize(opts)
-      );
+      pieces.push(this.alarmSettings.serialize(opts));
     }
-
     if (this.recurrenceSettings) {
-      writer.writeBuffer(
+      pieces.push(
         RecurrenceSettingsWrapper.of(this.recurrenceSettings).serialize(opts)
       );
     }
-
     if (this.exceptionDates.length > 0) {
-      writer.writeUInt16BE(this.exceptionDates.length);
-      for (const exceptionDate of this.exceptionDates) {
-        writer.writeBuffer(exceptionDate.serialize(opts));
-      }
+      pieces.push(
+        SDynamicArray.of(SUInt16BE, DatabaseDate)
+          .of(this.exceptionDates)
+          .serialize(opts)
+      );
     }
-
     if (this.description) {
-      writer.writeBufferNT(encodeString(this.description, opts));
+      pieces.push(SStringNT.of(this.description).serialize(opts));
     }
     if (this.note) {
-      writer.writeBufferNT(encodeString(this.note, opts));
+      pieces.push(SStringNT.of(this.note).serialize(opts));
     }
 
-    return writer.toBuffer();
+    return Buffer.concat(pieces);
   }
 
   getSerializedLength(opts?: SerializeOptions) {
     return (
       8 +
-      (this.alarmSettings
-        ? AlarmSettingsWrapper.of(this.alarmSettings).getSerializedLength(opts)
-        : 0) +
+      (this.alarmSettings ? this.alarmSettings.getSerializedLength(opts) : 0) +
       (this.recurrenceSettings
         ? RecurrenceSettingsWrapper.of(
             this.recurrenceSettings
           ).getSerializedLength(opts)
         : 0) +
       (this.exceptionDates.length > 0
-        ? 2 +
-          this.exceptionDates.length *
-            this.exceptionDates[0].getSerializedLength(opts)
+        ? SDynamicArray.of(SUInt16BE, DatabaseDate)
+            .of(this.exceptionDates)
+            .getSerializedLength(opts)
         : 0) +
       (this.note ? this.note.length + 1 : 0) +
       (this.description ? this.description.length + 1 : 0)
@@ -206,52 +231,6 @@ export class DatebookRecordAttrs extends SBitmask.of(SUInt8) {
   private unused2 = 0;
 }
 
-/** Event start / end time. */
-export class OptionalEventTime extends Serializable {
-  /** Time value, or null if not specified. */
-  value: {
-    /** Hour of day (0 to 23). */
-    hour: number;
-    /** Minute (0-59). */
-    minute: number;
-  } | null = null;
-
-  deserialize(buffer: Buffer, opts?: DeserializeOptions) {
-    if (buffer.readUInt16BE() === 0xffff) {
-      this.value = null;
-    } else {
-      const reader = SmartBuffer.fromBuffer(buffer);
-      this.value = {
-        hour: reader.readUInt8(),
-        minute: reader.readUInt8(),
-      };
-    }
-    return this.getSerializedLength(opts);
-  }
-
-  serialize(opts?: SerializeOptions) {
-    const writer = new SmartBuffer();
-    if (this.value) {
-      const {hour, minute} = this.value;
-      if (hour < 0 || hour > 23) {
-        throw new Error(`Invalid hour value: ${hour}`);
-      }
-      writer.writeUInt8(hour);
-      if (minute < 0 || minute > 59) {
-        throw new Error(`Invalid minute value: ${minute}`);
-      }
-      writer.writeUInt8(minute);
-    } else {
-      writer.writeUInt16BE(0xffff);
-    }
-    return writer.toBuffer();
-  }
-
-  getSerializedLength(opts?: SerializeOptions) {
-    return 2;
-  }
-}
-
 /** Time unit for describing when the alarm should fire. */
 export enum AlarmTimeUnit {
   MINUTES = 'minutes',
@@ -265,42 +244,30 @@ export enum AlarmTimeUnit {
  * and `value`. For example, `{unit: 'minutes', value: 10}` means the alarm will
  * fire 10 minutes before the event.
  */
-export interface AlarmSettings {
-  /** Time unit for expressing when the alarm should fire. */
-  unit: AlarmTimeUnit;
+export class AlarmSettings extends SObject {
   /** Number of time units before the event start time to fire the alarm. */
-  value: number;
-}
-
-/** SerializableWrapper for AlarmSettings. */
-export class AlarmSettingsWrapper extends SerializableWrapper<AlarmSettings> {
-  value = {unit: AlarmTimeUnit.MINUTES, value: 0};
+  @field(SUInt8)
+  value = 0;
+  @field(SUInt8)
+  private unitValue = 0;
+  /** Time unit for expressing when the alarm should fire. */
+  unit = AlarmTimeUnit.MINUTES;
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
-    const reader = SmartBuffer.fromBuffer(buffer);
-    this.value.value = reader.readUInt8();
-    this.value.unit = AlarmSettingsWrapper.unitValues[reader.readUInt8()];
-    return reader.readOffset;
+    const offset = super.deserialize(buffer, opts);
+    this.unit = AlarmSettings.unitValues[this.unitValue];
+    return offset;
   }
 
   serialize(opts?: SerializeOptions) {
-    const writer = new SmartBuffer();
-    if (this.value.value < 0 || this.value.value > 0xff) {
-      throw new Error(`Invalid hour value: ${this.value.value}`);
+    if (this.value < 0 || this.value > 0xff) {
+      throw new Error(`Invalid hour value: ${this.value}`);
     }
-    writer.writeUInt8(this.value.value);
-    const unitValueIndex = AlarmSettingsWrapper.unitValues.indexOf(
-      this.value.unit
-    );
-    if (unitValueIndex < 0) {
-      throw new Error(`Unknown alarm time unit: ${this.value.unit}`);
+    this.unitValue = AlarmSettings.unitValues.indexOf(this.unit);
+    if (this.unitValue < 0) {
+      throw new Error(`Unknown alarm time unit: ${this.unit}`);
     }
-    writer.writeUInt8(unitValueIndex);
-    return writer.toBuffer();
-  }
-
-  getSerializedLength(opts?: SerializeOptions) {
-    return 2;
+    return super.serialize(opts);
   }
 
   /** Array of unit values, indexed by their numeric value when serialized. */
@@ -380,7 +347,7 @@ export type RecurrenceSettings = (
   /** Frequency of repetition (every N days / weeks / months / years). */
   interval: number;
   /** Repetition end date. */
-  endDate: OptionalDatabaseDate;
+  endDate: DatabaseDate | null;
 };
 
 /** SerializableWrapper for RecurrenceSettings. */
@@ -389,7 +356,7 @@ class RecurrenceSettingsWrapper extends SerializableWrapper<RecurrenceSettings> 
   value: RecurrenceSettings = {
     frequency: RecurrenceFrequency.DAILY,
     interval: 1,
-    endDate: new OptionalDatabaseDate(),
+    endDate: null,
   };
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
@@ -401,9 +368,9 @@ class RecurrenceSettingsWrapper extends SerializableWrapper<RecurrenceSettings> 
     reader.readUInt8(); // Padding byte
 
     const endDate = OptionalDatabaseDate.from(
-      reader.readBuffer(this.value.endDate.getSerializedLength(opts)),
+      reader.readBuffer(new OptionalDatabaseDate().getSerializedLength(opts)),
       opts
-    );
+    ).value;
 
     const interval = reader.readUInt8();
 
@@ -450,7 +417,9 @@ class RecurrenceSettingsWrapper extends SerializableWrapper<RecurrenceSettings> 
     writer.writeUInt8(frequencyValueIndex);
     writer.writeUInt8(0); // Padding byte
 
-    writer.writeBuffer(this.value.endDate.serialize(opts));
+    writer.writeBuffer(
+      OptionalDatabaseDate.of(this.value.endDate).serialize(opts)
+    );
 
     if (this.value.interval < 0 || this.value.interval > 0xff) {
       throw new Error(

@@ -2,13 +2,13 @@ import fs from 'fs-extra';
 import path from 'path';
 import {
   AlarmSettings,
+  AlarmTimeUnit,
   DatabaseDate,
   DatebookDatabase,
   DatebookRecord,
+  EventTime,
   OptionalDatabaseDate,
-  RecurrenceSettings,
   RecurrenceFrequency,
-  AlarmTimeUnit,
 } from '..';
 
 describe('DatebookDatabase', function () {
@@ -22,10 +22,10 @@ describe('DatebookDatabase', function () {
     for (const record of db.records) {
       expect(record.date.year).toStrictEqual(2021);
       expect(record.date.month).toStrictEqual(2);
-      expect(record.startTime.value?.hour).toBeGreaterThan(0);
-      expect(record.startTime.value?.minute).toStrictEqual(0);
-      expect(record.endTime.value?.hour).toBeGreaterThan(0);
-      expect(record.endTime.value?.minute).toStrictEqual(0);
+      expect(record.startTime?.hour).toBeGreaterThan(0);
+      expect(record.startTime?.minute).toStrictEqual(0);
+      expect(record.endTime?.hour).toBeGreaterThan(0);
+      expect(record.endTime?.minute).toStrictEqual(0);
       expect(record.description.length).toBeGreaterThan(1);
     }
     expect(db.records[0].recurrenceSettings).toStrictEqual({
@@ -33,10 +33,10 @@ describe('DatebookDatabase', function () {
       daysOfWeek: [false, false, false, false, false, false, true],
       startOfWeek: 0,
       interval: 1,
-      endDate: new OptionalDatabaseDate(),
+      endDate: null,
     });
     expect(db.records[0].recurrenceSettings?.interval).toStrictEqual(1);
-    expect(db.records[0].recurrenceSettings?.endDate.value).toBeNull();
+    expect(db.records[0].recurrenceSettings?.endDate).toBeNull();
   });
 
   test('serialize', async function () {
@@ -48,11 +48,14 @@ describe('DatebookDatabase', function () {
       record.note = `Note #${i}`;
       record.date.year = 2000 + i;
       if (i % 2) {
-        record.startTime.value = {hour: i % 24, minute: 0};
-        record.endTime.value = {hour: i % 24, minute: 30};
+        record.startTime = EventTime.with({hour: i % 24, minute: 0});
+        record.endTime = EventTime.with({hour: i % 24, minute: 30});
       }
       if (i % 3) {
-        record.alarmSettings = {unit: AlarmTimeUnit.MINUTES, value: i};
+        record.alarmSettings = AlarmSettings.with({
+          unit: AlarmTimeUnit.MINUTES,
+          value: i,
+        });
       }
       if (i % 10 === 0) {
         record.recurrenceSettings = null;
@@ -63,7 +66,7 @@ describe('DatebookDatabase', function () {
             daysOfWeek: [false, false, false, false, false, false, false],
             startOfWeek: 0,
             interval: 1,
-            endDate: new OptionalDatabaseDate(),
+            endDate: null,
           };
           for (let j = 0; j < i; j += 2) {
             record.recurrenceSettings.daysOfWeek[j] = true;
@@ -74,7 +77,7 @@ describe('DatebookDatabase', function () {
             weekOfMonth: i % 6,
             dayOfWeek: i % 7,
             interval: 1,
-            endDate: new OptionalDatabaseDate(),
+            endDate: null,
           };
         } else {
           const frequencies = [
@@ -86,11 +89,11 @@ describe('DatebookDatabase', function () {
           record.recurrenceSettings = {
             frequency,
             interval: i,
-            endDate: new OptionalDatabaseDate(),
+            endDate: null,
           };
         }
         if (i % 4 && record.recurrenceSettings) {
-          record.recurrenceSettings.endDate.value = DatabaseDate.with({
+          record.recurrenceSettings.endDate = DatabaseDate.with({
             year: 2001 + i,
           });
         }

@@ -116,22 +116,12 @@ export class OptionalDatabaseDate extends SerializableWrapper<DatabaseDate | nul
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     const dateValue = buffer.readUInt16BE();
-    if (dateValue === 0xffff) {
-      this.value = null;
-    } else {
-      this.value = DatabaseDate.from(buffer, opts);
-    }
+    this.value = dateValue === 0xffff ? null : DatabaseDate.from(buffer, opts);
     return this.getSerializedLength(opts);
   }
 
   serialize(opts?: SerializeOptions) {
-    if (this.value) {
-      return this.value.serialize(opts);
-    } else {
-      const buffer = Buffer.alloc(this.getSerializedLength(opts));
-      buffer.writeUInt16BE(0xffff);
-      return buffer;
-    }
+    return this.value ? this.value.serialize(opts) : Buffer.of(0xff, 0xff);
   }
 
   getSerializedLength(opts?: SerializeOptions) {
