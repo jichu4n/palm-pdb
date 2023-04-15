@@ -25,7 +25,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">RecurrenceSettings</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/55641ff/src/datebook-database.ts#L291">src/datebook-database.ts:291</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/6ca6d87/src/datebook-database.ts#L328">src/datebook-database.ts:328</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -71,14 +71,14 @@
 <div class="tsd-comment tsd-typography"><p>Recurrence end date. If null, the event repeats forever.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/55641ff/src/datebook-database.ts#L316">src/datebook-database.ts:316</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/6ca6d87/src/datebook-database.ts#L353">src/datebook-database.ts:353</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="frequency" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>frequency</span><a href="#frequency" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">frequency<span class="tsd-signature-symbol">:</span> <a href="../enums/RecurrenceFrequency.html" class="tsd-signature-type" data-tsd-kind="Enumeration">RecurrenceFrequency</a><span class="tsd-signature-symbol"> = RecurrenceFrequency.DAILY</span></div>
 <div class="tsd-comment tsd-typography"><p>Frequency of this recurring event.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/55641ff/src/datebook-database.ts#L293">src/datebook-database.ts:293</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/6ca6d87/src/datebook-database.ts#L330">src/datebook-database.ts:330</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="interval" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>interval</span><a href="#interval" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">interval<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
@@ -86,23 +86,23 @@
 years).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/55641ff/src/datebook-database.ts#L321">src/datebook-database.ts:321</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/6ca6d87/src/datebook-database.ts#L358">src/datebook-database.ts:358</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="monthlyByDaySettings" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>monthly<wbr/>By<wbr/>Day<wbr/>Settings</span><a href="#monthlyByDaySettings" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">monthly<wbr/>By<wbr/>Day<wbr/>Settings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span>dayOfWeek<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>weekOfMonth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = null</span></div>
+<div class="tsd-signature">monthly<wbr/>By<wbr/>Day<wbr/>Settings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MonthlyByDayRecurrenceSettings</span><span class="tsd-signature-symbol"> = null</span></div>
 <div class="tsd-comment tsd-typography"><p>Additional settings for MONTHLY_BY_DAY frequency.</p>
 <p>Required if frequency is MONTHLY_BY_DAY.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/55641ff/src/datebook-database.ts#L344">src/datebook-database.ts:344</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/6ca6d87/src/datebook-database.ts#L370">src/datebook-database.ts:370</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="weeklySettings" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>weekly<wbr/>Settings</span><a href="#weeklySettings" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">weekly<wbr/>Settings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span>daysOfWeek<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>startOfWeek<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = null</span></div>
+<div class="tsd-signature">weekly<wbr/>Settings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">WeeklyRecurrenceSettings</span><span class="tsd-signature-symbol"> = null</span></div>
 <div class="tsd-comment tsd-typography"><p>Additional settings for WEEKLY frequency.</p>
 <p>Required if frequency is WEEKLY.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/55641ff/src/datebook-database.ts#L327">src/datebook-database.ts:327</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/6ca6d87/src/datebook-database.ts#L364">src/datebook-database.ts:364</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a id="assignFromSerializable" class="tsd-anchor"></a>
@@ -143,7 +143,7 @@ corresponding SerializableWrapper. Unknown fields are ignored.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <p>Overrides SObject.deserialize</p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/55641ff/src/datebook-database.ts#L368">src/datebook-database.ts:368</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/6ca6d87/src/datebook-database.ts#L380">src/datebook-database.ts:380</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a id="getSerializedLength" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Serialized<wbr/>Length</span><a href="#getSerializedLength" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
@@ -187,7 +187,7 @@ corresponding SerializableWrapper. Unknown fields are ignored.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Buffer</span></h4><aside class="tsd-sources">
 <p>Overrides SObject.serialize</p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/55641ff/src/datebook-database.ts#L399">src/datebook-database.ts:399</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/6ca6d87/src/datebook-database.ts#L411">src/datebook-database.ts:411</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a id="toJSON" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>toJSON</span><a href="#toJSON" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
