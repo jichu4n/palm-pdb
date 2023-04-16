@@ -78,7 +78,7 @@ describe('DatebookDatabase', function () {
             frequency: RecurrenceFrequency.MONTHLY_BY_DAY,
             monthlyByDay: {
               weekOfMonth: i % 6,
-              dayOfWeek: i % 7,
+              day: i % 7,
             },
             interval: 1,
             endDate: null,

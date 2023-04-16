@@ -253,14 +253,14 @@ export class AlarmSettings extends SObject {
   private get unitValue() {
     const unitValue = AlarmSettings.unitValues.indexOf(this.unit);
     if (unitValue < 0) {
-      throw new Error(`Unknown alarm time unit: ${this.unit}`);
+      throw new Error(`Invalid alarm time unit: ${this.unit}`);
     }
     return unitValue;
   }
   private set unitValue(newValue: number) {
     this.unit = AlarmSettings.unitValues[newValue];
     if (!this.unit) {
-      throw new Error(`Unknown alarm time unit value: ${newValue}`);
+      throw new Error(`Invalid alarm time unit value: ${newValue}`);
     }
   }
 
@@ -319,7 +319,7 @@ export interface MonthlyByDayRecurrenceSettings {
    *
    * 0 = Sunday, 1 = Monday, etc.
    */
-  dayOfWeek: number;
+  day: number;
 }
 /** Event recurrence settings. */
 export class RecurrenceSettings extends SObject {
@@ -327,18 +327,18 @@ export class RecurrenceSettings extends SObject {
   frequency = RecurrenceFrequency.DAILY;
   @field(SUInt8)
   private get frequencyValue() {
-    const frequencyValue = RecurrenceSettings.recurringFrequencyValues.indexOf(
+    const frequencyValue = RecurrenceSettings.frequencyValues.indexOf(
       this.frequency
     );
     if (frequencyValue < 0) {
-      throw new Error(`Invalid recurring frequency type: ${this.frequency}`);
+      throw new Error(`Invalid frequency type: ${this.frequency}`);
     }
     return frequencyValue;
   }
   private set frequencyValue(newValue: number) {
-    this.frequency = RecurrenceSettings.recurringFrequencyValues[newValue];
+    this.frequency = RecurrenceSettings.frequencyValues[newValue];
     if (!this.frequency) {
-      throw new Error(`Invalid recurring frequency value: ${newValue}`);
+      throw new Error(`Invalid frequency value: ${newValue}`);
     }
   }
 
@@ -393,11 +393,11 @@ export class RecurrenceSettings extends SObject {
         break;
       case RecurrenceFrequency.MONTHLY_BY_DAY:
         const weekOfMonth = Math.floor(this.arg1 / 7);
-        const dayOfWeek = this.arg1 % 7;
-        this.monthlyByDay = {weekOfMonth, dayOfWeek};
+        const day = this.arg1 % 7;
+        this.monthlyByDay = {weekOfMonth, day};
         break;
       default:
-        throw new Error(`Invalid recurring frequency type: ${this.frequency}`);
+        throw new Error(`Invalid frequency type: ${this.frequency}`);
     }
 
     return offset;
@@ -418,8 +418,7 @@ export class RecurrenceSettings extends SObject {
         const {days, firstDayOfWeek} = this.weekly;
         if (days.length !== 7) {
           throw new Error(
-            'Days of week array must have exactly 7 elements ' +
-              `(found ${days.length})`
+            `Days array must have exactly 7 elements, found ${days.length}`
           );
         }
         this.arg1 = 0;
@@ -439,32 +438,31 @@ export class RecurrenceSettings extends SObject {
             '`monthlyByDay` must be set when frequency is MONTHLY_BY_DAY'
           );
         }
-        const {weekOfMonth, dayOfWeek} = this.monthlyByDay;
+        const {weekOfMonth, day} = this.monthlyByDay;
         if (weekOfMonth < 0 || weekOfMonth > 5) {
           throw new Error(`Invalid week of month: ${weekOfMonth}`);
         }
-        if (dayOfWeek < 0 || dayOfWeek > 7) {
-          throw new Error(`Invalid day of week: ${dayOfWeek}`);
+        if (day < 0 || day > 7) {
+          throw new Error(`Invalid day of week: ${day}`);
         }
-        this.arg1 = weekOfMonth * 7 + dayOfWeek;
+        this.arg1 = weekOfMonth * 7 + day;
         this.arg2 = 0;
         break;
       default:
-        throw new Error(`Invalid recurring frequency type: ${this.frequency}`);
+        throw new Error(`Invalid frequency type: ${this.frequency}`);
     }
     return super.serialize(opts);
   }
 
-  /** Array of repetition frequency values, indexed by their numeric value when serialized. */
-  private static readonly recurringFrequencyValues: Array<RecurrenceFrequency> =
-    [
-      RecurrenceFrequency.NONE,
-      RecurrenceFrequency.DAILY,
-      RecurrenceFrequency.WEEKLY,
-      RecurrenceFrequency.MONTHLY_BY_DAY,
-      RecurrenceFrequency.MONTHLY_BY_DATE,
-      RecurrenceFrequency.YEARLY,
-    ];
+  /** Array of frequency types, indexed by their numeric value when serialized. */
+  private static readonly frequencyValues: Array<RecurrenceFrequency> = [
+    RecurrenceFrequency.NONE,
+    RecurrenceFrequency.DAILY,
+    RecurrenceFrequency.WEEKLY,
+    RecurrenceFrequency.MONTHLY_BY_DAY,
+    RecurrenceFrequency.MONTHLY_BY_DATE,
+    RecurrenceFrequency.YEARLY,
+  ];
 }
 
 /** DatebookDB database.
