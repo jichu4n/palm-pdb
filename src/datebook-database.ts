@@ -1,3 +1,4 @@
+import pick from 'lodash/pick';
 import times from 'lodash/times';
 import {
   bitfield,
@@ -74,6 +75,10 @@ export class DatebookAppInfo extends SObject {
 
   @field(SUInt8)
   private padding1 = 0;
+
+  toJSON() {
+    return pick(this, ['categoryInfo', 'firstDayOfWeek']);
+  }
 }
 
 /** A DatebookDB record. */
@@ -204,6 +209,19 @@ export class DatebookRecord extends PdbRecord {
       (this.description ? this.description.length + 1 : 0)
     );
   }
+
+  toJSON() {
+    return pick(this, [
+      'startTime',
+      'endTime',
+      'date',
+      'alarmSettings',
+      'recurrenceSettings',
+      'exceptionDates',
+      'description',
+      'note',
+    ]);
+  }
 }
 
 /** Datebook record attribute flags. */
@@ -262,6 +280,10 @@ export class AlarmSettings extends SObject {
     if (!this.unit) {
       throw new Error(`Invalid alarm time unit value: ${newValue}`);
     }
+  }
+
+  toJSON() {
+    return pick(this, ['value', 'unit']);
   }
 
   /** Array of unit values, indexed by their numeric value when serialized. */
@@ -452,6 +474,16 @@ export class RecurrenceSettings extends SObject {
         throw new Error(`Invalid frequency type: ${this.frequency}`);
     }
     return super.serialize(opts);
+  }
+
+  toJSON() {
+    return pick(this, [
+      'frequency',
+      'endDate',
+      'interval',
+      'weekly',
+      'monthlyByDay',
+    ]);
   }
 
   /** Array of frequency types, indexed by their numeric value when serialized. */

@@ -1,3 +1,4 @@
+import pick from 'lodash/pick';
 import {
   DeserializeOptions,
   field,
@@ -24,7 +25,7 @@ export class ToDoAppInfo extends SObject {
 
   /** Not sure what this is ¯\_(ツ)_/¯ */
   @field(SUInt16BE)
-  dirty = 0;
+  private dirty = 0;
 
   /** Item sort order.
    *
@@ -34,13 +35,17 @@ export class ToDoAppInfo extends SObject {
   sortOrder = 0;
 
   @field(SUInt8)
-  padding1 = 0;
+  private padding1 = 0;
 
   serialize(opts?: SerializeOptions) {
     if (this.sortOrder < 0 || this.sortOrder > 1) {
       throw new Error(`Invalid sort order: ${this.sortOrder}`);
     }
     return super.serialize(opts);
+  }
+
+  toJSON() {
+    return pick(this, ['categoryInfo', 'sortOrder']);
   }
 }
 
@@ -84,6 +89,16 @@ export class ToDoRecord extends PdbRecord {
       this.attrs |= 0x80;
     }
     return super.serialize(opts);
+  }
+
+  toJSON() {
+    return pick(this, [
+      'dueDate',
+      'isCompleted',
+      'priority',
+      'description',
+      'note',
+    ]);
   }
 }
 

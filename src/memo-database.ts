@@ -1,3 +1,4 @@
+import pick from 'lodash/pick';
 import {
   field,
   SerializeOptions,
@@ -32,6 +33,10 @@ export class MemoAppInfo extends SObject {
       throw new Error(`Invalid sort order: ${this.sortOrder}`);
     }
     return super.serialize(opts);
+  }
+
+  toJSON() {
+    return pick(this, ['categoryInfo', 'sortOrder']);
   }
 }
 
