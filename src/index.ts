@@ -10,4 +10,5 @@ export * from './record';
 export * from './datebook-database';
 export * from './memo-database';
 export * from './todo-database';
+export * from './address-database';
 export * from './palmdoc-database';

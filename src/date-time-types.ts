@@ -6,9 +6,9 @@ import {
 } from 'serio';
 
 /** Standard epoch on Palm OS -- 1904/1/1. */
-export const PdbEpoch = new Date('1904-01-01T00:00:00.000Z');
+export const PDB_EPOCH = new Date('1904-01-01T00:00:00.000Z');
 /** Standard epoch on Palm OS -- 1904/1/1. */
-export const UnixEpoch = new Date(0);
+export const UNIX_EPOCH = new Date(0);
 
 /** Epoch that a DatabaseTimestamp value is based on. */
 export enum EpochType {
@@ -41,7 +41,7 @@ export class DatabaseTimestamp extends SerializableWrapper<Date> {
     let ts = buffer.readUInt32BE();
     if (ts === 0 || ts & (1 << 31)) {
       this.epochType = EpochType.PDB;
-      this.value.setTime(PdbEpoch.getTime() + ts * 1000);
+      this.value.setTime(PDB_EPOCH.getTime() + ts * 1000);
     } else {
       this.epochType = EpochType.UNIX;
       ts = buffer.readInt32BE();
@@ -56,7 +56,7 @@ export class DatabaseTimestamp extends SerializableWrapper<Date> {
     switch (this.epochType) {
       case EpochType.PDB:
         buffer.writeUInt32BE(
-          (this.value.getTime() - PdbEpoch.getTime()) / 1000
+          (this.value.getTime() - PDB_EPOCH.getTime()) / 1000
         );
         break;
       case EpochType.UNIX:
@@ -74,7 +74,7 @@ export class DatabaseTimestamp extends SerializableWrapper<Date> {
 }
 
 /** DatabaseTimestamp corresponding to epochDate. */
-export const EpochTimestamp = DatabaseTimestamp.of(PdbEpoch);
+export const EPOCH_TIMESTAMP = DatabaseTimestamp.of(PDB_EPOCH);
 
 /** A date (year, month, DOM) encoded as a 16-bit integer.
  *
@@ -83,7 +83,7 @@ export const EpochTimestamp = DatabaseTimestamp.of(PdbEpoch);
  */
 export class DatabaseDate extends SerializableWrapper<Date> {
   /** Year. */
-  year = PdbEpoch.getUTCFullYear();
+  year = PDB_EPOCH.getUTCFullYear();
   /** Month (Jan = 0, Dec = 11). */
   month = 0;
   /** Day of the month (1st = 1). */
@@ -99,7 +99,7 @@ export class DatabaseDate extends SerializableWrapper<Date> {
   }
 
   serialize(opts?: SerializeOptions) {
-    if (this.year < PdbEpoch.getUTCFullYear()) {
+    if (this.year < PDB_EPOCH.getUTCFullYear()) {
       throw new Error(`Invalid year: ${this.year}`);
     }
     if (this.month < 0 || this.month > 11) {
@@ -109,7 +109,7 @@ export class DatabaseDate extends SerializableWrapper<Date> {
       throw new Error(`Invalid day of month: ${this.dayOfMonth}`);
     }
     return SUInt16BE.of(
-      ((this.year - PdbEpoch.getUTCFullYear()) << 9) |
+      ((this.year - PDB_EPOCH.getUTCFullYear()) << 9) |
         ((this.month + 1) << 5) |
         this.dayOfMonth
     ).serialize();
@@ -119,7 +119,7 @@ export class DatabaseDate extends SerializableWrapper<Date> {
     const {value: v} = SUInt16BE.from(buffer, opts);
 
     // upper 7 bits => year since 1904
-    this.year = ((v >> 9) & 0x7f) + PdbEpoch.getUTCFullYear();
+    this.year = ((v >> 9) & 0x7f) + PDB_EPOCH.getUTCFullYear();
     // 4 bits => month
     this.month = ((v >> 5) & 0x0f) - 1;
     // 5 bits => date

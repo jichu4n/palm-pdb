@@ -254,6 +254,8 @@ export enum AlarmTimeUnit {
   DAYS = 'days',
 }
 
+const ALARM_TIME_UNITS = Object.values(AlarmTimeUnit);
+
 /** Event alarm settings.
  *
  * The time when the alarm will fire is specified by the combination of `unit`
@@ -269,14 +271,14 @@ export class AlarmSettings extends SObject {
   unit = AlarmTimeUnit.MINUTES;
   @field(SUInt8)
   private get unitValue() {
-    const unitValue = AlarmSettings.unitValues.indexOf(this.unit);
+    const unitValue = ALARM_TIME_UNITS.indexOf(this.unit);
     if (unitValue < 0) {
       throw new Error(`Invalid alarm time unit: ${this.unit}`);
     }
     return unitValue;
   }
   private set unitValue(newValue: number) {
-    this.unit = AlarmSettings.unitValues[newValue];
+    this.unit = ALARM_TIME_UNITS[newValue];
     if (!this.unit) {
       throw new Error(`Invalid alarm time unit value: ${newValue}`);
     }
@@ -285,13 +287,6 @@ export class AlarmSettings extends SObject {
   toJSON() {
     return pick(this, ['value', 'unit']);
   }
-
-  /** Array of unit values, indexed by their numeric value when serialized. */
-  private static readonly unitValues: Array<AlarmTimeUnit> = [
-    AlarmTimeUnit.MINUTES,
-    AlarmTimeUnit.HOURS,
-    AlarmTimeUnit.DAYS,
-  ];
 }
 
 /** Frequency of a recurring event. */
@@ -309,6 +304,8 @@ export enum RecurrenceFrequency {
   /** Repeat on same day of the year every N years. */
   YEARLY = 'yearly',
 }
+
+const RECURRENCE_FREQUENCIES = Object.values(RecurrenceFrequency);
 
 /** Additional settings for events with weekly recurrence. */
 export interface WeeklyRecurrenceSettings {
@@ -349,16 +346,14 @@ export class RecurrenceSettings extends SObject {
   frequency = RecurrenceFrequency.DAILY;
   @field(SUInt8)
   private get frequencyValue() {
-    const frequencyValue = RecurrenceSettings.frequencyValues.indexOf(
-      this.frequency
-    );
+    const frequencyValue = RECURRENCE_FREQUENCIES.indexOf(this.frequency);
     if (frequencyValue < 0) {
       throw new Error(`Invalid frequency type: ${this.frequency}`);
     }
     return frequencyValue;
   }
   private set frequencyValue(newValue: number) {
-    this.frequency = RecurrenceSettings.frequencyValues[newValue];
+    this.frequency = RECURRENCE_FREQUENCIES[newValue];
     if (!this.frequency) {
       throw new Error(`Invalid frequency value: ${newValue}`);
     }
@@ -485,16 +480,6 @@ export class RecurrenceSettings extends SObject {
       'monthlyByDay',
     ]);
   }
-
-  /** Array of frequency types, indexed by their numeric value when serialized. */
-  private static readonly frequencyValues: Array<RecurrenceFrequency> = [
-    RecurrenceFrequency.NONE,
-    RecurrenceFrequency.DAILY,
-    RecurrenceFrequency.WEEKLY,
-    RecurrenceFrequency.MONTHLY_BY_DAY,
-    RecurrenceFrequency.MONTHLY_BY_DATE,
-    RecurrenceFrequency.YEARLY,
-  ];
 }
 
 /** DatebookDB database.

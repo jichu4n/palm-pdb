@@ -1,3 +1,4 @@
+*.code-workspace
 /dist
 /docs
 

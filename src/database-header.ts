@@ -10,7 +10,7 @@ import {
   SUInt32BE,
   SUInt8,
 } from 'serio';
-import {DatabaseTimestamp, EpochTimestamp} from './date-time-types';
+import {DatabaseTimestamp, EPOCH_TIMESTAMP} from './date-time-types';
 import {LocalId, SDynamicArray, TypeId} from './utility-types';
 
 /** Maximum length of database names - 31 chars + 1 NUL byte.
@@ -18,7 +18,7 @@ import {LocalId, SDynamicArray, TypeId} from './utility-types';
  * References:
  *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-3.1/include/Core/System/DataMgr.h#L72
  */
-export const dmDbNameLength = 32;
+export const DB_NAME_LENGTH = 32;
 
 /** Database header.
  *
@@ -28,7 +28,7 @@ export const dmDbNameLength = 32;
  */
 export class DatabaseHdrType extends SObject {
   /** Database name. */
-  @field(SStringNT.ofLength(dmDbNameLength))
+  @field(SStringNT.ofLength(DB_NAME_LENGTH))
   name = '';
 
   /** Database attribute flags. */
@@ -49,7 +49,7 @@ export class DatabaseHdrType extends SObject {
 
   /** Last backup timestamp. */
   @field()
-  lastBackupDate: DatabaseTimestamp = EpochTimestamp;
+  lastBackupDate: DatabaseTimestamp = EPOCH_TIMESTAMP;
 
   /** Modification number (integer). */
   @field(SUInt32BE)

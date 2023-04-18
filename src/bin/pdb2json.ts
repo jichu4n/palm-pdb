@@ -3,6 +3,7 @@
 import {program} from 'commander';
 import fs from 'fs-extra';
 import {
+  AddressDatabase,
   DatebookDatabase,
   DEFAULT_ENCODING,
   MemoDatabase,
@@ -30,6 +31,12 @@ const DATABASE_REGISTRY: Array<DatabaseRegistryEntry> = [
     type: 'DATA',
     databaseType: DatebookDatabase,
     label: 'Datebook',
+  },
+  {
+    creator: 'addr',
+    type: 'DATA',
+    databaseType: AddressDatabase,
+    label: 'Address',
   },
   {
     creator: 'REAd',
