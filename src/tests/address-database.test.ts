@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import {AddressDatabase} from '..';
 
-describe('MemoDatabase', function () {
+describe('AddressDatabase', function () {
   describe('load test databases', function () {
     for (const dbFile of ['AddressDB-LifeDrive.pdb', 'AddressDB-Visor.pdb']) {
       test(`load test database ${dbFile}`, async function () {

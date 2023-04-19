@@ -132,13 +132,9 @@ export class DatebookRecord extends PdbRecord {
     if (this.attrs.hasExceptionDates) {
       const wrapper = new (SDynamicArray.of(SUInt16BE, DatabaseDate))();
       offset += wrapper.deserialize(buffer.subarray(offset), opts);
-      this.exceptionDates.splice(
-        0,
-        this.exceptionDates.length,
-        ...wrapper.value
-      );
+      this.exceptionDates = wrapper.value;
     } else {
-      this.exceptionDates.length = 0;
+      this.exceptionDates = [];
     }
 
     if (this.attrs.hasDescription) {

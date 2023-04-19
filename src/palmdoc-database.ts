@@ -38,7 +38,7 @@ export class PalmDoc extends Serializable {
   serialize(opts?: PalmDocSerializeOptions) {
     this.db.header.name = this.name;
     if (this.text !== this.textInDb) {
-      this.db.records.length = 0;
+      this.db.records = [];
 
       // Split text into 4096-byte chunks, compress, and add to DB.
       for (let i = 0; i < this.text.length; i += PALM_DOC_RECORD_SIZE) {
