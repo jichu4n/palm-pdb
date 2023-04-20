@@ -21,6 +21,7 @@
   "scripts": {
     "build": "tsc",
     "build:docs": "rm -rf ./docs/ && typedoc && cp 'Palm File Format Specification.pdf' ./docs/assets/",
+    "watch:docs": "concurrently 'typedoc --watch' 'serve docs'",
     "lint": "prettier --check .",
     "test": "jest",
     "prepack": "npm run lint && npm run build && npm test && rm -r ./dist/tests"
@@ -30,7 +31,9 @@
     "@types/jest": "^29.5.0",
     "@types/lodash": "^4.14.192",
     "@types/node": "^18.15.11",
+    "concurrently": "^8.0.1",
     "prettier": "^2.8.7",
+    "serve": "^14.2.0",
     "ts-jest": "^29.1.0",
     "typedoc": "^0.24.1",
     "typescript": "^5.0.4"
