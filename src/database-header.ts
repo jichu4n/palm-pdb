@@ -1,7 +1,6 @@
 import {
   bitfield,
   field,
-  SArray,
   SBitmask,
   Serializable,
   SObject,
@@ -10,8 +9,8 @@ import {
   SUInt32BE,
   SUInt8,
 } from 'serio';
-import {DatabaseTimestamp, EPOCH_TIMESTAMP} from './date-time-types';
-import {LocalId, SDynamicArray, TypeId} from './utility-types';
+import {DatabaseTimestamp, EPOCH_TIMESTAMP} from './date-time';
+import {LocalId, RecordId, SDynamicArray, TypeId} from './util';
 
 /** Maximum length of database names - 31 chars + 1 NUL byte.
  *
@@ -91,9 +90,12 @@ export class RecordEntryType extends SObject {
   @field()
   attributes = new RecordAttrs();
 
-  /** Unique ID of record (3 bytes). Should not be all zero for a valid record. */
-  @field(SArray.of(SUInt8).ofLength(3))
-  uniqueId = [0, 0, 0];
+  /** Unique ID of the record.
+   *
+   * Valid records should have a non-zero unique ID.
+   */
+  @field(RecordId)
+  uniqueId = 0;
 }
 
 /** Resource entry in PRC files.
@@ -242,8 +244,7 @@ export class DatabaseAttrs extends SBitmask.of(SUInt16BE) {
 
 /** Record attribute flags.
  *
- * Source:
- *
+ * References:
  *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DataMgr.h
  *   - https://github.com/dwery/coldsync/blob/master/include/pdb.h
  *   - https://metacpan.org/release/Palm-PDB/source/lib/Palm/PDB.pm

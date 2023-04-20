@@ -78,7 +78,7 @@ describe('PalmDoc', function () {
     test(`serialize ${label}`, async function () {
       // Create doc1.
       const doc1 = new PalmDoc();
-      doc1.name = label.substr(0, 31);
+      doc1.name = label.substring(0, 31);
       doc1.text = text;
 
       // Serialize to buffer and deserialize back into doc2.

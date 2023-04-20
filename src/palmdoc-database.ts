@@ -6,7 +6,12 @@ import {
   SerializeOptions,
 } from 'serio';
 import {SmartBuffer} from 'smart-buffer';
-import {DatabaseHdrType, PdbDatabase, PdbSBufferRecord} from '.';
+import {
+  DatabaseHdrType,
+  PdbDatabase,
+  PdbSBufferRecord,
+  DEFAULT_ENCODING,
+} from '.';
 
 /** PalmDOC document. */
 export class PalmDoc extends Serializable {
@@ -16,6 +21,7 @@ export class PalmDoc extends Serializable {
   text = '';
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
+    opts = {encoding: DEFAULT_ENCODING, ...opts};
     const numBytes = this.db.deserialize(buffer, opts);
     this.name = this.db.header.name;
     if (this.db.records.length === 0) {
@@ -36,18 +42,23 @@ export class PalmDoc extends Serializable {
   }
 
   serialize(opts?: PalmDocSerializeOptions) {
+    opts = {encoding: DEFAULT_ENCODING, ...opts};
     this.db.header.name = this.name;
     if (this.text !== this.textInDb) {
       this.db.records = [];
 
       // Split text into 4096-byte chunks, compress, and add to DB.
-      for (let i = 0; i < this.text.length; i += PALM_DOC_RECORD_SIZE) {
-        const textChunk = this.text.substr(i, PALM_DOC_RECORD_SIZE);
-        const encodedTextChunk = encodeString(textChunk, opts);
-        const record = new PdbSBufferRecord();
-        record.value = opts?.enableCompression
-          ? PalmDoc.compress(encodedTextChunk)
-          : encodedTextChunk;
+      const encodedText = encodeString(this.text, opts);
+      for (let i = 0; i < encodedText.length; i += PALM_DOC_RECORD_SIZE) {
+        const encodedTextChunk = encodedText.subarray(
+          i,
+          i + PALM_DOC_RECORD_SIZE
+        );
+        const record = PdbSBufferRecord.of(
+          opts?.enableCompression
+            ? PalmDoc.compress(encodedTextChunk)
+            : encodedTextChunk
+        );
         this.db.records.push(record);
       }
 
@@ -61,8 +72,7 @@ export class PalmDoc extends Serializable {
       ) {
         this.metadata.position = 0;
       }
-      const metadataRecord = new PdbSBufferRecord();
-      metadataRecord.value = this.metadata.serialize(opts);
+      const metadataRecord = PdbSBufferRecord.of(this.metadata.serialize(opts));
       this.db.records.unshift(metadataRecord);
 
       this.textInDb = this.text;
@@ -164,7 +174,7 @@ export class PalmDoc extends Serializable {
         let chunk = reader.readBuffer(Math.min(10, reader.remaining()));
         // Prev occurrence must be within 2047 byte window.
         const windowStartPos = Math.max(0, readOffset - 2047);
-        const window = buffer.slice(windowStartPos, readOffset);
+        const window = buffer.subarray(windowStartPos, readOffset);
         let prevOccurrencePos = -1;
         do {
           prevOccurrencePos = window.lastIndexOf(chunk);
@@ -172,7 +182,7 @@ export class PalmDoc extends Serializable {
             prevOccurrencePos += windowStartPos;
             break;
           } else {
-            chunk = chunk.slice(0, chunk.length - 1);
+            chunk = chunk.subarray(0, chunk.length - 1);
           }
         } while (chunk.length >= 3);
 

@@ -14,6 +14,7 @@ import {
   RsrcEntryType,
 } from './database-header';
 import {PdbSBufferRecord, PrcSBufferRecord, Record} from './record';
+import {DEFAULT_ENCODING} from './util';
 
 /** Representation of a Palm OS database file. */
 export abstract class Database<
@@ -62,6 +63,7 @@ export abstract class Database<
   }
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
+    opts = {encoding: DEFAULT_ENCODING, ...opts};
     this.header.deserialize(buffer, opts);
     const recordList = new this.recordListType();
     recordList.deserialize(
@@ -124,6 +126,7 @@ export abstract class Database<
   //   - appInfoId
   //   - sortInfoId
   serialize(opts?: SerializeOptions) {
+    opts = {encoding: DEFAULT_ENCODING, ...opts};
     const recordList = new this.recordListType();
     recordList.values = this.records.map(({entry}) => entry);
 
