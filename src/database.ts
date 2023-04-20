@@ -67,7 +67,7 @@ export abstract class Database<
     this.header.deserialize(buffer, opts);
     const recordList = new this.recordListType();
     recordList.deserialize(
-      buffer.slice(this.header.getSerializedLength(opts)),
+      buffer.subarray(this.header.getSerializedLength(opts)),
       opts
     );
 
@@ -81,7 +81,7 @@ export abstract class Database<
         this.appInfo = new this.appInfoType();
       }
       this.appInfo.deserialize(
-        buffer.slice(this.header.appInfoId, appInfoEnd),
+        buffer.subarray(this.header.appInfoId, appInfoEnd),
         opts
       );
     } else {
@@ -97,7 +97,7 @@ export abstract class Database<
         this.sortInfo = new this.sortInfoType();
       }
       this.sortInfo.deserialize(
-        buffer.slice(this.header.sortInfoId, sortInfoEnd),
+        buffer.subarray(this.header.sortInfoId, sortInfoEnd),
         opts
       );
     } else {
@@ -114,7 +114,7 @@ export abstract class Database<
           : buffer.length;
       const record = new this.recordType();
       record.entry = recordList.values[i];
-      record.deserialize(buffer.slice(recordStart, recordEnd), opts);
+      record.deserialize(buffer.subarray(recordStart, recordEnd), opts);
       this.records.push(record);
       lastRecordEnd = recordEnd;
     }

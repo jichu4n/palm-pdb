@@ -25,7 +25,7 @@ export abstract class SDynamicArray<
     const length = new this.lengthType();
     let readOffset = length.deserialize(buffer, opts);
     const sArray = new (SArray.ofLength(length.value, this.valueType))();
-    readOffset += sArray.deserialize(buffer.slice(readOffset), opts);
+    readOffset += sArray.deserialize(buffer.subarray(readOffset), opts);
     this.value.splice(0, this.value.length, ...sArray.value);
     return readOffset;
   }
