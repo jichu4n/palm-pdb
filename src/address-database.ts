@@ -82,7 +82,7 @@ export enum AddressFieldType {
   PHONE_8 = 'phone8',
 }
 /** List of field types in AddressDB, indexed by code. */
-const ADDRESS_FIELD_TYPES = Object.values(AddressFieldType);
+export const ADDRESS_FIELD_TYPES = Object.values(AddressFieldType);
 /** Number of address fields (and field types). */
 export const NUM_ADDRESS_FIELDS = 22;
 
@@ -102,16 +102,16 @@ export enum PhoneNumberType {
   MOBILE = 'mobile',
 }
 /** List of standard phone number fields in AddressDB, indexed by code. */
-const PHONE_NUMBER_TYPES = Object.values(PhoneNumberType);
+export const PHONE_NUMBER_TYPES = Object.values(PhoneNumberType);
 /** Standard phone number fields. */
-const PHONE_NUMBER_FIELD_TYPES: Array<PhoneNumberFieldType> = [
+export const PHONE_NUMBER_FIELD_TYPES: Array<PhoneNumberFieldType> = [
   AddressFieldType.PHONE_1,
   AddressFieldType.PHONE_2,
   AddressFieldType.PHONE_3,
   AddressFieldType.PHONE_4,
   AddressFieldType.PHONE_5,
 ];
-type PhoneNumberFieldType =
+export type PhoneNumberFieldType =
   | AddressFieldType.PHONE_1
   | AddressFieldType.PHONE_2
   | AddressFieldType.PHONE_3
@@ -250,18 +250,46 @@ export class AddressRecord extends PdbRecord {
   set phoneNumberTypeMapping(newValue: PhoneNumberTypeMapping) {
     this.phoneNumberTypeMappingBitmask.phoneNumberTypeMapping = newValue;
   }
-  // TODO: expose the below in a more friendly format.
   @field()
   private phoneNumberTypeMappingBitmask = new PhoneNumberTypeMappingBitmask();
 
-  /** Cells in this record. */
+  /** Cells in this record.
+   *
+   * A record can contain up to NUM_ADDRESS_FIELDS cells, one for each
+   * AddressFieldType.
+   *
+   * This array can be manipulated directly or via the get() and set() methods.
+   */
   cells: Array<AddressRecordCell> = [];
   @field(SUInt32BE)
-  private fields = 0;
+  private fieldsBitmask = 0;
   @field(SUInt8)
   private companyCellValueOffset = 0;
   @field(SArray.of(SStringNT))
   private values: Array<string> = [];
+
+  /** Returns the cell value for a field type in this record, or undefined if
+   * not present.
+   */
+  get(fieldType: AddressFieldType) {
+    return this.cells.find((cell) => cell.fieldType === fieldType)?.value;
+  }
+  /** Sets the cell value for a field type.
+   *
+   * If field type was already present on this record, the previous cell value
+   * is overwritten. Otherwise, a new cell is appended.
+   */
+  set(fieldType: AddressFieldType, value: string) {
+    const cell = this.makeCell(fieldType, value);
+    const existingCellIdx = this.cells.findIndex(
+      (cell) => cell.fieldType === fieldType
+    );
+    if (existingCellIdx >= 0) {
+      this.cells[existingCellIdx] = cell;
+    } else {
+      this.cells.push(cell);
+    }
+  }
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     this.cells = [];
@@ -269,25 +297,17 @@ export class AddressRecord extends PdbRecord {
     let offset = super.deserialize(buffer, opts);
     const s = new SStringNT();
     for (let i = 0; i < NUM_ADDRESS_FIELDS; ++i) {
-      if (this.fields & (1 << i)) {
+      if (this.fieldsBitmask & (1 << i)) {
         offset += s.deserialize(buffer.subarray(offset), opts);
         const fieldType = ADDRESS_FIELD_TYPES[i];
-        this.cells.push({
-          fieldType,
-          ...(isPhoneNumberFieldType(fieldType)
-            ? {
-                phoneNumberType: this.phoneNumberTypeMapping[fieldType],
-              }
-            : {}),
-          value: s.value,
-        });
+        this.cells.push(this.makeCell(fieldType, s.value));
       }
     }
     return offset;
   }
 
   serialize(opts?: SerializeOptions) {
-    this.fields = 0;
+    this.fieldsBitmask = 0;
     this.values = [];
     this.companyCellValueOffset = 0;
     const cellsByFieldType = groupBy(this.cells, ({fieldType}) => fieldType);
@@ -304,18 +324,26 @@ export class AddressRecord extends PdbRecord {
         );
       }
       const {value, phoneNumberType} = cells[0];
-      if (
-        isPhoneNumberFieldType(fieldType) &&
-        phoneNumberType &&
-        phoneNumberType !== this.phoneNumberTypeMapping[fieldType]
-      ) {
-        throw new Error(
-          `Incorrect phone number type in cell ${fieldType}: ` +
-            `phoneNumberTypeMapping[${fieldType}] is ${this.phoneNumberTypeMapping[fieldType]}, ` +
-            `but cell has phone number type ${phoneNumberType}`
-        );
+      if (isPhoneNumberFieldType(fieldType)) {
+        if (
+          phoneNumberType &&
+          phoneNumberType !== this.phoneNumberTypeMapping[fieldType]
+        ) {
+          throw new Error(
+            `Incorrect phone number type in cell ${fieldType}: ` +
+              `phoneNumberTypeMapping[${fieldType}] is ${this.phoneNumberTypeMapping[fieldType]}, ` +
+              `but cell has phone number type ${phoneNumberType}`
+          );
+        }
+      } else {
+        if (phoneNumberType) {
+          throw new Error(
+            `${fieldType} is not a phone number field and should not have phoneNumberType set ` +
+              `(found ${phoneNumberType})`
+          );
+        }
       }
-      this.fields |= 1 << i;
+      this.fieldsBitmask |= 1 << i;
       this.values.push(value);
       if (fieldType === AddressFieldType.COMPANY) {
         this.companyCellValueOffset = companyCellValueOffset + 1;
@@ -326,13 +354,29 @@ export class AddressRecord extends PdbRecord {
     return super.serialize(opts);
   }
 
+  getSerializedLength(opts?: SerializeOptions) {
+    this.values = this.cells.map(({value}) => value);
+    return super.getSerializedLength(opts);
+  }
+
   toJSON() {
     return pick(this, [
-      'entry',
-      'cells',
-      'mainPhoneNumberType',
       'phoneNumberTypeMapping',
+      'mainPhoneNumberType',
+      'cells',
     ]);
+  }
+
+  private makeCell(fieldType: AddressFieldType, value: string) {
+    return {
+      fieldType,
+      ...(isPhoneNumberFieldType(fieldType)
+        ? {
+            phoneNumberType: this.phoneNumberTypeMapping[fieldType],
+          }
+        : {}),
+      value,
+    };
   }
 }
 
