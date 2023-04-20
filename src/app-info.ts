@@ -67,17 +67,25 @@ export class AppInfoType extends SObject {
   @field(SUInt8)
   private readonly padding1 = 0;
 
-  /** Finds the category with the given unique ID. */
-  getCategoryByUniqId(uniqId: number): Category | null {
-    // return _.find(this.categories, ['categoryUniqId', uniqId]) ?? null;
-    return (
-      this.categories.find((category) => category.uniqId === uniqId) ?? null
-    );
-  }
-
-  /** Finds the category with the given label. */
-  getCategoryByLabel(label: string): Category | null {
-    return this.categories.find((category) => category.label === label) ?? null;
+  /** Finds the category with the given unique ID or label.
+   *
+   * If the argument is a number, this method will look for a category with a
+   * matching uniqId. If the argument is a string, this method will look for a
+   * category with a matching label.
+   */
+  getCategory(arg: number | string): Category | null {
+    let matchFn: (category: Category) => boolean;
+    switch (typeof arg) {
+      case 'number':
+        matchFn = (category) => category.uniqId === arg;
+        break;
+      case 'string':
+        matchFn = (category) => category.label === arg;
+        break;
+      default:
+        throw new Error(`Expected a number or string, found ${typeof arg}`);
+    }
+    return this.categories.find(matchFn) ?? null;
   }
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
@@ -111,7 +119,7 @@ export class AppInfoType extends SObject {
     return super.serialize(opts);
   }
 
-  toJSON() {
+  toJSON(): any {
     return pick(this, ['categories', 'lastUniqId']);
   }
 }

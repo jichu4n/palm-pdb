@@ -13,7 +13,7 @@ async function loadTestDbAndDoBasicChecks(dbFile: string, encoding?: string) {
   const buffer = await fs.readFile(path.join(__dirname, 'testdata', dbFile));
   const db = AddressDatabase.from(buffer, {encoding});
 
-  expect((db.appInfo?.categoryInfo.categories ?? []).length).toBeGreaterThan(0);
+  expect((db.appInfo?.categories ?? []).length).toBeGreaterThan(0);
   expect(db.records.length).toBeGreaterThan(0);
   for (const record of db.records) {
     expect(record.cells.length).toBeGreaterThan(0);
@@ -28,7 +28,7 @@ describe('AddressDatabase', function () {
   describe('load test databases', function () {
     test(`load test database AddressDB-LifeDrive.pdb`, async function () {
       const db = await loadTestDbAndDoBasicChecks('AddressDB-LifeDrive.pdb');
-      expect(db.appInfo?.categoryInfo.categories).toStrictEqual([
+      expect(db.appInfo?.categories).toStrictEqual([
         {
           label: 'Unfiled',
           uniqId: 0,
@@ -202,7 +202,7 @@ describe('AddressDatabase', function () {
         'AddressDB-Palm V-JP.pdb',
         'shiftjis'
       );
-      expect(db.appInfo?.categoryInfo.categories).toStrictEqual([
+      expect(db.appInfo?.categories).toStrictEqual([
         {
           label: '未分類',
           uniqId: 0,

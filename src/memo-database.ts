@@ -10,13 +10,9 @@ import {
 import {AppInfoType, DatabaseHdrType, PdbDatabase, PdbRecord} from '.';
 
 /** MemoDB AppInfo block. */
-export class MemoAppInfo extends SObject {
-  /** Standard category info. */
-  @field()
-  categoryInfo = new AppInfoType();
-
+export class MemoAppInfo extends AppInfoType {
   @field(SUInt16BE)
-  private padding1 = 0;
+  private padding2 = 0;
 
   /** Memo sort order.
    *
@@ -26,7 +22,7 @@ export class MemoAppInfo extends SObject {
   sortOrder = 0;
 
   @field(SUInt8)
-  private padding2 = 0;
+  private padding3 = 0;
 
   serialize(opts?: SerializeOptions) {
     if (this.sortOrder < 0 || this.sortOrder > 1) {
@@ -36,7 +32,7 @@ export class MemoAppInfo extends SObject {
   }
 
   toJSON() {
-    return pick(this, ['categoryInfo', 'sortOrder']);
+    return {...super.toJSON(), ...pick(this, ['sortOrder'])};
   }
 }
 

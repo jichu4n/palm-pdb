@@ -18,11 +18,7 @@ import {
 } from '.';
 
 /** ToDoDB AppInfo block. */
-export class ToDoAppInfo extends SObject {
-  /** Standard category info. */
-  @field()
-  categoryInfo = new AppInfoType();
-
+export class ToDoAppInfo extends AppInfoType {
   /** Not sure what this is ¯\_(ツ)_/¯ */
   @field(SUInt16BE)
   private dirty = 0;
@@ -35,7 +31,7 @@ export class ToDoAppInfo extends SObject {
   sortOrder = 0;
 
   @field(SUInt8)
-  private padding1 = 0;
+  private padding2 = 0;
 
   serialize(opts?: SerializeOptions) {
     if (this.sortOrder < 0 || this.sortOrder > 1) {
@@ -45,7 +41,7 @@ export class ToDoAppInfo extends SObject {
   }
 
   toJSON() {
-    return pick(this, ['categoryInfo', 'sortOrder']);
+    return {...super.toJSON(), ...pick(this, ['sortOrder'])};
   }
 }
 

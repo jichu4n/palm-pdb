@@ -63,21 +63,20 @@ export class OptionalEventTime extends SerializableWrapper<EventTime | null> {
 }
 
 /** DatebookDB AppInfo block. */
-export class DatebookAppInfo extends SObject {
-  /** Standard category info. */
-  @field()
-  categoryInfo = new AppInfoType();
-
+export class DatebookAppInfo extends AppInfoType {
   /** Day of the week to start the week on. Not sure what the format is
    * ¯\_(ツ)_/¯ */
   @field(SUInt8)
   firstDayOfWeek = 0;
 
   @field(SUInt8)
-  private padding1 = 0;
+  private padding2 = 0;
 
   toJSON() {
-    return pick(this, ['categoryInfo', 'firstDayOfWeek']);
+    return {
+      ...super.toJSON(),
+      ...pick(this, ['firstDayOfWeek']),
+    };
   }
 }
 

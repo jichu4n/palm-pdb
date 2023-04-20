@@ -138,13 +138,9 @@ export interface AddressField {
 }
 
 /** AddressDB AppInfo block. */
-export class AddressAppInfo extends SObject {
-  /** Standard category info. */
-  @field()
-  categoryInfo = new AppInfoType();
-
+export class AddressAppInfo extends AppInfoType {
   @field(SUInt16BE)
-  private padding1 = 0;
+  private padding2 = 0;
 
   /** Field information.
    *
@@ -175,14 +171,14 @@ export class AddressAppInfo extends SObject {
   private countryCode = 0;
 
   @field(SUInt8)
-  private padding2 = 0;
+  private padding3 = 0;
 
   /** Whether to sort the database by company - must be 0 or 1. */
   @field(SUInt8)
   sortByCompany = 0;
 
   @field(SUInt8)
-  private padding3 = 0;
+  private padding4 = 0;
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     const offset = super.deserialize(buffer, opts);
@@ -220,7 +216,10 @@ export class AddressAppInfo extends SObject {
   }
 
   toJSON() {
-    return pick(this, ['categoryInfo', 'fields', 'country', 'sortByCompany']);
+    return {
+      ...super.toJSON(),
+      ...pick(this, ['fields', 'country', 'sortByCompany']),
+    };
   }
 }
 
