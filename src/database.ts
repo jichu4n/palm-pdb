@@ -7,19 +7,20 @@ import {
 import {SmartBuffer} from 'smart-buffer';
 import {
   DatabaseHdrType,
+  EntryType,
   PdbRecordListType,
   PrcRecordListType,
   RecordEntryType,
   RecordListType,
   RsrcEntryType,
 } from './database-header';
-import {PdbSBufferRecord, PrcSBufferRecord, Record} from './record';
+import {RawPdbRecord, RawPrcRecord, Record} from './record';
 import {DEFAULT_ENCODING} from './util';
 
 /** Representation of a Palm OS database file. */
 export abstract class Database<
   /** Record or resource entry type. */
-  EntryT extends RecordEntryType | RsrcEntryType,
+  EntryT extends EntryType,
   /** Record type. */
   RecordT extends Record<EntryT>,
   /** AppInfo type. */
@@ -252,14 +253,14 @@ export abstract class PrcDatabase<
 
 /** PDB database providing records, AppInfo and SortInfo as raw buffers. */
 export class RawPdbDatabase extends PdbDatabase.of(
-  PdbSBufferRecord,
+  RawPdbRecord,
   SBuffer,
   SBuffer
 ) {}
 
 /** PRC database providing records, AppInfo and SortInfo as raw buffers. */
 export class RawPrcDatabase extends PrcDatabase.of(
-  PrcSBufferRecord,
+  RawPrcRecord,
   SBuffer,
   SBuffer
 ) {}

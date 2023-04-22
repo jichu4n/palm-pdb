@@ -1,11 +1,10 @@
-import {SBuffer, Serializable, SObject} from 'serio';
-import {RecordEntryType, RsrcEntryType} from './database-header';
+import {field, SBuffer, Serializable, SObject} from 'serio';
+import {EntryType, RecordEntryType, RsrcEntryType} from './database-header';
 
 /** Interface of database records. */
-export interface Record<EntryT extends RecordEntryType | RsrcEntryType>
-  extends Serializable {
+export abstract class Record<EntryT extends EntryType> extends Serializable {
   /** Record entry stored in the database header. */
-  entry: EntryT;
+  abstract entry: EntryT;
 }
 
 /** A record in a PDB database. */
@@ -25,14 +24,13 @@ export abstract class PrcRecord
 }
 
 /** No-op PDB database record implementation that serializes record to / from Buffers. */
-export class PdbSBufferRecord
-  extends SBuffer
-  implements Record<RecordEntryType>
-{
-  entry = new RecordEntryType();
+export class RawPdbRecord extends PdbRecord {
+  @field(SBuffer)
+  data = Buffer.of();
 }
 
 /** No-op PRC database record implementation that serializes record to / from Buffers. */
-export class PrcSBufferRecord extends SBuffer implements Record<RsrcEntryType> {
-  entry = new RsrcEntryType();
+export class RawPrcRecord extends PrcRecord {
+  @field(SBuffer)
+  data = Buffer.of();
 }

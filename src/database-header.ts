@@ -118,9 +118,11 @@ export class RsrcEntryType extends SObject {
   localChunkId = 0;
 }
 
+/** Union type representing any record entry type. */
+export type EntryType = RecordEntryType | RsrcEntryType;
+
 /** Record or resource entry list. */
-export interface RecordListType<EntryT extends RecordEntryType | RsrcEntryType>
-  extends Serializable {
+export interface RecordListType<EntryT extends EntryType> extends Serializable {
   /** Array of record or resource entries. */
   values: Array<EntryT>;
 }
@@ -245,7 +247,7 @@ export class DatabaseAttrs extends SBitmask.of(SUInt16BE) {
 /** Record attribute flags.
  *
  * References:
- *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DataMgr.h
+ *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DataMgr.h#L44
  *   - https://github.com/dwery/coldsync/blob/master/include/pdb.h
  *   - https://metacpan.org/release/Palm-PDB/source/lib/Palm/PDB.pm
  */

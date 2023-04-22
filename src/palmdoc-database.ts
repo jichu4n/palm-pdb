@@ -6,12 +6,7 @@ import {
   SerializeOptions,
 } from 'serio';
 import {SmartBuffer} from 'smart-buffer';
-import {
-  DatabaseHdrType,
-  PdbDatabase,
-  PdbSBufferRecord,
-  DEFAULT_ENCODING,
-} from '.';
+import {DatabaseHdrType, PdbDatabase, RawPdbRecord, DEFAULT_ENCODING} from '.';
 
 /** PalmDOC document. */
 export class PalmDoc extends Serializable {
@@ -27,10 +22,10 @@ export class PalmDoc extends Serializable {
     if (this.db.records.length === 0) {
       throw new Error(`PalmDOC metadata record missing`);
     }
-    this.metadata.deserialize(this.db.records[0].value, opts);
+    this.metadata.deserialize(this.db.records[0].data, opts);
     this.textInDb = this.db.records
       .slice(1, this.metadata.numRecords + 1)
-      .map(({value: data}) =>
+      .map(({data: data}) =>
         decodeString(
           this.metadata.isCompressed ? PalmDoc.decompress(data) : data,
           opts
@@ -54,11 +49,11 @@ export class PalmDoc extends Serializable {
           i,
           i + PALM_DOC_RECORD_SIZE
         );
-        const record = PdbSBufferRecord.of(
-          opts?.enableCompression
+        const record = RawPdbRecord.with({
+          data: opts?.enableCompression
             ? PalmDoc.compress(encodedTextChunk)
-            : encodedTextChunk
-        );
+            : encodedTextChunk,
+        });
         this.db.records.push(record);
       }
 
@@ -72,7 +67,9 @@ export class PalmDoc extends Serializable {
       ) {
         this.metadata.position = 0;
       }
-      const metadataRecord = PdbSBufferRecord.of(this.metadata.serialize(opts));
+      const metadataRecord = RawPdbRecord.with({
+        data: this.metadata.serialize(opts),
+      });
       this.db.records.unshift(metadataRecord);
 
       this.textInDb = this.text;
@@ -321,7 +318,7 @@ export class PalmDocMetadata extends Serializable {
 }
 
 /** PalmDOC database.*/
-export class PalmDocDatabase extends PdbDatabase.of(PdbSBufferRecord) {
+export class PalmDocDatabase extends PdbDatabase.of(RawPdbRecord) {
   get defaultHeader() {
     return DatabaseHdrType.with({
       name: 'Document',

@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
 import {SmartBuffer} from 'smart-buffer';
-import {PrcSBufferRecord, RawPrcDatabase} from '..';
+import {RawPrcRecord, RawPrcDatabase} from '..';
 
 describe('PrcDatabase', function () {
   test('load test database', async function () {
@@ -12,7 +12,7 @@ describe('PrcDatabase', function () {
     const db = RawPrcDatabase.from(buffer);
 
     const recordsByType = _.groupBy(db.records, 'entry.type') as _.Dictionary<
-      Array<PrcSBufferRecord>
+      Array<RawPrcRecord>
     >;
     for (const [type, resourceIds] of [
       // Obtained from Simulator > View > Databases.
@@ -32,10 +32,10 @@ describe('PrcDatabase', function () {
       ).toStrictEqual(resourceIds);
     }
     expect(
-      SmartBuffer.fromBuffer(recordsByType['tAIN'][0].value).readStringNT()
+      SmartBuffer.fromBuffer(recordsByType['tAIN'][0].data).readStringNT()
     ).toStrictEqual('OnBoard Asm');
     expect(
-      SmartBuffer.fromBuffer(recordsByType['tver'][0].value).readStringNT()
+      SmartBuffer.fromBuffer(recordsByType['tver'][0].data).readStringNT()
     ).toStrictEqual('2.5.1');
   });
 
@@ -47,10 +47,10 @@ describe('PrcDatabase', function () {
     db1.header.type = 'appl';
     db1.header.creator = 'TSt1';
     for (let i = 0; i < 10; ++i) {
-      const record = new PrcSBufferRecord();
+      const record = new RawPrcRecord();
       record.entry.type = 'code';
       record.entry.resourceId = i;
-      record.value = new SmartBuffer().writeUInt32BE(i).toBuffer();
+      record.data = new SmartBuffer().writeUInt32BE(i).toBuffer();
       db1.records.push(record);
     }
 
