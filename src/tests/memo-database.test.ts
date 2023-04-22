@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import {MemoDatabase, MemoRecord} from '..';
+import {Category, MemoDatabase, MemoRecord} from '..';
 
 describe('MemoDatabase', function () {
   test('load test database', async function () {
@@ -20,8 +20,8 @@ describe('MemoDatabase', function () {
     // Create db1.
     const db1 = new MemoDatabase();
     db1.appInfo!.categories = [
-      {label: 'Unfiled', uniqId: 0, isRenamed: false},
-      {label: 'Personal', uniqId: 1, isRenamed: false},
+      Category.with({label: 'Unfiled', uniqId: 0, isRenamed: false}),
+      Category.with({label: 'Personal', uniqId: 1, isRenamed: false}),
     ];
     db1.appInfo!.sortOrder = 1;
     for (let i = 0; i < 10; ++i) {

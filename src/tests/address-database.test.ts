@@ -4,10 +4,12 @@ import {
   AddressCountry,
   AddressDatabase,
   AddressFieldType,
+  Category,
   PHONE_NUMBER_FIELD_TYPES,
   PhoneNumberType,
 } from '..';
-import {SStringNT} from 'serio';
+import {SObject, SStringNT} from 'serio';
+import {Serializable} from 'child_process';
 
 async function loadTestDbAndDoBasicChecks(dbFile: string, encoding?: string) {
   const buffer = await fs.readFile(path.join(__dirname, 'testdata', dbFile));
@@ -24,11 +26,15 @@ async function loadTestDbAndDoBasicChecks(dbFile: string, encoding?: string) {
   return db;
 }
 
+function mapToJson(array: Array<SObject>) {
+  return array.map((e) => e.toJSON());
+}
+
 describe('AddressDatabase', function () {
   describe('load test databases', function () {
     test(`load test database AddressDB-LifeDrive.pdb`, async function () {
       const db = await loadTestDbAndDoBasicChecks('AddressDB-LifeDrive.pdb');
-      expect(db.appInfo?.categories).toStrictEqual([
+      expect(mapToJson(db.appInfo!.categories)).toStrictEqual([
         {
           label: 'Unfiled',
           uniqId: 0,
@@ -202,7 +208,7 @@ describe('AddressDatabase', function () {
         'AddressDB-Palm V-JP.pdb',
         'shiftjis'
       );
-      expect(db.appInfo?.categories).toStrictEqual([
+      expect(mapToJson(db.appInfo!.categories)).toStrictEqual([
         {
           label: '未分類',
           uniqId: 0,

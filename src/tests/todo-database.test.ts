@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import {DatabaseDate, ToDoDatabase, ToDoRecord} from '..';
+import {Category, DatabaseDate, ToDoDatabase, ToDoRecord} from '..';
 
 describe('ToDoDatabase', function () {
   test('load test database', async function () {
@@ -29,8 +29,8 @@ describe('ToDoDatabase', function () {
     // Create db1.
     const db1 = new ToDoDatabase();
     db1.appInfo!.categories = [
-      {label: 'Unfiled', uniqId: 0, isRenamed: false},
-      {label: 'Personal', uniqId: 1, isRenamed: false},
+      Category.with({label: 'Unfiled', uniqId: 0, isRenamed: false}),
+      Category.with({label: 'Personal', uniqId: 1, isRenamed: false}),
     ];
     for (let i = 0; i < 10; ++i) {
       const record = new ToDoRecord();
