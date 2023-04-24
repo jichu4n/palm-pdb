@@ -30,10 +30,10 @@
 <a id="$usage" class="tsd-anchor"></a><h2><a href="#$usage" style="color:inherit;text-decoration:none">Usage</a></h2><p>The following sections provide a high level overview of the API. For more details, please see <a href="https://jichu4n.github.io/palm-pdb">the generated documentation</a>.</p>
 <a id="$core-concepts" class="tsd-anchor"></a><h3><a href="#$core-concepts" style="color:inherit;text-decoration:none">Core concepts</a></h3><p>The <a href="https://jichu4n.github.io/palm-pdb/classes/Database.html">Database</a> class is the logical representation of a PDB / PRC file. Its member fields correspond to the high level structure described in the <a href="https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf">Palm File Format Specification</a>:</p>
 <ul>
-<li><code>header</code>: A block with a fixed structure (<a href="https://jichu4n.github.io/palm-pdb/classes/DatabaseHdrType">DatabaseHdrType</a>) containing basic metadata about the file, such as name, creator and type information.</li>
-<li><code>appInfo</code>: An optional block for storing application settings or other data. The format is up to the application, but there is a standard structure (<a href="https://jichu4n.github.io/palm-pdb/classes/AppInfoType">AppInfoType</a>) for category settings that is used by all the built-in PIM applications.</li>
-<li><code>sortInfo</code>: An optional block for record ordering information. The format is up to the application.</li>
-<li><code>records</code>: A list of records (<a href="https://jichu4n.github.io/palm-pdb/classes/Record.html">Record</a>). Each record has an associated <code>entry</code> (<a href="https://jichu4n.github.io/palm-pdb/types/EntryType.html">EntryType</a>) which is a standard structure storing metadata about each record.</li>
+<li><code>header</code>: Standard structure (<a href="https://jichu4n.github.io/palm-pdb/classes/DatabaseHdrType">DatabaseHdrType</a>) for basic metadata, such as name, creator and type information.</li>
+<li><code>appInfo</code>: Optional block for application settings or other data. The format is up to the application, but there is a standard structure (<a href="https://jichu4n.github.io/palm-pdb/classes/AppInfoType">AppInfoType</a>) for category settings that is used by all the built-in PIM applications.</li>
+<li><code>sortInfo</code>: Optional block for record ordering information. The format is up to the application.</li>
+<li><code>records</code>: An array of records (<a href="https://jichu4n.github.io/palm-pdb/classes/Record.html">Record</a>). Each record has an associated <code>entry</code> (<a href="https://jichu4n.github.io/palm-pdb/types/EntryType.html">EntryType</a>) which is a standard structure containing metadata about each record.</li>
 </ul>
 <p>There are two sets of classes dervied from the ones described above, corresponding to the PDB and PRC formats respectively:</p>
 <table>
