@@ -359,6 +359,7 @@ export class AddressRecord extends PdbRecord {
 
   toJSON() {
     return pick(this, [
+      'entry',
       'phoneNumberTypeMapping',
       'mainPhoneNumberType',
       'cells',

@@ -88,6 +88,7 @@ export class ToDoRecord extends PdbRecord {
 
   toJSON() {
     return pick(this, [
+      'entry',
       'dueDate',
       'isCompleted',
       'priority',

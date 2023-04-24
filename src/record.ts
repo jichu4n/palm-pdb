@@ -13,6 +13,13 @@ export abstract class PdbRecord
   implements Record<RecordEntryType>
 {
   entry = new RecordEntryType();
+
+  toJSON() {
+    return {
+      entry: this.entry,
+      ...super.toJSON(),
+    };
+  }
 }
 
 /** Base class of records in a PRC database. */
@@ -21,6 +28,13 @@ export abstract class PrcRecord
   implements Record<RsrcEntryType>
 {
   entry = new RsrcEntryType();
+
+  toJSON() {
+    return {
+      entry: this.entry,
+      ...super.toJSON(),
+    };
+  }
 }
 
 /** PDB database record that simply stores record data in a Buffer. */

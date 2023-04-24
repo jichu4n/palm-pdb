@@ -207,6 +207,7 @@ export class DatebookRecord extends PdbRecord {
 
   toJSON() {
     return pick(this, [
+      'entry',
       'startTime',
       'endTime',
       'date',
