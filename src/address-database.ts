@@ -7,7 +7,6 @@ import {
   SArray,
   SBitmask,
   SerializeOptions,
-  SObject,
   SStringNT,
   SUInt16BE,
   SUInt32BE,
@@ -449,11 +448,9 @@ export class AddressDatabase extends PdbDatabase.of(
   AddressRecord,
   AddressAppInfo
 ) {
-  get defaultHeader() {
-    return DatabaseHdrType.with({
-      name: 'AddressDB',
-      type: 'DATA',
-      creator: 'addr',
-    });
-  }
+  header = DatabaseHdrType.with({
+    name: 'AddressDB',
+    type: 'DATA',
+    creator: 'addr',
+  });
 }

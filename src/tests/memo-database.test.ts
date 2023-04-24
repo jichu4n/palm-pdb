@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import pick from 'lodash/pick';
 import path from 'path';
 import {Category, MemoDatabase, MemoRecord} from '..';
 
@@ -9,6 +10,9 @@ describe('MemoDatabase', function () {
     );
     const db = MemoDatabase.from(buffer);
 
+    expect(db.header).toMatchObject(
+      pick(new MemoDatabase().header, ['name', 'type', 'creator'])
+    );
     expect(db.appInfo?.categories.length).toStrictEqual(3);
     expect(db.records.length).toStrictEqual(5);
     for (const record of db.records) {

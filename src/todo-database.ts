@@ -3,7 +3,6 @@ import {
   DeserializeOptions,
   field,
   SerializeOptions,
-  SObject,
   SStringNT,
   SUInt16BE,
   SUInt8,
@@ -105,11 +104,9 @@ export class ToDoRecord extends PdbRecord {
  *   - https://github.com/madsen/p5-Palm/blob/master/lib/Palm/ToDo.pm
  */
 export class ToDoDatabase extends PdbDatabase.of(ToDoRecord, ToDoAppInfo) {
-  get defaultHeader() {
-    return DatabaseHdrType.with({
-      name: 'ToDoDB',
-      type: 'DATA',
-      creator: 'todo',
-    });
-  }
+  header = DatabaseHdrType.with({
+    name: 'ToDoDB',
+    type: 'DATA',
+    creator: 'todo',
+  });
 }

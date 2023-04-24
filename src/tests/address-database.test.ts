@@ -1,20 +1,22 @@
 import fs from 'fs-extra';
+import pick from 'lodash/pick';
 import path from 'path';
+import {SObject, SStringNT} from 'serio';
 import {
   AddressCountry,
   AddressDatabase,
   AddressFieldType,
-  Category,
   PHONE_NUMBER_FIELD_TYPES,
   PhoneNumberType,
 } from '..';
-import {SObject, SStringNT} from 'serio';
-import {Serializable} from 'child_process';
 
 async function loadTestDbAndDoBasicChecks(dbFile: string, encoding?: string) {
   const buffer = await fs.readFile(path.join(__dirname, 'testdata', dbFile));
   const db = AddressDatabase.from(buffer, {encoding});
 
+  expect(db.header).toMatchObject(
+    pick(new AddressDatabase().header, ['name', 'type', 'creator'])
+  );
   expect((db.appInfo?.categories ?? []).length).toBeGreaterThan(0);
   expect(db.records.length).toBeGreaterThan(0);
   for (const record of db.records) {

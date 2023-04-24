@@ -49,7 +49,7 @@ The following sections provide a high level overview of the API. For more detail
 
 The [Database](https://jichu4n.github.io/palm-pdb/classes/Database.html) class is the logical representation of a PDB / PRC file. Its member fields correspond to the high level structure described in the [Palm File Format Specification](https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf):
 
-- `header`: A fixed structure ([DatabaseHdrType](https://jichu4n.github.io/palm-pdb/classes/DatabaseHdrType)) containing basic metadata about the file, such as name, type informtion, and creation timestamp.
+- `header`: A fixed structure ([DatabaseHdrType](https://jichu4n.github.io/palm-pdb/classes/DatabaseHdrType)) containing basic metadata about the file, such as name, type information, and creation timestamp.
 - `appInfo`: An optional block for storing application settings or other data. The format is up to the application, but there is a standard structure ([AppInfoType](https://jichu4n.github.io/palm-pdb/classes/AppInfoType)) for category settings that is used by all the built-in PIM applications.
 - `sortInfo`: An optional block for record ordering information. The format is completely up to the application.
 - `records`: A list of records ([Record](https://jichu4n.github.io/palm-pdb/classes/Record.html)). Each record has an associated `entry` ([EntryType](https://jichu4n.github.io/palm-pdb/types/EntryType.html)) which is a standard structure storing metadata about each record.

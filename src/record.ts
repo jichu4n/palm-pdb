@@ -7,7 +7,7 @@ export abstract class Record<EntryT extends EntryType> extends Serializable {
   abstract entry: EntryT;
 }
 
-/** A record in a PDB database. */
+/** Base class of records in a PDB database. */
 export abstract class PdbRecord
   extends SObject
   implements Record<RecordEntryType>
@@ -15,7 +15,7 @@ export abstract class PdbRecord
   entry = new RecordEntryType();
 }
 
-/** A record in a PRC database. */
+/** Base class of records in a PRC database. */
 export abstract class PrcRecord
   extends SObject
   implements Record<RsrcEntryType>

@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import pick from 'lodash/pick';
 import path from 'path';
 import {Category, DatabaseDate, ToDoDatabase, ToDoRecord} from '..';
 
@@ -9,6 +10,9 @@ describe('ToDoDatabase', function () {
     );
     const db = ToDoDatabase.from(buffer);
 
+    expect(db.header).toMatchObject(
+      pick(new ToDoDatabase().header, ['name', 'type', 'creator'])
+    );
     expect(db.appInfo?.categories.length).toStrictEqual(3);
     expect(db.records.length).toStrictEqual(3);
     for (const record of db.records) {

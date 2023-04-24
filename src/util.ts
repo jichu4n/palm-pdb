@@ -95,19 +95,6 @@ function createSDynamicArray<
   };
 }
 
-/** A dummy Serializable that takes up no space. */
-export class SNil extends Serializable {
-  deserialize(buffer: Buffer, opts?: DeserializeOptions) {
-    return 0;
-  }
-  serialize(opts?: SerializeOptions) {
-    return Buffer.of();
-  }
-  getSerializedLength(opts?: SerializeOptions) {
-    return 0;
-  }
-}
-
 /** Serializable wrapper for a 32-bit type ID mapped to a 4-character string. */
 export class TypeId extends SString.ofLength(4) {
   value = 'AAAA';

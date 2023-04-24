@@ -319,11 +319,9 @@ export class PalmDocMetadata extends Serializable {
 
 /** PalmDOC database.*/
 export class PalmDocDatabase extends PdbDatabase.of(RawPdbRecord) {
-  get defaultHeader() {
-    return DatabaseHdrType.with({
-      name: 'Document',
-      type: 'TEXt',
-      creator: 'REAd',
-    });
-  }
+  header = DatabaseHdrType.with({
+    name: 'Document',
+    type: 'TEXt',
+    creator: 'REAd',
+  });
 }

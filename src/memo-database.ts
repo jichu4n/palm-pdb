@@ -50,11 +50,9 @@ export class MemoRecord extends PdbRecord {
  *   - https://github.com/madsen/p5-Palm/blob/master/lib/Palm/Memo.pm
  */
 export class MemoDatabase extends PdbDatabase.of(MemoRecord, MemoAppInfo) {
-  get defaultHeader() {
-    return DatabaseHdrType.with({
-      name: 'MemoDB',
-      type: 'DATA',
-      creator: 'memo',
-    });
-  }
+  header = DatabaseHdrType.with({
+    name: 'MemoDB',
+    type: 'DATA',
+    creator: 'memo',
+  });
 }

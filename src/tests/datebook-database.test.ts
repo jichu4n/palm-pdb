@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import pick from 'lodash/pick';
 import path from 'path';
 import {
   AlarmSettings,
@@ -18,6 +19,9 @@ describe('DatebookDatabase', function () {
     );
     const db = DatebookDatabase.from(buffer);
 
+    expect(db.header).toMatchObject(
+      pick(new DatebookDatabase().header, ['name', 'type', 'creator'])
+    );
     expect(db.records.length).toStrictEqual(3);
     for (const record of db.records) {
       expect(record.date.year).toStrictEqual(2021);

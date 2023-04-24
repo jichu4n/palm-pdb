@@ -487,11 +487,9 @@ export class DatebookDatabase extends PdbDatabase.of(
   DatebookRecord,
   DatebookAppInfo
 ) {
-  get defaultHeader() {
-    return DatabaseHdrType.with({
-      name: 'DatebookDB',
-      type: 'DATA',
-      creator: 'date',
-    });
-  }
+  header = DatabaseHdrType.with({
+    name: 'DatebookDB',
+    type: 'DATA',
+    creator: 'date',
+  });
 }

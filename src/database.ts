@@ -1,3 +1,4 @@
+import sum from 'lodash/sum';
 import {
   DeserializeOptions,
   SBuffer,
@@ -39,29 +40,19 @@ export abstract class Database<
 
   /** Database header.
    *
-   * Note that some fields in the header are recomputed based on other
-   * properties during serialization. See `serialize()` for details.
+   * Note that `appInfoId` and `sortInfoId` fields in the header are overwritten
+   * during serialization.
    */
-  header: DatabaseHdrType = this.defaultHeader;
+  header = new DatabaseHdrType();
   /** AppInfo value. */
-  appInfo: AppInfoT | null = this.defaultAppInfo;
+  appInfo: AppInfoT | null = null;
   /** SortInfo value. */
-  sortInfo: SortInfoT | null = this.defaultSortInfo;
-  /** Record values. */
+  sortInfo: SortInfoT | null = null;
+  /** Record values.
+   *
+   * Note that `entry.localChunkId` is overwritten during serialization.
+   */
   records: Array<RecordT> = [];
-
-  /** Generates the default header for a new database. */
-  get defaultHeader() {
-    return new DatabaseHdrType();
-  }
-  /** Generates the default AppInfo for a new database. */
-  get defaultAppInfo(): AppInfoT | null {
-    return null;
-  }
-  /** Generates the default SortInfo for a new database. */
-  get defaultSortInfo(): SortInfoT | null {
-    return null;
-  }
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     opts = {encoding: DEFAULT_ENCODING, ...opts};
@@ -123,9 +114,6 @@ export abstract class Database<
     return lastRecordEnd;
   }
 
-  // Recomputed fields:
-  //   - appInfoId
-  //   - sortInfoId
   serialize(opts?: SerializeOptions) {
     opts = {encoding: DEFAULT_ENCODING, ...opts};
     const recordList = new this.recordListType();
@@ -168,7 +156,13 @@ export abstract class Database<
   }
 
   getSerializedLength(opts?: SerializeOptions) {
-    return this.serialize(opts).length;
+    return (
+      this.header.getSerializedLength(opts) +
+      sum(this.records.map(({entry}) => entry.getSerializedLength(opts))) +
+      (this.appInfo ? this.appInfo.getSerializedLength(opts) : 0) +
+      (this.sortInfo ? this.sortInfo.getSerializedLength(opts) : 0) +
+      sum(this.records.map((record) => record.getSerializedLength(opts)))
+    );
   }
 }
 
@@ -202,12 +196,8 @@ export abstract class PdbDatabase<
       recordType = recordType;
       appInfoType = appInfoType ?? null;
       sortInfoType = sortInfoType ?? null;
-      get defaultAppInfo() {
-        return appInfoType ? new appInfoType() : null;
-      }
-      get defaultSortInfo() {
-        return sortInfoType ? new sortInfoType() : null;
-      }
+      appInfo = appInfoType ? new appInfoType() : null;
+      sortInfo = sortInfoType ? new sortInfoType() : null;
     };
   }
 }
@@ -241,12 +231,8 @@ export abstract class PrcDatabase<
       recordType = recordType;
       appInfoType = appInfoType ?? null;
       sortInfoType = sortInfoType ?? null;
-      get defaultAppInfo() {
-        return appInfoType ? new appInfoType() : null;
-      }
-      get defaultSortInfo() {
-        return sortInfoType ? new sortInfoType() : null;
-      }
+      appInfo = appInfoType ? new appInfoType() : null;
+      sortInfo = sortInfoType ? new sortInfoType() : null;
     };
   }
 }
