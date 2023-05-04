@@ -22,16 +22,17 @@ import fs from 'fs-extra';
 
 // Let's read some memos!
 const memoDb = MemoDatabase.from(await fs.readFile('MemoDB.pdb'));
-const record = memoDb.records[0];
+const record = memoDb.records[0]!;
 console.log(record.value); // "Hello world!"
 console.log(
-  memoDb.appInfo.getCategory(record.entry.attributes.category)!.label
+  memoDb.appInfo!.getCategory(record.entry.attributes.category)!.label
 ); // "Personal"
 
 // Let's add a new memo!
 const newRecord = new MemoRecord();
 newRecord.value = 'Look, new memo!';
-newRecord.entry.attributes.category = memoDb.appInfo.getCategory('Work').uniqId;
+newRecord.entry.attributes.category =
+  memoDb.appInfo!.getCategory('Personal')!.uniqId;
 memoDb.records.push(newRecord);
 await fs.writeFile('MemoDB.pdb', memoDb.serialize());
 ```
