@@ -245,12 +245,10 @@ export class DatebookRecordAttrs extends SBitmask.of(SUInt8) {
 
 /** Time unit for describing when the alarm should fire. */
 export enum AlarmTimeUnit {
-  MINUTES = 'minutes',
-  HOURS = 'hours',
-  DAYS = 'days',
+  MINUTES = 0,
+  HOURS = 1,
+  DAYS = 2,
 }
-
-const ALARM_TIME_UNITS = Object.values(AlarmTimeUnit);
 
 /** Event alarm settings.
  *
@@ -264,44 +262,25 @@ export class AlarmSettings extends SObject {
   value = 0;
 
   /** Time unit for expressing when the alarm should fire. */
+  @field(SUInt8.enum(AlarmTimeUnit))
   unit = AlarmTimeUnit.MINUTES;
-  @field(SUInt8)
-  private get unitValue() {
-    const unitValue = ALARM_TIME_UNITS.indexOf(this.unit);
-    if (unitValue < 0) {
-      throw new Error(`Invalid alarm time unit: ${this.unit}`);
-    }
-    return unitValue;
-  }
-  private set unitValue(newValue: number) {
-    this.unit = ALARM_TIME_UNITS[newValue];
-    if (!this.unit) {
-      throw new Error(`Invalid alarm time unit value: ${newValue}`);
-    }
-  }
-
-  toJSON() {
-    return pick(this, ['value', 'unit']);
-  }
 }
 
 /** Frequency of a recurring event. */
 export enum RecurrenceFrequency {
   /** Don't repeat. */
-  NONE = 'none',
+  NONE = 0,
   /** Repeat every N days */
-  DAILY = 'daily',
+  DAILY = 1,
   /** Repeat every N weeks on the same days of the week. */
-  WEEKLY = 'weekly',
+  WEEKLY = 2,
   /** Repeat on same week of the month every N months. */
-  MONTHLY_BY_DAY = 'monthlyByDay',
+  MONTHLY_BY_DAY = 3,
   /** Repeat on same day of the month every N months. */
-  MONTHLY_BY_DATE = 'monthlyByDate',
+  MONTHLY_BY_DATE = 4,
   /** Repeat on same day of the year every N years. */
-  YEARLY = 'yearly',
+  YEARLY = 5,
 }
-
-const RECURRENCE_FREQUENCIES = Object.values(RecurrenceFrequency);
 
 /** Additional settings for events with weekly recurrence. */
 export interface WeeklyRecurrenceSettings {
@@ -339,21 +318,8 @@ export interface MonthlyByDayRecurrenceSettings {
 /** Event recurrence settings. */
 export class RecurrenceSettings extends SObject {
   /** Frequency of this recurring event. */
+  @field(SUInt8.enum(RecurrenceFrequency))
   frequency = RecurrenceFrequency.DAILY;
-  @field(SUInt8)
-  private get frequencyValue() {
-    const frequencyValue = RECURRENCE_FREQUENCIES.indexOf(this.frequency);
-    if (frequencyValue < 0) {
-      throw new Error(`Invalid frequency type: ${this.frequency}`);
-    }
-    return frequencyValue;
-  }
-  private set frequencyValue(newValue: number) {
-    this.frequency = RECURRENCE_FREQUENCIES[newValue];
-    if (!this.frequency) {
-      throw new Error(`Invalid frequency value: ${newValue}`);
-    }
-  }
 
   @field(SUInt8)
   private padding1 = 0;

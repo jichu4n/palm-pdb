@@ -16,18 +16,21 @@ import {
   PdbRecord,
 } from '.';
 
+/** ToDoDB item sort order. */
+export enum ToDoSortOrder {
+  MANUAL = 0,
+  PRIORITY = 1,
+}
+
 /** ToDoDB AppInfo block. */
 export class ToDoAppInfo extends AppInfoType {
   /** Not sure what this is ¯\_(ツ)_/¯ */
   @field(SUInt16BE)
   private dirty = 0;
 
-  /** Item sort order.
-   *
-   * 0 = manual, 1 = sort by priority.
-   */
-  @field(SUInt8)
-  sortOrder = 0;
+  /** Item sort order. */
+  @field(SUInt8.enum(ToDoSortOrder))
+  sortOrder = ToDoSortOrder.MANUAL;
 
   @field(SUInt8)
   private padding2 = 0;
@@ -40,7 +43,10 @@ export class ToDoAppInfo extends AppInfoType {
   }
 
   toJSON() {
-    return {...super.toJSON(), ...pick(this, ['sortOrder'])};
+    return {
+      ...super.toJSON(),
+      sortOrder: SUInt8.enum(ToDoSortOrder).of(this.sortOrder),
+    };
   }
 }
 

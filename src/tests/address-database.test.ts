@@ -22,7 +22,7 @@ async function loadTestDbAndDoBasicChecks(dbFile: string, encoding?: string) {
   for (const record of db.records) {
     expect(record.cells.length).toBeGreaterThan(0);
     expect(Object.keys(record.phoneNumberTypeMapping)).toStrictEqual(
-      PHONE_NUMBER_FIELD_TYPES
+      PHONE_NUMBER_FIELD_TYPES.map((t) => t.toString())
     );
   }
   return db;

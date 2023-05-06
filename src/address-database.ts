@@ -23,33 +23,31 @@ export const ADDRESS_FIELD_LABEL_LENGTH = 16;
  *   - https://github.com/madsen/p5-Palm/blob/master/lib/Palm/Address.pm#L170
  */
 export enum AddressCountry {
-  AUSTRALIA = 'Australia',
-  AUSTRIA = 'Austria',
-  BELGIUM = 'Belgium',
-  BRAZIL = 'Brazil',
-  CANADA = 'Canada',
-  DENMARK = 'Denmark',
-  FINLAND = 'Finland',
-  FRANCE = 'France',
-  GERMANY = 'Germany',
-  HONG_KONG = 'Hong Kong',
-  ICELAND = 'Iceland',
-  IRELAND = 'Ireland',
-  ITALY = 'Italy',
-  JAPAN = 'Japan',
-  LUXEMBOURG = 'Luxembourg',
-  MEXICO = 'Mexico',
-  NETHERLANDS = 'Netherlands',
-  NEW_ZEALAND = 'New Zealand',
-  NORWAY = 'Norway',
-  SPAIN = 'Spain',
-  SWEDEN = 'Sweden',
-  SWITZERLAND = 'Switzerland',
-  UNITED_KINGDOM = 'United Kingdom',
-  UNITED_STATES = 'United States',
+  AUSTRALIA = 0,
+  AUSTRIA = 1,
+  BELGIUM = 2,
+  BRAZIL = 3,
+  CANADA = 4,
+  DENMARK = 5,
+  FINLAND = 6,
+  FRANCE = 7,
+  GERMANY = 8,
+  HONG_KONG = 9,
+  ICELAND = 10,
+  IRELAND = 11,
+  ITALY = 12,
+  JAPAN = 13,
+  LUXEMBOURG = 14,
+  MEXICO = 15,
+  NETHERLANDS = 16,
+  NEW_ZEALAND = 17,
+  NORWAY = 18,
+  SPAIN = 19,
+  SWEDEN = 20,
+  SWITZERLAND = 21,
+  UNITED_KINGDOM = 22,
+  UNITED_STATES = 23,
 }
-/** List of supported countries and regions in AddressDB, indexed by code. */
-const ADDRESS_COUNTRIES = Object.values(AddressCountry);
 
 /** Field types in AddressDB.
  *
@@ -57,31 +55,29 @@ const ADDRESS_COUNTRIES = Object.values(AddressCountry);
  *   - https://github.com/madsen/p5-Palm/blob/master/lib/Palm/Address.pm#L424
  */
 export enum AddressFieldType {
-  LAST_NAME = 'lastName',
-  FIRST_NAME = 'firstName',
-  COMPANY = 'company',
-  PHONE_1 = 'phone1',
-  PHONE_2 = 'phone2',
-  PHONE_3 = 'phone3',
-  PHONE_4 = 'phone4',
-  PHONE_5 = 'phone5',
-  ADDRESS = 'address',
-  CITY = 'city',
-  STATE = 'state',
-  ZIP_CODE = 'zipCode',
-  COUNTRY = 'country',
-  TITLE = 'title',
-  CUSTOM_1 = 'custom1',
-  CUSTOM_2 = 'custom2',
-  CUSTOM_3 = 'custom3',
-  CUSTOM_4 = 'custom4',
-  NOTE = 'note',
-  PHONE_6 = 'phone6',
-  PHONE_7 = 'phone7',
-  PHONE_8 = 'phone8',
+  LAST_NAME = 0,
+  FIRST_NAME = 1,
+  COMPANY = 2,
+  PHONE_1 = 3,
+  PHONE_2 = 4,
+  PHONE_3 = 5,
+  PHONE_4 = 6,
+  PHONE_5 = 7,
+  ADDRESS = 8,
+  CITY = 9,
+  STATE = 10,
+  ZIP_CODE = 11,
+  COUNTRY = 12,
+  TITLE = 13,
+  CUSTOM_1 = 14,
+  CUSTOM_2 = 15,
+  CUSTOM_3 = 16,
+  CUSTOM_4 = 17,
+  NOTE = 18,
+  PHONE_6 = 19,
+  PHONE_7 = 20,
+  PHONE_8 = 21,
 }
-/** List of field types in AddressDB, indexed by code. */
-export const ADDRESS_FIELD_TYPES = Object.values(AddressFieldType);
 /** Number of address fields (and field types). */
 export const NUM_ADDRESS_FIELDS = 22;
 
@@ -91,17 +87,15 @@ export const NUM_ADDRESS_FIELDS = 22;
  *   - https://github.com/madsen/p5-Palm/blob/master/lib/Palm/Address.pm#L159
  */
 export enum PhoneNumberType {
-  WORK = 'work',
-  HOME = 'home',
-  FAX = 'fax',
-  OTHER = 'other',
-  EMAIL = 'email',
-  MAIN = 'main',
-  PAGER = 'pager',
-  MOBILE = 'mobile',
+  WORK = 0,
+  HOME = 1,
+  FAX = 2,
+  OTHER = 3,
+  EMAIL = 4,
+  MAIN = 5,
+  PAGER = 6,
+  MOBILE = 7,
 }
-/** List of standard phone number fields in AddressDB, indexed by code. */
-export const PHONE_NUMBER_TYPES = Object.values(PhoneNumberType);
 /** Standard phone number fields. */
 export const PHONE_NUMBER_FIELD_TYPES: Array<PhoneNumberFieldType> = [
   AddressFieldType.PHONE_1,
@@ -155,19 +149,8 @@ export class AddressAppInfo extends AppInfoType {
   )
   private addressLabels: Array<string> = [];
 
-  /** The country or region for which the labels were designed. */
-  get country() {
-    return ADDRESS_COUNTRIES[this.countryCode];
-  }
-  set country(newValue: AddressCountry) {
-    const countryCode = ADDRESS_COUNTRIES.indexOf(newValue);
-    if (countryCode < 0) {
-      throw new Error(`Invalid country or region: ${newValue}`);
-    }
-    this.countryCode = countryCode;
-  }
-  @field(SUInt8)
-  private countryCode = 0;
+  @field(SUInt8.enum(AddressCountry))
+  country = AddressCountry.UNITED_STATES;
 
   @field(SUInt8)
   private padding3 = 0;
@@ -182,7 +165,7 @@ export class AddressAppInfo extends AppInfoType {
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     const offset = super.deserialize(buffer, opts);
     this.fields = this.addressLabels.map((label, i) => ({
-      type: ADDRESS_FIELD_TYPES[i],
+      type: i,
       label,
       isRenamed: !!(this.renamedFields & (1 << i)),
     }));
@@ -200,9 +183,9 @@ export class AddressAppInfo extends AppInfoType {
     this.addressLabels = [];
     for (let i = 0; i < this.fields.length; ++i) {
       const {type, label, isRenamed} = this.fields[i];
-      if (type !== ADDRESS_FIELD_TYPES[i]) {
+      if (type !== i) {
         throw new Error(
-          `Expected field[${i}] to have type ${ADDRESS_FIELD_TYPES[i]}, ` +
+          `Expected field[${i}] to have type ${AddressFieldType[i]}, ` +
             `found ${type}`
         );
       }
@@ -217,7 +200,8 @@ export class AddressAppInfo extends AppInfoType {
   toJSON() {
     return {
       ...super.toJSON(),
-      ...pick(this, ['fields', 'country', 'sortByCompany']),
+      ...pick(this, ['fields', 'sortByCompany']),
+      country: SUInt8.enum(AddressCountry).of(this.country),
     };
   }
 }
@@ -297,7 +281,7 @@ export class AddressRecord extends PdbRecord {
     for (let i = 0; i < NUM_ADDRESS_FIELDS; ++i) {
       if (this.fieldsBitmask & (1 << i)) {
         offset += s.deserialize(buffer.subarray(offset), opts);
-        const fieldType = ADDRESS_FIELD_TYPES[i];
+        const fieldType = i;
         this.cells.push(this.makeCell(fieldType, s.value));
       }
     }
@@ -310,7 +294,7 @@ export class AddressRecord extends PdbRecord {
     this.companyCellValueOffset = 0;
     const cellsByFieldType = groupBy(this.cells, ({fieldType}) => fieldType);
     for (let i = 0, companyCellValueOffset = 0; i < NUM_ADDRESS_FIELDS; ++i) {
-      const fieldType = ADDRESS_FIELD_TYPES[i];
+      const fieldType = i;
       const cells = cellsByFieldType[fieldType];
       if (!cells) {
         continue;
@@ -388,40 +372,24 @@ class PhoneNumberTypeMappingBitmask extends SBitmask.of(SUInt32BE) {
   @bitfield(8)
   private padding1 = 0;
 
-  get mainPhoneNumberType() {
-    return PHONE_NUMBER_TYPES[this.mainPhone];
-  }
-  set mainPhoneNumberType(newValue: PhoneNumberType) {
-    this.mainPhone = PHONE_NUMBER_TYPES.indexOf(newValue);
-  }
   @bitfield(4)
-  private mainPhone = 0;
+  mainPhoneNumberType = PhoneNumberType.WORK;
 
   get phoneNumberTypeMapping(): PhoneNumberTypeMapping {
     return {
-      [AddressFieldType.PHONE_1]: PHONE_NUMBER_TYPES[this.phone1],
-      [AddressFieldType.PHONE_2]: PHONE_NUMBER_TYPES[this.phone2],
-      [AddressFieldType.PHONE_3]: PHONE_NUMBER_TYPES[this.phone3],
-      [AddressFieldType.PHONE_4]: PHONE_NUMBER_TYPES[this.phone4],
-      [AddressFieldType.PHONE_5]: PHONE_NUMBER_TYPES[this.phone5],
+      [AddressFieldType.PHONE_1]: this.phone1,
+      [AddressFieldType.PHONE_2]: this.phone2,
+      [AddressFieldType.PHONE_3]: this.phone3,
+      [AddressFieldType.PHONE_4]: this.phone4,
+      [AddressFieldType.PHONE_5]: this.phone5,
     };
   }
   set phoneNumberTypeMapping(newValue: PhoneNumberTypeMapping) {
-    this.phone1 = PHONE_NUMBER_TYPES.indexOf(
-      newValue[AddressFieldType.PHONE_1]
-    );
-    this.phone2 = PHONE_NUMBER_TYPES.indexOf(
-      newValue[AddressFieldType.PHONE_2]
-    );
-    this.phone3 = PHONE_NUMBER_TYPES.indexOf(
-      newValue[AddressFieldType.PHONE_3]
-    );
-    this.phone4 = PHONE_NUMBER_TYPES.indexOf(
-      newValue[AddressFieldType.PHONE_4]
-    );
-    this.phone5 = PHONE_NUMBER_TYPES.indexOf(
-      newValue[AddressFieldType.PHONE_5]
-    );
+    this.phone1 = newValue[AddressFieldType.PHONE_1];
+    this.phone2 = newValue[AddressFieldType.PHONE_2];
+    this.phone3 = newValue[AddressFieldType.PHONE_3];
+    this.phone4 = newValue[AddressFieldType.PHONE_4];
+    this.phone5 = newValue[AddressFieldType.PHONE_5];
   }
   @bitfield(4)
   private phone5 = 4;
