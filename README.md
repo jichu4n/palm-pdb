@@ -117,33 +117,44 @@ Implementations of the following PDB formats are included in palm-pdb:
 
 #### MemoDB
 
+Data format used by the **Memo Pad** (a.k.a. **Memos**) application.
+
 👉 [MemoDatabase](https://jichu4n.github.io/palm-pdb/classes/MemoDatabase.html), [MemoAppInfo](https://jichu4n.github.io/palm-pdb/classes/MemoAppInfo.html), [MemoRecord](https://jichu4n.github.io/palm-pdb/classes/MemoRecord.html)
 
-Data format used by the **Memo Pad** (a.k.a. **Memos**) application.
+Usage example: [src/tests/memo-database.test.ts](https://github.com/jichu4n/palm-pdb/blob/master/src/tests/memo-database.test.ts)
 
 #### DatebookDB
 
+Data format used by the **Date Book** (a.k.a. **Calendar**) application.
+
 👉 [DatebookDatabase](https://jichu4n.github.io/palm-pdb/classes/DatebookDatabase.html), [DatebookAppInfo](https://jichu4n.github.io/palm-pdb/classes/DatebookAppInfo.html), [DatebookRecord](https://jichu4n.github.io/palm-pdb/classes/DatebookRecord.html)
 
-Data format used by the **Date Book** (a.k.a. **Calendar**) application.
+Usage example: [src/tests/datebook-database.test.ts](https://github.com/jichu4n/palm-pdb/blob/master/src/tests/datebook-database.test.ts)
 
 #### ToDoDB
 
+Data format used by the **To Do List** (a.k.a. **Tasks**) application.
+
 👉 [ToDoDatabase](https://jichu4n.github.io/palm-pdb/classes/ToDoDatabase.html), [ToDoAppInfo](https://jichu4n.github.io/palm-pdb/classes/ToDoAppInfo.html), [ToDoRecord](https://jichu4n.github.io/palm-pdb/classes/ToDoRecord.html)
 
-Data format used by the **To Do List** (a.k.a. **Tasks**) application.
+Usage example: [src/tests/todo-database.test.ts](https://github.com/jichu4n/palm-pdb/blob/master/src/tests/todo-database.test.ts)
 
 #### AddressDB
 
+Data format used by the **Address** (a.k.a. **Contacts**) application.
+
 👉 [AddressDatabase](https://jichu4n.github.io/palm-pdb/classes/AddressDatabase.html), [AddressAppInfo](https://jichu4n.github.io/palm-pdb/classes/AddressAppInfo.html), [AddressRecord](https://jichu4n.github.io/palm-pdb/classes/AddressRecord.html)
 
-Data format used by the **Address** (a.k.a. **Contacts**) application.
+Usage example: [src/tests/address-database.test.ts](https://github.com/jichu4n/palm-pdb/blob/master/src/tests/address-database.test.ts)
 
 #### PalmDOC
 
+Data format for text documents and eBooks.
+
 👉 [PalmDoc](https://jichu4n.github.io/palm-pdb/classes/PalmDoc.html)
 
-Data format for text documents and eBooks. See [src/bin/palmdoc.ts](https://github.com/jichu4n/palm-pdb/blob/master/src/bin/palmdoc.ts) for a working example.
+Usage examples: [src/bin/palmdoc.ts](https://github.com/jichu4n/palm-pdb/blob/master/src/bin/palmdoc.ts), [src/tests/palmdoc-database.test.ts](https://github.com/jichu4n/palm-pdb/blob/master/src/tests/palmdoc-database.test.ts)
+
 
 ### Implementing your own PDB / PRC data format
 
