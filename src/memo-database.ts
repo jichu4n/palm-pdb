@@ -9,6 +9,12 @@ import {
 } from 'serio';
 import {AppInfoType, DatabaseHdrType, PdbDatabase, PdbRecord} from '.';
 
+/** MemoDB sort order. */
+export enum MemoSortOrder {
+  MANUAL = 0,
+  ALPHABETICAL = 1,
+}
+
 /** MemoDB AppInfo block. */
 export class MemoAppInfo extends AppInfoType {
   @field(SUInt16BE)
@@ -16,10 +22,10 @@ export class MemoAppInfo extends AppInfoType {
 
   /** Memo sort order.
    *
-   * New for 2.0 memo application. 0 = manual, 1 = alphabetical.
+   * New for 2.0 memo application.
    */
-  @field(SUInt8)
-  sortOrder = 0;
+  @field(SUInt8.enum(MemoSortOrder))
+  sortOrder = MemoSortOrder.MANUAL;
 
   @field(SUInt8)
   private padding3 = 0;

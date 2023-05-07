@@ -155,7 +155,6 @@ Data format for text documents and eBooks.
 
 Usage examples: [src/bin/palmdoc.ts](https://github.com/jichu4n/palm-pdb/blob/master/src/bin/palmdoc.ts), [src/tests/palmdoc-database.test.ts](https://github.com/jichu4n/palm-pdb/blob/master/src/tests/palmdoc-database.test.ts)
 
-
 ### Implementing your own PDB / PRC data format
 
 The general outline for a PDB / PRC data format implementation looks like the following:

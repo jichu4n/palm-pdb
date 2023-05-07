@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import pick from 'lodash/pick';
 import path from 'path';
-import {Category, MemoDatabase, MemoRecord} from '..';
+import {Category, MemoDatabase, MemoRecord, MemoSortOrder} from '..';
 
 describe('MemoDatabase', function () {
   test('load test database', async function () {
@@ -27,7 +27,7 @@ describe('MemoDatabase', function () {
       Category.with({label: 'Unfiled', uniqId: 0, isRenamed: false}),
       Category.with({label: 'Personal', uniqId: 1, isRenamed: false}),
     ];
-    db1.appInfo!.sortOrder = 1;
+    db1.appInfo!.sortOrder = MemoSortOrder.ALPHABETICAL;
     for (let i = 0; i < 10; ++i) {
       const record = new MemoRecord();
       record.value = `Memo #${i}`;
