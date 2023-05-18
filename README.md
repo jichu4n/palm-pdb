@@ -92,7 +92,7 @@ db3.deserialize(buf1);
 
 ### Text encoding
 
-Text in PDB / PRC files generally use use one of several pre-Unicode encodings, depending on the Palm OS language setting. The default encoding for the Latin alphabet is CP1252 ([`DEFAULT_ENCODING`](https://jichu4n.github.io/palm-pdb/variables/DEFAULT_ENCODING.html)), so that's what palm-pdb defaults to.
+Text in PDB / PRC files is generally stored in one of several pre-Unicode encodings, depending on the Palm OS language setting. The default encoding for the Latin alphabet is CP1252 ([`DEFAULT_ENCODING`](https://jichu4n.github.io/palm-pdb/variables/DEFAULT_ENCODING.html)), so that's what palm-pdb defaults to.
 
 To select a different text encoding, pass in an `encoding` name during serialization / deserialization:
 
@@ -107,9 +107,7 @@ db2.deserialize(buffer, {encoding: 'gb2312'});
 const buf1 = db3.serialize({encoding: 'shiftjis'});
 ```
 
-If you are not sure what text encoding to specify, see [here](https://github.com/jichu4n/palm-os-sdk/blob/a7a3d4ad02a939f8b91db8018065ebcf05cdf276/sdk-5r3/include/Core/System/PalmLocale.h#L487) for the full list of text encodings supported by Palm OS.
-
-To find the `encoding` name that corresponds to a particular text encoding, see [the iconv-lite wiki](https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings).
+If you are not sure what text encoding to specify, see [here](https://github.com/jichu4n/palm-os-sdk/blob/a7a3d4ad02a939f8b91db8018065ebcf05cdf276/sdk-5r3/include/Core/System/PalmLocale.h#L487) for the full list of text encodings supported by Palm OS. To find the `encoding` value that corresponds to a particular text encoding, see [the iconv-lite wiki](https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings).
 
 ### Included PDB format implementations
 
@@ -204,9 +202,9 @@ There are three options for implementing a record format.
 
 #### AppInfo & SortInfo
 
-Similarly, the AppInfo and SortInfo blocks can be implemented in different ways,with the only requirement being that they implement the [Serializable](https://github.com/jichu4n/serio/#serializable) interface.
+Similarly, the AppInfo and SortInfo blocks can be implemented in different ways. The only requirement is that they need to implement the [Serializable](https://github.com/jichu4n/serio/#serializable) interface. The easiest way would be to extend [SObject](https://github.com/jichu4n/serio/#objects) and use `@field()` annotations to define fields.
 
-There is a standard format for storing category settings inside the AppInfo block, as described in the [Palm File Format Specification](https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf). This format is used by the built-in PIM applications, and is called [AppInfoType](https://jichu4n.github.io/palm-pdb/classes/AppInfoType.html). See the implementation for [MemoAppInfo](https://github.com/jichu4n/palm-pdb/blob/master/src/memo-database.ts) or [ToDoAppInfo](https://github.com/jichu4n/palm-pdb/blob/master/src/todo-database.ts) for examples.
+There is a standard format for storing category settings inside the AppInfo block, as described in the [Palm File Format Specification](https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf). This format is used by the built-in PIM applications, and is called [AppInfoType](https://jichu4n.github.io/palm-pdb/classes/AppInfoType.html). See the implementation for [MemoAppInfo](https://github.com/jichu4n/palm-pdb/blob/master/src/memo-database.ts) for an example AppInfo block that makes use of AppInfoType.
 
 ## Acknowledgements
 
