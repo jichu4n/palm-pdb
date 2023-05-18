@@ -36,10 +36,6 @@ export class MemoAppInfo extends AppInfoType {
     }
     return super.serialize(opts);
   }
-
-  toJSON() {
-    return {...super.toJSON(), ...pick(this, ['sortOrder'])};
-  }
 }
 
 /** A MemoDB record. */

@@ -41,13 +41,6 @@ export class ToDoAppInfo extends AppInfoType {
     }
     return super.serialize(opts);
   }
-
-  toJSON() {
-    return {
-      ...super.toJSON(),
-      sortOrder: SUInt8.enum(ToDoSortOrder).of(this.sortOrder),
-    };
-  }
 }
 
 /** A ToDoDB record. */
@@ -90,17 +83,6 @@ export class ToDoRecord extends PdbRecord {
       this.attrs |= 0x80;
     }
     return super.serialize(opts);
-  }
-
-  toJSON() {
-    return pick(this, [
-      'entry',
-      'dueDate',
-      'isCompleted',
-      'priority',
-      'description',
-      'note',
-    ]);
   }
 }
 

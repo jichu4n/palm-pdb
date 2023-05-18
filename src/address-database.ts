@@ -196,14 +196,6 @@ export class AddressAppInfo extends AppInfoType {
     }
     return super.serialize(opts);
   }
-
-  toJSON() {
-    return {
-      ...super.toJSON(),
-      ...pick(this, ['fields', 'sortByCompany']),
-      country: SUInt8.enum(AddressCountry).of(this.country),
-    };
-  }
 }
 
 /** A cell in an AddressDB record. */
@@ -341,15 +333,6 @@ export class AddressRecord extends PdbRecord {
     return super.getSerializedLength(opts);
   }
 
-  toJSON() {
-    return pick(this, [
-      'entry',
-      'phoneNumberTypeMapping',
-      'mainPhoneNumberType',
-      'cells',
-    ]);
-  }
-
   private makeCell(fieldType: AddressFieldType, value: string) {
     return {
       fieldType,
@@ -401,10 +384,6 @@ class PhoneNumberTypeMappingBitmask extends SBitmask.of(SUInt32BE) {
   private phone2 = 1;
   @bitfield(4)
   private phone1 = 0;
-
-  toJSON() {
-    return pick(this, ['mainPhoneNumberType', 'phoneNumberTypeMap']);
-  }
 }
 
 /** AddressDB database.

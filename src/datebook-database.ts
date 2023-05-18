@@ -71,13 +71,6 @@ export class DatebookAppInfo extends AppInfoType {
 
   @field(SUInt8)
   private padding2 = 0;
-
-  toJSON() {
-    return {
-      ...super.toJSON(),
-      ...pick(this, ['firstDayOfWeek']),
-    };
-  }
 }
 
 /** A DatebookDB record. */
@@ -203,20 +196,6 @@ export class DatebookRecord extends PdbRecord {
       (this.note ? this.note.length + 1 : 0) +
       (this.description ? this.description.length + 1 : 0)
     );
-  }
-
-  toJSON() {
-    return pick(this, [
-      'entry',
-      'startTime',
-      'endTime',
-      'date',
-      'alarmSettings',
-      'recurrenceSettings',
-      'exceptionDates',
-      'description',
-      'note',
-    ]);
   }
 }
 
@@ -431,16 +410,6 @@ export class RecurrenceSettings extends SObject {
         throw new Error(`Invalid frequency type: ${this.frequency}`);
     }
     return super.serialize(opts);
-  }
-
-  toJSON() {
-    return pick(this, [
-      'frequency',
-      'endDate',
-      'interval',
-      'weekly',
-      'monthlyByDay',
-    ]);
   }
 }
 

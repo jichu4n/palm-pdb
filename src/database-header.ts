@@ -97,11 +97,6 @@ export class RecordEntryType extends SObject {
    */
   @field(RecordId)
   uniqueId = 0;
-
-  toJSON() {
-    // return {attributes: this.attributes, uniqueId: this.uniqueId};
-    return pick(this, ['attributes', 'uniqueId']);
-  }
 }
 
 /** Resource entry in PRC files.
@@ -326,15 +321,5 @@ export class RecordAttrs extends SBitmask.of(SUInt8) {
       );
     }
     this.lowest4bits = newValue & 0b1111;
-  }
-
-  toJSON() {
-    return pick(this, [
-      'delete',
-      'dirty',
-      'busy',
-      'secret',
-      ...(this.delete || this.busy ? ['archive'] : ['category']),
-    ]);
   }
 }

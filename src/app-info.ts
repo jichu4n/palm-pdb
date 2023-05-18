@@ -131,8 +131,4 @@ export class AppInfoType extends SObject {
     }
     return super.serialize(opts);
   }
-
-  toJSON(): any {
-    return pick(this, ['categories', 'lastUniqId']);
-  }
 }
