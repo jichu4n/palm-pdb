@@ -7,7 +7,7 @@ import {
 
 /** Standard epoch on Palm OS -- 1904/1/1. */
 export const PDB_EPOCH = new Date('1904-01-01T00:00:00.000Z');
-/** Standard epoch on Palm OS -- 1904/1/1. */
+/** Standard UNIX epoch. */
 export const UNIX_EPOCH = new Date(0);
 
 /** Epoch that a DatabaseTimestamp value is based on. */
