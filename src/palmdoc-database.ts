@@ -4,12 +4,13 @@ import {
   encodeString,
   Serializable,
   SerializeOptions,
+  SObject,
 } from 'serio';
 import {SmartBuffer} from 'smart-buffer';
-import {DatabaseHdrType, PdbDatabase, RawPdbRecord, DEFAULT_ENCODING} from '.';
+import {DatabaseHdrType, DEFAULT_ENCODING, PdbDatabase, RawPdbRecord} from '.';
 
 /** PalmDOC document. */
-export class PalmDoc extends Serializable {
+export class PalmDoc extends SObject {
   /** Document name (typically the file name). */
   name = 'doc.txt';
   /** Text content. */

@@ -2,6 +2,7 @@ import sum from 'lodash/sum';
 import {
   DeserializeOptions,
   SBuffer,
+  SObject,
   Serializable,
   SerializeOptions,
 } from 'serio';
@@ -28,7 +29,7 @@ export abstract class Database<
   AppInfoT extends Serializable = SBuffer,
   /** SortInfo type. */
   SortInfoT extends Serializable = SBuffer
-> extends Serializable {
+> extends SObject {
   /** Record list constructor, to be provided by child classes. */
   protected abstract readonly recordListType: new () => RecordListType<EntryT>;
   /** Record type constructor, to be provided by child classes. */
