@@ -57,7 +57,9 @@ export abstract class Database<
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
     opts = {encoding: DEFAULT_ENCODING, ...opts};
+
     this.header.deserialize(buffer, opts);
+
     const recordList = new this.recordListType();
     recordList.deserialize(
       buffer.subarray(this.header.getSerializedLength(opts)),
@@ -117,6 +119,49 @@ export abstract class Database<
 
   serialize(opts?: SerializeOptions) {
     opts = {encoding: DEFAULT_ENCODING, ...opts};
+    this.recomputeOffsets(opts);
+    const writer = new SmartBuffer();
+
+    writer.writeBuffer(this.header.serialize(opts));
+
+    const recordList = new this.recordListType();
+    recordList.values = this.records.map(({entry}) => entry);
+    writer.writeBuffer(recordList.serialize(opts));
+
+    if (this.appInfo) {
+      writer.writeBuffer(this.appInfo.serialize(opts));
+    }
+
+    if (this.sortInfo) {
+      writer.writeBuffer(this.sortInfo.serialize(opts));
+    }
+
+    for (const record of this.records) {
+      writer.writeBuffer(record.serialize(opts));
+    }
+
+    return writer.toBuffer();
+  }
+
+  getSerializedLength(opts?: SerializeOptions) {
+    return (
+      this.header.getSerializedLength(opts) +
+      sum(this.records.map(({entry}) => entry.getSerializedLength(opts))) +
+      (this.appInfo ? this.appInfo.getSerializedLength(opts) : 0) +
+      (this.sortInfo ? this.sortInfo.getSerializedLength(opts) : 0) +
+      sum(this.records.map((record) => record.getSerializedLength(opts)))
+    );
+  }
+
+  /** Recompute offsets in the database and record headers.
+   *
+   * This will update the following based on the current field values:
+   *  - `header.appInfoId`
+   *  - `header.sortInfoId`
+   *  - `entry.localChunkId` for each record
+   */
+  recomputeOffsets(opts?: SerializeOptions) {
+    opts = {encoding: DEFAULT_ENCODING, ...opts};
     const recordList = new this.recordListType();
     recordList.values = this.records.map(({entry}) => entry);
 
@@ -140,30 +185,6 @@ export abstract class Database<
       recordList.values[i].localChunkId = offset;
       offset += this.records[i].getSerializedLength(opts);
     }
-
-    const writer = new SmartBuffer();
-    writer.writeBuffer(this.header.serialize(opts));
-    writer.writeBuffer(recordList.serialize(opts));
-    if (this.appInfo) {
-      writer.writeBuffer(this.appInfo.serialize(opts));
-    }
-    if (this.sortInfo) {
-      writer.writeBuffer(this.sortInfo.serialize(opts));
-    }
-    for (const record of this.records) {
-      writer.writeBuffer(record.serialize(opts));
-    }
-    return writer.toBuffer();
-  }
-
-  getSerializedLength(opts?: SerializeOptions) {
-    return (
-      this.header.getSerializedLength(opts) +
-      sum(this.records.map(({entry}) => entry.getSerializedLength(opts))) +
-      (this.appInfo ? this.appInfo.getSerializedLength(opts) : 0) +
-      (this.sortInfo ? this.sortInfo.getSerializedLength(opts) : 0) +
-      sum(this.records.map((record) => record.getSerializedLength(opts)))
-    );
   }
 }
 
