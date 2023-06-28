@@ -34,7 +34,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">PdbDatabase</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L171">src/database.ts:171</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L192">src/database.ts:192</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -61,6 +61,7 @@
 <a href="PdbDatabase.html#deserialize" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>deserialize</span></a>
 <a href="PdbDatabase.html#getSerializedLength" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Serialized<wbr/>Length</span></a>
 <a href="PdbDatabase.html#mapValuesToSerializable" class="tsd-index-link tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>map<wbr/>Values<wbr/>To<wbr/>Serializable</span></a>
+<a href="PdbDatabase.html#recomputeOffsets" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>recompute<wbr/>Offsets</span></a>
 <a href="PdbDatabase.html#serialize" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>serialize</span></a>
 <a href="PdbDatabase.html#toJSON" class="tsd-index-link tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>toJSON</span></a>
 <a href="PdbDatabase.html#from" class="tsd-index-link tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>from</span></a>
@@ -86,7 +87,7 @@
 <h4 class="tsd-returns-title">Returns <a href="PdbDatabase.html" class="tsd-signature-type tsd-kind-class">PdbDatabase</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">RecordT</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type tsd-kind-type-parameter">AppInfoT</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type tsd-kind-type-parameter">SortInfoT</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Overrides <a href="Database.html">Database</a>.<a href="Database.html#constructor">constructor</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L179">src/database.ts:179</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L200">src/database.ts:200</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="appInfo" class="tsd-anchor"></a>
@@ -96,7 +97,7 @@
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#appInfo">appInfo</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L49">src/database.ts:49</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L49">src/database.ts:49</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="appInfoType" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>app<wbr/>Info<wbr/>Type</span><a href="#appInfoType" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">app<wbr/>Info<wbr/>Type</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">new </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type tsd-kind-type-parameter">AppInfoT</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> = null</span></div>
@@ -104,7 +105,7 @@
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#appInfoType">appInfoType</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L38">src/database.ts:38</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L38">src/database.ts:38</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="header" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>header</span><a href="#header" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">header</span><span class="tsd-signature-symbol">:</span> <a href="DatabaseHdrType.html" class="tsd-signature-type tsd-kind-class">DatabaseHdrType</a><span class="tsd-signature-symbol"> = ...</span></div>
@@ -114,13 +115,13 @@ during serialization.</p>
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#header">header</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L47">src/database.ts:47</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L47">src/database.ts:47</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="recordListType" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>record<wbr/>List<wbr/>Type</span><a href="#recordListType" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">record<wbr/>List<wbr/>Type</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">typeof </span><a href="PdbRecordListType.html" class="tsd-signature-type tsd-kind-class">PdbRecordListType</a><span class="tsd-signature-symbol"> = PdbRecordListType</span></div><aside class="tsd-sources">
 <p>Overrides <a href="Database.html">Database</a>.<a href="Database.html#recordListType">recordListType</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L184">src/database.ts:184</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L205">src/database.ts:205</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="recordType" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <code class="tsd-tag ts-flagAbstract">Abstract</code> <span>record<wbr/>Type</span><a href="#recordType" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">record<wbr/>Type</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">new </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type tsd-kind-type-parameter">RecordT</span><span class="tsd-signature-symbol">)</span></div>
@@ -136,7 +137,7 @@ during serialization.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type tsd-kind-type-parameter">RecordT</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
 <p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#recordType">recordType</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L36">src/database.ts:36</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L36">src/database.ts:36</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="records" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>records</span><a href="#records" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">records</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type tsd-kind-type-parameter">RecordT</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
@@ -145,7 +146,7 @@ during serialization.</p>
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#records">records</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L56">src/database.ts:56</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L56">src/database.ts:56</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="sortInfo" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>sort<wbr/>Info</span><a href="#sortInfo" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">sort<wbr/>Info</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type tsd-kind-type-parameter">SortInfoT</span><span class="tsd-signature-symbol"> = null</span></div>
@@ -153,7 +154,7 @@ during serialization.</p>
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#sortInfo">sortInfo</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L51">src/database.ts:51</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L51">src/database.ts:51</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="sortInfoType" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>sort<wbr/>Info<wbr/>Type</span><a href="#sortInfoType" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">sort<wbr/>Info<wbr/>Type</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">new </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type tsd-kind-type-parameter">SortInfoT</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> = null</span></div>
@@ -161,7 +162,7 @@ during serialization.</p>
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#sortInfoType">sortInfoType</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L40">src/database.ts:40</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L40">src/database.ts:40</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited tsd-is-external"><a id="assignFromSerializable" class="tsd-anchor"></a>
@@ -202,7 +203,7 @@ corresponding SerializableWrapper. Unknown fields are ignored.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#deserialize">deserialize</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L58">src/database.ts:58</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L58">src/database.ts:58</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="getSerializedLength" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Serialized<wbr/>Length</span><a href="#getSerializedLength" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -216,7 +217,7 @@ corresponding SerializableWrapper. Unknown fields are ignored.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#getSerializedLength">getSerializedLength</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L159">src/database.ts:159</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L146">src/database.ts:146</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited tsd-is-external"><a id="mapValuesToSerializable" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>map<wbr/>Values<wbr/>To<wbr/>Serializable</span><a href="#mapValuesToSerializable" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited tsd-is-external">
@@ -233,6 +234,28 @@ corresponding SerializableWrapper. Unknown fields are ignored.</p>
 <p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#mapValuesToSerializable">mapValuesToSerializable</a></p>
 <ul>
 <li>Defined in node_modules/serio/dist/serializable-objects.d.ts:16</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-inherited"><a id="recomputeOffsets" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>recompute<wbr/>Offsets</span><a href="#recomputeOffsets" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-inherited">
+<li class="tsd-signature tsd-anchor-link" id="recomputeOffsets.recomputeOffsets-1"><span class="tsd-kind-call-signature">recompute<wbr/>Offsets</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">opts</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#recomputeOffsets.recomputeOffsets-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Recompute offsets in the database and record headers.</p>
+<p>This will update the following based on the current field values:</p>
+<ul>
+<li><code>header.appInfoId</code></li>
+<li><code>header.sortInfoId</code></li>
+<li><code>entry.localChunkId</code> for each record</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">opts</span>: <span class="tsd-signature-type ">SerializeOptions</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#recomputeOffsets">recomputeOffsets</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L163">src/database.ts:163</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="serialize" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>serialize</span><a href="#serialize" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -246,7 +269,7 @@ corresponding SerializableWrapper. Unknown fields are ignored.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Buffer</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="Database.html">Database</a>.<a href="Database.html#serialize">serialize</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L118">src/database.ts:118</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L120">src/database.ts:120</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited tsd-is-external"><a id="toJSON" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>toJSON</span><a href="#toJSON" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited tsd-is-external">
@@ -332,7 +355,7 @@ corresponding SerializableWrapper. Unknown fields are ignored.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type tsd-kind-type-parameter">SortInfoT</span></h4></li></ul></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type ">__class</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/2e46b21/src/database.ts#L187">src/database.ts:187</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/cce4146/src/database.ts#L208">src/database.ts:208</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited tsd-is-external"><a id="with" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>with</span><a href="#with" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited tsd-is-external">
@@ -393,6 +416,7 @@ corresponding SerializableWrapper. Unknown fields are ignored.</p>
 <li><a href="#deserialize" class="tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>deserialize</span></a></li>
 <li><a href="#getSerializedLength" class="tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Serialized<wbr/>Length</span></a></li>
 <li><a href="#mapValuesToSerializable" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>map<wbr/>Values<wbr/>To<wbr/>Serializable</span></a></li>
+<li><a href="#recomputeOffsets" class="tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>recompute<wbr/>Offsets</span></a></li>
 <li><a href="#serialize" class="tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>serialize</span></a></li>
 <li><a href="#toJSON" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>toJSON</span></a></li>
 <li><a href="#from" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>from</span></a></li>
