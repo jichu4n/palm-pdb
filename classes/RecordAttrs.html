@@ -16,12 +16,42 @@
 <li><a href="RecordAttrs.html">RecordAttrs</a></li></ul>
 <h1>Class RecordAttrs</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Record attribute flags.</p>
+<div class="tsd-comment tsd-typography"><p>Record attribute flags in PDB files.</p>
+<p>In the DLP protocol, we use one byte to store record attribute flags and
+another byte to store the record category. However, in PDB files, we use a
+single byte is used to store both attribute flags and the record category.</p>
+<p>This presents a problem: there are 5 record attributes (namely delete, dirty,
+busy, secret, and archive), leaving 3 bits unused, but we need 4 bits to
+store the record category. So the lowest 4 bits are overloaded, but the
+exactly how differs among existing open source implementations:</p>
+<p>In pilot-link:</p>
+<ul>
+<li>Upper 4 bits store the first 4 record attributes (delete, dirty, busy, secret)</li>
+<li>Lower 4 bits store the record category; there&#39;s no archive bit</li>
+</ul>
+<p>In ColdSync:</p>
+<ul>
+<li>If the record is busy, bit 5 stores the archive flag and the lowest 3
+bits are unused.</li>
+<li>If the record is not busy, the lowest 4 bits store the category.</li>
+</ul>
+<p>In the Palm::PDB Perl module:</p>
+<ul>
+<li>If the record is deleted or busy, bit 5 stores the archive flag and the
+lowest 3 bits are unused.</li>
+<li>If the record is neither deleted or busy, the lowest 4 bits store the
+category.</li>
+</ul>
+<p>Here we&#39;ve chosen to follow the Palm::PDB Perl module&#39;s implementation, as it
+is the most flexible.</p>
 <p>References:</p>
 <ul>
 <li><a href="https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DataMgr.h#L44">https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DataMgr.h#L44</a></li>
-<li><a href="https://github.com/dwery/coldsync/blob/master/include/pdb.h">https://github.com/dwery/coldsync/blob/master/include/pdb.h</a></li>
-<li><a href="https://metacpan.org/release/Palm-PDB/source/lib/Palm/PDB.pm">https://metacpan.org/release/Palm-PDB/source/lib/Palm/PDB.pm</a></li>
+<li><a href="https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DLCommon.h#L44">https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DLCommon.h#L44</a></li>
+<li><a href="https://github.com/jichu4n/pilot-link/blob/master/libpisock/pi-file.c#L670">https://github.com/jichu4n/pilot-link/blob/master/libpisock/pi-file.c#L670</a></li>
+<li><a href="https://github.com/jichu4n/pilot-link/blob/master/libpisock/pi-file.c#L479">https://github.com/jichu4n/pilot-link/blob/master/libpisock/pi-file.c#L479</a></li>
+<li><a href="https://github.com/dwery/coldsync/blob/master/libpdb/pdb.c#L96">https://github.com/dwery/coldsync/blob/master/libpdb/pdb.c#L96</a></li>
+<li><a href="https://metacpan.org/dist/Palm-PDB/source/lib/Palm/PDB.pm#L428">https://metacpan.org/dist/Palm-PDB/source/lib/Palm/PDB.pm#L428</a></li>
 </ul>
 </div></section>
 <section class="tsd-panel tsd-hierarchy">
@@ -31,7 +61,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">RecordAttrs</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/f94110c/src/database-header.ts#L255">src/database-header.ts:255</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/497cb75/src/database-header.ts#L285">src/database-header.ts:285</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -86,28 +116,28 @@
 <a href="https://github.com/dwery/coldsync/blob/master/include/pdb.h">https://github.com/dwery/coldsync/blob/master/include/pdb.h</a> .</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/f94110c/src/database-header.ts#L268">src/database-header.ts:268</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/497cb75/src/database-header.ts#L298">src/database-header.ts:298</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="delete" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>delete</span><a href="#delete" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">delete</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 <div class="tsd-comment tsd-typography"><p>Record has been deleted.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/f94110c/src/database-header.ts#L258">src/database-header.ts:258</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/497cb75/src/database-header.ts#L288">src/database-header.ts:288</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="dirty" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>dirty</span><a href="#dirty" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">dirty</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 <div class="tsd-comment tsd-typography"><p>Record has been modified.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/f94110c/src/database-header.ts#L261">src/database-header.ts:261</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/497cb75/src/database-header.ts#L291">src/database-header.ts:291</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="secret" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>secret</span><a href="#secret" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">secret</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 <div class="tsd-comment tsd-typography"><p>&quot;Secret&quot; record - password protected.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/f94110c/src/database-header.ts#L271">src/database-header.ts:271</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/497cb75/src/database-header.ts#L301">src/database-header.ts:301</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited tsd-is-external"><a id="value" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>value</span><a href="#value" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
@@ -140,7 +170,7 @@
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/f94110c/src/database-header.ts#L280">src/database-header.ts:280</a></li></ul></aside></li>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/497cb75/src/database-header.ts#L310">src/database-header.ts:310</a></li></ul></aside></li>
 <li class="tsd-signature" id="archive.archive-2"><span class="tsd-signature-symbol">set</span> archive<span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">newValue</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
@@ -150,7 +180,7 @@
 <h5><span class="tsd-kind-parameter">newValue</span>: <span class="tsd-signature-type">boolean</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/f94110c/src/database-header.ts#L287">src/database-header.ts:287</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/497cb75/src/database-header.ts#L317">src/database-header.ts:317</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="category" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>category</span><a href="#category" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -161,7 +191,7 @@
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/f94110c/src/database-header.ts#L303">src/database-header.ts:303</a></li></ul></aside></li>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/497cb75/src/database-header.ts#L333">src/database-header.ts:333</a></li></ul></aside></li>
 <li class="tsd-signature" id="category.category-2"><span class="tsd-signature-symbol">set</span> category<span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">newValue</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
@@ -171,7 +201,7 @@
 <h5><span class="tsd-kind-parameter">newValue</span>: <span class="tsd-signature-type">number</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/f94110c/src/database-header.ts#L310">src/database-header.ts:310</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/jichu4n/palm-pdb/blob/497cb75/src/database-header.ts#L340">src/database-header.ts:340</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited tsd-is-external"><a id="deserialize" class="tsd-anchor"></a>
