@@ -245,12 +245,42 @@ export class DatabaseAttrs extends SBitmask.of(SUInt16BE) {
   resDB = false;
 }
 
-/** Record attribute flags.
+/** Record attribute flags in PDB files.
+ *
+ * In the DLP protocol, we use one byte to store record attribute flags and
+ * another byte to store the record category. However, in PDB files, we use a
+ * single byte is used to store both attribute flags and the record category.
+ *
+ * This presents a problem: there are 5 record attributes (namely delete, dirty,
+ * busy, secret, and archive), leaving 3 bits unused, but we need 4 bits to
+ * store the record category. So the lowest 4 bits are overloaded, but the
+ * exactly how differs among existing open source implementations:
+ *
+ * In pilot-link:
+ *   - Upper 4 bits store the first 4 record attributes (delete, dirty, busy, secret)
+ *   - Lower 4 bits store the record category; there's no archive bit
+ *
+ * In ColdSync:
+ *   - If the record is busy, bit 5 stores the archive flag and the lowest 3
+ *     bits are unused.
+ *   - If the record is not busy, the lowest 4 bits store the category.
+ *
+ * In the Palm::PDB Perl module:
+ *   - If the record is deleted or busy, bit 5 stores the archive flag and the
+ *     lowest 3 bits are unused.
+ *   - If the record is neither deleted or busy, the lowest 4 bits store the
+ *     category.
+ *
+ * Here we've chosen to follow the Palm::PDB Perl module's implementation, as it
+ * is the most flexible.
  *
  * References:
  *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DataMgr.h#L44
- *   - https://github.com/dwery/coldsync/blob/master/include/pdb.h
- *   - https://metacpan.org/release/Palm-PDB/source/lib/Palm/PDB.pm
+ *   - https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r4/include/Core/System/DLCommon.h#L44
+ *   - https://github.com/jichu4n/pilot-link/blob/master/libpisock/pi-file.c#L670
+ *   - https://github.com/jichu4n/pilot-link/blob/master/libpisock/pi-file.c#L479
+ *   - https://github.com/dwery/coldsync/blob/master/libpdb/pdb.c#L96
+ *   - https://metacpan.org/dist/Palm-PDB/source/lib/Palm/PDB.pm#L428
  */
 export class RecordAttrs extends SBitmask.of(SUInt8) {
   /** Record has been deleted. */

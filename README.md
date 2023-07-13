@@ -107,7 +107,7 @@ db2.deserialize(buffer, {encoding: 'gb2312'});
 const buf1 = db3.serialize({encoding: 'shiftjis'});
 ```
 
-If you are not sure what text encoding to specify, see [here](https://github.com/jichu4n/palm-os-sdk/blob/a7a3d4ad02a939f8b91db8018065ebcf05cdf276/sdk-5r3/include/Core/System/PalmLocale.h#L487) for the full list of text encodings supported by Palm OS. To find the `encoding` value that corresponds to a particular text encoding, see [the iconv-lite wiki](https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings).
+If you are not sure what text encoding to specify, see [here](https://github.com/jichu4n/palm-os-sdk/blob/master/sdk-5r3/include/Core/System/PalmLocale.h#L487) for the full list of text encodings supported by Palm OS. To find the `encoding` value that corresponds to a particular text encoding, see [the iconv-lite wiki](https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings).
 
 ### Included PDB format implementations
 
