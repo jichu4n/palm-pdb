@@ -28,7 +28,7 @@ export abstract class Database<
   /** AppInfo type. */
   AppInfoT extends Serializable = SBuffer,
   /** SortInfo type. */
-  SortInfoT extends Serializable = SBuffer
+  SortInfoT extends Serializable = SBuffer,
 > extends SObject {
   /** Record list constructor, to be provided by child classes. */
   protected abstract readonly recordListType: new () => RecordListType<EntryT>;
@@ -195,7 +195,7 @@ export abstract class PdbDatabase<
   /** AppInfo type. */
   AppInfoT extends Serializable = SBuffer,
   /** SortInfo type. */
-  SortInfoT extends Serializable = SBuffer
+  SortInfoT extends Serializable = SBuffer,
 > extends Database<RecordEntryType, RecordT, AppInfoT, SortInfoT> {
   constructor() {
     super();
@@ -208,7 +208,7 @@ export abstract class PdbDatabase<
   static of<
     RecordT extends Record<RecordEntryType>,
     AppInfoT extends Serializable = SBuffer,
-    SortInfoT extends Serializable = SBuffer
+    SortInfoT extends Serializable = SBuffer,
   >(
     recordType: new () => RecordT,
     appInfoType?: new () => AppInfoT,
@@ -231,7 +231,7 @@ export abstract class PrcDatabase<
   /** AppInfo type. */
   AppInfoT extends Serializable = SBuffer,
   /** SortInfo type. */
-  SortInfoT extends Serializable = SBuffer
+  SortInfoT extends Serializable = SBuffer,
 > extends Database<RsrcEntryType, RecordT, AppInfoT, SortInfoT> {
   constructor() {
     super();
@@ -243,7 +243,7 @@ export abstract class PrcDatabase<
   static of<
     RecordT extends Record<RsrcEntryType>,
     AppInfoT extends Serializable = SBuffer,
-    SortInfoT extends Serializable = SBuffer
+    SortInfoT extends Serializable = SBuffer,
   >(
     recordType: new () => RecordT,
     appInfoType?: new () => AppInfoT,

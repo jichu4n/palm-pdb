@@ -216,3 +216,9 @@ Information regarding PDB / PRC data formats is based on the following sources:
 - pilot-link ([archive](https://github.com/jichu4n/pilot-link)) by David A. Desrosiers, JP Rosevear, Kenneth Albanowski et al.
 
 Wherever possible, the names of classes and fields are derived from their equivalents in the official Palm OS SDKs and the Palm File Format Specification.
+
+## Changelog
+
+### 0.2.0
+
+- Upgrade to serio@2.0.0 (see https://github.com/jichu4n/serio?tab=readme-ov-file#200)

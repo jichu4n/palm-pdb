@@ -343,8 +343,8 @@ export class RecordAttrs extends SBitmask.of(SUInt8) {
         this.delete && this.busy
           ? 'deleted and busy'
           : this.delete
-          ? 'deleted'
-          : 'busy';
+            ? 'deleted'
+            : 'busy';
       throw new Error(
         `Attempting to set category ${newValue} on record ` +
           `that is currently ${recordState}`

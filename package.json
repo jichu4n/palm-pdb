@@ -1,6 +1,6 @@
 {
   "name": "palm-pdb",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Work with Palm OS PDB and PRC files",
   "repository": {
     "type": "git",
@@ -28,20 +28,20 @@
     "prepublishOnly": "./src/tests/package-test.sh"
   },
   "devDependencies": {
-    "@types/fs-extra": "^11.0.1",
-    "@types/jest": "^29.5.1",
-    "@types/lodash": "^4.14.194",
-    "@types/node": "^20.2.0",
-    "concurrently": "^8.0.1",
-    "prettier": "^2.8.8",
-    "serve": "^14.2.0",
-    "ts-jest": "^29.1.0",
-    "typedoc": "^0.24.7",
-    "typescript": "^5.0.4"
+    "@types/fs-extra": "^11.0.4",
+    "@types/jest": "^29.5.12",
+    "@types/lodash": "^4.14.202",
+    "@types/node": "^20.11.24",
+    "concurrently": "^8.2.2",
+    "prettier": "^3.2.5",
+    "serve": "^14.2.1",
+    "ts-jest": "^29.1.2",
+    "typedoc": "^0.25.9",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
-    "commander": "^10.0.1",
-    "fs-extra": "^11.1.1",
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0",
     "iconv-lite": "^0.6.3",
     "lodash": "^4.17.21",
     "serio": "^2.0.0",

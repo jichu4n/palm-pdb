@@ -12,7 +12,7 @@ import {
 /** An array encoded as a number N followed by N elements. */
 export abstract class SDynamicArray<
   LengthT extends SerializableWrapper<number>,
-  ValueT extends Serializable
+  ValueT extends Serializable,
 > extends SerializableWrapper<Array<ValueT>> {
   /** Array of Serializables. */
   value: Array<ValueT> = [];
@@ -58,14 +58,14 @@ export abstract class SDynamicArray<
   /** Returns an SDynamicArray class with the given length and value types. */
   static of<
     LengthT extends SerializableWrapper<number>,
-    ValueT extends Serializable
+    ValueT extends Serializable,
   >(
     lengthType: new () => LengthT,
     valueType: new () => ValueT
   ): ReturnType<typeof createSDynamicArray<LengthT, ValueT>>;
   static of<
     LengthT extends SerializableWrapper<number>,
-    ValueT extends Serializable
+    ValueT extends Serializable,
   >(arg1: Array<ValueT> | (new () => LengthT), arg2?: new () => ValueT) {
     if (Array.isArray(arg1)) {
       return super.of(arg1);
@@ -87,7 +87,7 @@ export abstract class SDynamicArray<
 
 function createSDynamicArray<
   LengthT extends SerializableWrapper<number>,
-  ValueT extends Serializable
+  ValueT extends Serializable,
 >(lengthType: new () => LengthT, valueType: new () => ValueT) {
   return class extends SDynamicArray<LengthT, ValueT> {
     lengthType = lengthType;
