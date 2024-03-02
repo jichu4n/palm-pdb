@@ -219,6 +219,6 @@ Wherever possible, the names of classes and fields are derived from their equiva
 
 ## Changelog
 
-### 0.2.0
+### 0.2
 
-- Upgrade to serio@2.0.0 (see https://github.com/jichu4n/serio?tab=readme-ov-file#200)
+- Upgrade to serio 2.0 (see https://github.com/jichu4n/serio?tab=readme-ov-file#20)
