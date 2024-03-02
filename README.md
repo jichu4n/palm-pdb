@@ -194,7 +194,7 @@ class MyDatabase extends PdbDatabase.of(MyRecord, MyAppInfo, MySortInfo) {
 
 There are three options for implementing a record format.
 
-**Using @field() annotations**: This is the easiest option and should be preferred for most use cases. The [PdbRecord](https://jichu4n.github.io/palm-pdb/classes/PdbRecord.html) and [PrcRecord](https://jichu4n.github.io/palm-pdb/classes/PrcRecord.html) classes extend [SObject](https://github.com/jichu4n/serio/#objects), so you can use `@field()` annotations to define fields that should be processed by the default `serialize()`, `deserialize()` and `getSerializedLength()` implementations. For example, see the implementation for [MemoRecord](https://github.com/jichu4n/palm-pdb/blob/master/src/memo-database.ts) or [ToDoRecord](https://github.com/jichu4n/palm-pdb/blob/master/src/todo-database.ts).
+**Using @field() decorators**: This is the easiest option and should be preferred for most use cases. The [PdbRecord](https://jichu4n.github.io/palm-pdb/classes/PdbRecord.html) and [PrcRecord](https://jichu4n.github.io/palm-pdb/classes/PrcRecord.html) classes extend [SObject](https://github.com/jichu4n/serio/#objects), so you can use `@field()` decorators to define fields that should be processed by the default `serialize()`, `deserialize()` and `getSerializedLength()` implementations. For example, see the implementation for [MemoRecord](https://github.com/jichu4n/palm-pdb/blob/master/src/memo-database.ts) or [ToDoRecord](https://github.com/jichu4n/palm-pdb/blob/master/src/todo-database.ts).
 
 **Custom implementation**: You can also provide your own fully custom implementation of the [Serializable](https://github.com/jichu4n/serio/#serializable) interface, i.e. by overriding the methods `serialize()`, `deserialize()`, and `getSerializedLength()`.
 
@@ -202,7 +202,7 @@ There are three options for implementing a record format.
 
 #### AppInfo & SortInfo
 
-Similarly, the AppInfo and SortInfo blocks can be implemented in different ways. The only requirement is that they need to implement the [Serializable](https://github.com/jichu4n/serio/#serializable) interface. The easiest way would be to extend [SObject](https://github.com/jichu4n/serio/#objects) and use `@field()` annotations to define fields.
+Similarly, the AppInfo and SortInfo blocks can be implemented in different ways. The only requirement is that they need to implement the [Serializable](https://github.com/jichu4n/serio/#serializable) interface. The easiest way would be to extend [SObject](https://github.com/jichu4n/serio/#objects) and use `@field()` decorators to define fields.
 
 There is a standard format for storing category settings inside the AppInfo block, as described in the [Palm File Format Specification](https://jichu4n.github.io/palm-pdb/assets/Palm%20File%20Format%20Specification.pdf). This format is used by the built-in PIM applications, and is called [AppInfoType](https://jichu4n.github.io/palm-pdb/classes/AppInfoType.html). See the implementation for [MemoAppInfo](https://github.com/jichu4n/palm-pdb/blob/master/src/memo-database.ts) for an example AppInfo block that makes use of AppInfoType.
 
