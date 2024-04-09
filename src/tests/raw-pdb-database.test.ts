@@ -1,7 +1,6 @@
 import fs from 'fs-extra';
-import pick from 'lodash/pick';
 import path from 'path';
-import {Category, RawPdbDatabase} from '..';
+import {RawPdbDatabase} from '..';
 
 describe('RawPdbDatabase', function () {
   test('load and serialize test database', async function () {
