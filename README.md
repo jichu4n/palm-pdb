@@ -219,6 +219,10 @@ Wherever possible, the names of classes and fields are derived from their equiva
 
 ## Changelog
 
-### 0.2
+### 0.2.2
+
+- Fix bug where PDB_EPOCH is accidentally overwritten
+
+### 0.2.1
 
 - Upgrade to serio 2.0 (see https://github.com/jichu4n/serio?tab=readme-ov-file#20)
