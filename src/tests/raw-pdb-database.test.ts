@@ -8,7 +8,6 @@ describe('RawPdbDatabase', function () {
       path.join(__dirname, 'testdata', 'ExpenseDB.pdb')
     );
     const db = RawPdbDatabase.from(buffer);
-    console.log(db.toJSON());
     expect(db.header).toMatchObject({
       name: 'ExpenseDB',
       type: 'DATA',
