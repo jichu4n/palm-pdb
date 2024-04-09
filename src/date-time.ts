@@ -74,7 +74,7 @@ export class DatabaseTimestamp extends SerializableWrapper<Date> {
 }
 
 /** DatabaseTimestamp corresponding to epochDate. */
-export const EPOCH_TIMESTAMP = DatabaseTimestamp.of(PDB_EPOCH);
+export const EPOCH_TIMESTAMP = DatabaseTimestamp.of(new Date(PDB_EPOCH));
 
 /** A date (year, month, DOM) encoded as a 16-bit integer.
  *

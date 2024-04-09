@@ -9,7 +9,7 @@ import {
   SUInt32BE,
   SUInt8,
 } from 'serio';
-import {DatabaseTimestamp, EPOCH_TIMESTAMP} from './date-time';
+import {DatabaseTimestamp, PDB_EPOCH} from './date-time';
 import {LocalId, RecordId, SDynamicArray, TypeId} from './util';
 import pick from 'lodash/pick';
 
@@ -49,7 +49,7 @@ export class DatabaseHdrType extends SObject {
 
   /** Last backup timestamp. */
   @field()
-  lastBackupDate: DatabaseTimestamp = EPOCH_TIMESTAMP;
+  lastBackupDate = DatabaseTimestamp.of(new Date(PDB_EPOCH));
 
   /** Modification number (integer). */
   @field(SUInt32BE)
