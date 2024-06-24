@@ -36,7 +36,7 @@
     "prettier": "^3.2.5",
     "serve": "^14.2.1",
     "ts-jest": "^29.1.2",
-    "typedoc": "^0.25.12",
+    "typedoc": "^0.26.2",
     "typescript": "^5.4.3"
   },
   "dependencies": {
