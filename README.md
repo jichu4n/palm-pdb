@@ -1,5 +1,8 @@
 # palm-pdb
 
+[![NPM Version][npm-version-image]][npm-url]
+[![Build Status][build-status-image]][github-url]
+
 TypeScript library for working with Palm OS PDB and PRC files.
 
 palm-pdb provides a TypeScript / JavaScript API for reading and writing Palm OS PDB and PRC files. It also provides out-of-the-box implementations of several PDB data formats, including those of the core Palm OS PIM applications (Memo Pad, Date Book, Address, To Do List) and PalmDOC.
@@ -226,3 +229,8 @@ Wherever possible, the names of classes and fields are derived from their equiva
 ### 0.2.1
 
 - Upgrade to serio 2.0 (see https://github.com/jichu4n/serio?tab=readme-ov-file#20)
+
+[npm-url]: https://npmjs.org/package/palm-pdb
+[npm-version-image]: https://badgen.net/npm/v/palm-pdb
+[github-url]: https://github.com/jichu4n/palm-pdb
+[build-status-image]: https://github.com/jichu4n/palm-pdb/actions/workflows/build.yaml/badge.svg
