@@ -7,6 +7,7 @@ import path from 'path';
 import {DEFAULT_ENCODING, PalmDoc} from '..';
 // Not using resolveJsonModule because it causes the output to be generated
 // relative to the root directory instead of src/.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const packageJson = require('../../package.json');
 
 if (require.main === module) {
@@ -27,13 +28,16 @@ if (require.main === module) {
         'utf-8'
       )
       .option('-o, --output <document.txt>', 'path to output text file')
-      .action(async (inputFilePath: string, opts: any) => {
+      .action(async (inputFilePath: string, opts) => {
         const doc = new PalmDoc();
         try {
           const buffer = await fs.readFile(inputFilePath);
           doc.deserialize(buffer, {encoding: opts.inputEncoding});
-        } catch (e: any) {
-          console.error(`Could not open '${inputFilePath}': ${e.message}`);
+        } catch (e) {
+          console.error(
+            `Could not open '${inputFilePath}': ` +
+              (e instanceof Error ? e.message : String(e))
+          );
           process.exit(1);
         }
         const outputFilePath =
@@ -61,15 +65,18 @@ if (require.main === module) {
       .option('--compress', 'enable compression', true)
       .option('--no-compress', 'disable compression')
       .option('-o, --output <document.pdb>', 'path to output PalmDOC PDB file')
-      .action(async (inputFilePath: string, opts: any) => {
+      .action(async (inputFilePath: string, opts) => {
         const doc = new PalmDoc();
         try {
           doc.text = iconv.decode(
             await fs.readFile(inputFilePath),
             opts.inputEncoding
           );
-        } catch (e: any) {
-          console.error(`Could not open '${inputFilePath}': ${e.message}`);
+        } catch (e) {
+          console.error(
+            `Could not open '${inputFilePath}': ` +
+              (e instanceof Error ? e.message : String(e))
+          );
           process.exit(1);
         }
         doc.name = opts.name || path.basename(inputFilePath);

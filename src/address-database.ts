@@ -113,7 +113,7 @@ export type PhoneNumberFieldType =
 export function isPhoneNumberFieldType(
   fieldType: AddressFieldType
 ): fieldType is PhoneNumberFieldType {
-  return PHONE_NUMBER_FIELD_TYPES.includes(fieldType as any);
+  return PHONE_NUMBER_FIELD_TYPES.includes(fieldType as PhoneNumberFieldType);
 }
 
 /** Information about a field in AddressDB. */

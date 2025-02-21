@@ -10,16 +10,24 @@ import {
   PalmDocDatabase,
   PdbDatabase,
   RawPdbDatabase,
+  Record,
+  RecordEntryType,
   ToDoDatabase,
 } from '..';
+import {Serializable} from 'serio';
 // Not using resolveJsonModule because it causes the output to be generated
 // relative to the root directory instead of src/.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const packageJson = require('../../package.json');
 
 interface DatabaseRegistryEntry {
   creator: string;
   type: string;
-  databaseType: new () => PdbDatabase<any, any, any>;
+  databaseType: new () => PdbDatabase<
+    Record<RecordEntryType>,
+    Serializable,
+    Serializable
+  >;
   label: string;
 }
 
@@ -71,8 +79,11 @@ if (require.main === module) {
         try {
           pdbBuffer = await fs.readFile(inputFilePath);
           rawDb = RawPdbDatabase.from(pdbBuffer);
-        } catch (e: any) {
-          console.error(`Could not open '${inputFilePath}': ${e.message}`);
+        } catch (e) {
+          console.error(
+            `Could not open '${inputFilePath}': ` +
+              (e instanceof Error ? e.message : String(e))
+          );
           process.exit(1);
         }
 
@@ -92,8 +103,11 @@ if (require.main === module) {
         const db = new dbRegistryEntry.databaseType();
         try {
           db.deserialize(pdbBuffer, {encoding: options.inputEncoding});
-        } catch (e: any) {
-          console.error(`Could not parse '${inputFilePath}': ${e.message}`);
+        } catch (e) {
+          console.error(
+            `Could not parse '${inputFilePath}': ` +
+              (e instanceof Error ? e.message : String(e))
+          );
           process.exit(1);
         }
 
