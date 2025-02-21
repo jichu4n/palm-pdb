@@ -3,6 +3,7 @@ import {
   bitfield,
   DeserializeOptions,
   field,
+  json,
   SArray,
   SBitmask,
   SerializeOptions,
@@ -132,6 +133,7 @@ export interface AddressField {
 /** AddressDB AppInfo block. */
 export class AddressAppInfo extends AppInfoType {
   @field(SUInt16BE)
+  @json(false)
   private padding2 = 0;
 
   /** Field information.
@@ -140,18 +142,21 @@ export class AddressAppInfo extends AppInfoType {
    */
   fields: Array<AddressField> = [];
   @field(SUInt32BE)
+  @json(false)
   private renamedFields = 0;
   @field(
     SArray.of(SStringNT.ofLength(ADDRESS_FIELD_LABEL_LENGTH)).ofLength(
       NUM_ADDRESS_FIELDS
     )
   )
+  @json(false)
   private addressLabels: Array<string> = [];
 
   @field(SUInt8.enum(AddressCountry))
   country = AddressCountry.UNITED_STATES;
 
   @field(SUInt8)
+  @json(false)
   private padding3 = 0;
 
   /** Whether to sort the database by company - must be 0 or 1. */
@@ -159,6 +164,7 @@ export class AddressAppInfo extends AppInfoType {
   sortByCompany = 0;
 
   @field(SUInt8)
+  @json(false)
   private padding4 = 0;
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {
@@ -210,6 +216,7 @@ export interface AddressRecordCell {
 /** An AddressDB record. */
 export class AddressRecord extends PdbRecord {
   /** The "main" phone number type for this record. */
+  @json(true)
   get mainPhoneNumberType() {
     return this.phoneNumberTypeMappingBitmask.mainPhoneNumberType;
   }
@@ -217,6 +224,7 @@ export class AddressRecord extends PdbRecord {
     this.phoneNumberTypeMappingBitmask.mainPhoneNumberType = newValue;
   }
   /** Phone number type mapping for this record. */
+  @json(true)
   get phoneNumberTypeMapping() {
     return this.phoneNumberTypeMappingBitmask.phoneNumberTypeMapping;
   }
@@ -224,6 +232,7 @@ export class AddressRecord extends PdbRecord {
     this.phoneNumberTypeMappingBitmask.phoneNumberTypeMapping = newValue;
   }
   @field()
+  @json(false)
   private phoneNumberTypeMappingBitmask = new PhoneNumberTypeMappingBitmask();
 
   /** Cells in this record.
@@ -235,10 +244,13 @@ export class AddressRecord extends PdbRecord {
    */
   cells: Array<AddressRecordCell> = [];
   @field(SUInt32BE)
+  @json(false)
   private fieldsBitmask = 0;
   @field(SUInt8)
+  @json(false)
   private companyCellValueOffset = 0;
   @field(SArray.of(SStringNT))
+  @json(false)
   private values: Array<string> = [];
 
   /** Returns the cell value for a field type in this record, or undefined if
@@ -350,11 +362,13 @@ export type PhoneNumberTypeMapping = {
 
 class PhoneNumberTypeMappingBitmask extends SBitmask.of(SUInt32BE) {
   @bitfield(8)
+  @json(false)
   private padding1 = 0;
 
   @bitfield(4)
   mainPhoneNumberType = PhoneNumberType.WORK;
 
+  @json(true)
   get phoneNumberTypeMapping(): PhoneNumberTypeMapping {
     return {
       [AddressFieldType.PHONE_1]: this.phone1,
@@ -372,14 +386,19 @@ class PhoneNumberTypeMappingBitmask extends SBitmask.of(SUInt32BE) {
     this.phone5 = newValue[AddressFieldType.PHONE_5];
   }
   @bitfield(4)
+  @json(false)
   private phone5 = 4;
   @bitfield(4)
+  @json(false)
   private phone4 = 3;
   @bitfield(4)
+  @json(false)
   private phone3 = 2;
   @bitfield(4)
+  @json(false)
   private phone2 = 1;
   @bitfield(4)
+  @json(false)
   private phone1 = 0;
 }
 

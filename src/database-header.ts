@@ -1,6 +1,7 @@
 import {
   bitfield,
   field,
+  json,
   SBitmask,
   Serializable,
   SObject,
@@ -143,6 +144,7 @@ export class PdbRecordListType
    * page 17 of the Palm File Format Specification for more details.
    */
   @field(SUInt32BE)
+  @json(false)
   private readonly nextListId = 0;
 
   /** Array of record entries. */
@@ -150,6 +152,7 @@ export class PdbRecordListType
   values: Array<RecordEntryType> = [];
 
   @field(SUInt16BE)
+  @json(false)
   private readonly padding1 = 0;
 }
 
@@ -169,6 +172,7 @@ export class PrcRecordListType
    * page 17 of the Palm File Format Specification for more details.
    */
   @field(SUInt32BE)
+  @json(false)
   private readonly nextListId = 0;
 
   /** Array of resource entries. */
@@ -176,6 +180,7 @@ export class PrcRecordListType
   values: Array<RsrcEntryType> = [];
 
   @field(SUInt16BE)
+  @json(false)
   private readonly padding1 = 0;
 }
 
@@ -190,6 +195,7 @@ export class DatabaseAttrs extends SBitmask.of(SUInt16BE) {
   @bitfield(1)
   open = false;
   @bitfield(3)
+  @json(false)
   private unused1 = 0;
   /** This database (resource or record) is associated with the application
    * with the same creator. It will be beamed and copied along with the
@@ -300,6 +306,7 @@ export class RecordAttrs extends SBitmask.of(SUInt8) {
   secret = false;
 
   @bitfield(4)
+  @json(false)
   private lowest4bits = 0;
 
   /** Record is archived.

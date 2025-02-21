@@ -1,6 +1,7 @@
 import {
   DeserializeOptions,
   field,
+  json,
   SerializeOptions,
   SStringNT,
   SUInt16BE,
@@ -25,6 +26,7 @@ export enum ToDoSortOrder {
 export class ToDoAppInfo extends AppInfoType {
   /** Not sure what this is ¯\_(ツ)_/¯ */
   @field(SUInt16BE)
+  @json(false)
   private dirty = 0;
 
   /** Item sort order. */
@@ -32,6 +34,7 @@ export class ToDoAppInfo extends AppInfoType {
   sortOrder = ToDoSortOrder.MANUAL;
 
   @field(SUInt8)
+  @json(false)
   private padding2 = 0;
 
   serialize(opts?: SerializeOptions) {
@@ -50,6 +53,7 @@ export class ToDoRecord extends PdbRecord {
 
   /** Attributes byte. */
   @field(SUInt8)
+  @json(false)
   private attrs = 0;
 
   /** Whether the item is completed. Stored inside attrs. */
