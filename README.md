@@ -185,11 +185,7 @@ class MySortInfo implements Serializable {
 // optional.
 class MyDatabase extends PdbDatabase.of(MyRecord, MyAppInfo, MySortInfo) {
   // Set default header settings (optional)
-  header = DatabaseHdrType.with({
-    name: 'MyDB',
-    type: 'DATA',
-    creator: 'abcd',
-  });
+  header = DatabaseHdrType.with({name: 'MyDB', type: 'DATA', creator: 'abcd'});
 }
 ```
 
@@ -221,6 +217,12 @@ Information regarding PDB / PRC data formats is based on the following sources:
 Wherever possible, the names of classes and fields are derived from their equivalents in the official Palm OS SDKs and the Palm File Format Specification.
 
 ## Changelog
+
+### 0.3.0
+
+- Upgrade to serio 3.0
+- Enable ESLint
+- Fix minor bug in DatebookRecord deserialization
 
 ### 0.2.2
 
