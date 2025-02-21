@@ -1,4 +1,3 @@
-import pick from 'lodash/pick';
 import times from 'lodash/times';
 import {
   bitfield,
@@ -145,7 +144,7 @@ export class DatebookRecord extends PdbRecord {
       this.note = '';
     }
 
-    return buffer.length;
+    return offset;
   }
 
   serialize(opts?: SerializeOptions) {
@@ -341,7 +340,7 @@ export class RecurrenceSettings extends SObject {
       case RecurrenceFrequency.MONTHLY_BY_DATE:
       case RecurrenceFrequency.YEARLY:
         break;
-      case RecurrenceFrequency.WEEKLY:
+      case RecurrenceFrequency.WEEKLY: {
         const days = times(
           7,
           (i) => !!(this.arg1 & (1 << i))
@@ -349,11 +348,13 @@ export class RecurrenceSettings extends SObject {
         const firstDayOfWeek = this.arg2;
         this.weekly = {days, firstDayOfWeek};
         break;
-      case RecurrenceFrequency.MONTHLY_BY_DAY:
+      }
+      case RecurrenceFrequency.MONTHLY_BY_DAY: {
         const weekOfMonth = Math.floor(this.arg1 / 7);
         const day = this.arg1 % 7;
         this.monthlyByDay = {weekOfMonth, day};
         break;
+      }
       default:
         throw new Error(`Invalid frequency type: ${this.frequency}`);
     }
@@ -369,7 +370,7 @@ export class RecurrenceSettings extends SObject {
         this.arg1 = 0;
         this.arg2 = 0;
         break;
-      case RecurrenceFrequency.WEEKLY:
+      case RecurrenceFrequency.WEEKLY: {
         if (!this.weekly) {
           throw new Error('`weekly` must be set when frequency is WEEKLY');
         }
@@ -390,7 +391,8 @@ export class RecurrenceSettings extends SObject {
         }
         this.arg2 = firstDayOfWeek;
         break;
-      case RecurrenceFrequency.MONTHLY_BY_DAY:
+      }
+      case RecurrenceFrequency.MONTHLY_BY_DAY: {
         if (!this.monthlyByDay) {
           throw new Error(
             '`monthlyByDay` must be set when frequency is MONTHLY_BY_DAY'
@@ -406,6 +408,7 @@ export class RecurrenceSettings extends SObject {
         this.arg1 = weekOfMonth * 7 + day;
         this.arg2 = 0;
         break;
+      }
       default:
         throw new Error(`Invalid frequency type: ${this.frequency}`);
     }

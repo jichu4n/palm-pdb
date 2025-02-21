@@ -1,5 +1,4 @@
 import groupBy from 'lodash/groupBy';
-import pick from 'lodash/pick';
 import {
   bitfield,
   DeserializeOptions,
@@ -337,9 +336,7 @@ export class AddressRecord extends PdbRecord {
     return {
       fieldType,
       ...(isPhoneNumberFieldType(fieldType)
-        ? {
-            phoneNumberType: this.phoneNumberTypeMapping[fieldType],
-          }
+        ? {phoneNumberType: this.phoneNumberTypeMapping[fieldType]}
         : {}),
       value,
     };

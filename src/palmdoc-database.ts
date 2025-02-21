@@ -219,7 +219,7 @@ export class PalmDoc extends SObject {
       }
 
       // Consume next byte.
-      let byte1 = reader.readUInt8();
+      const byte1 = reader.readUInt8();
 
       // 2. Try 2-byte "space, char XOR 0x80" encoding.
       if (byte1 === ' '.charCodeAt(0) && reader.remaining() >= 1) {
