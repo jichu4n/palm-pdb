@@ -37,7 +37,7 @@ export class DatabaseTimestamp extends SerializableWrapper<Date> {
    * If the time has the top bit clear, it's a signed 32-bit number counting
    * from 1st Jan 1970.
    */
-  deserialize(buffer: Buffer, opts?: DeserializeOptions) {
+  deserialize(buffer: Buffer, _opts?: DeserializeOptions) {
     let ts = buffer.readUInt32BE();
     if (ts === 0 || ts & (1 << 31)) {
       this.epochType = EpochType.PDB;
@@ -51,7 +51,7 @@ export class DatabaseTimestamp extends SerializableWrapper<Date> {
     return 4;
   }
 
-  serialize(opts?: SerializeOptions) {
+  serialize(_opts?: SerializeOptions) {
     const buffer = Buffer.alloc(4);
     switch (this.epochType) {
       case EpochType.PDB:
@@ -68,7 +68,7 @@ export class DatabaseTimestamp extends SerializableWrapper<Date> {
     return buffer;
   }
 
-  getSerializedLength(opts?: SerializeOptions) {
+  getSerializedLength(_opts?: SerializeOptions) {
     return 4;
   }
 }
@@ -98,7 +98,7 @@ export class DatabaseDate extends SerializableWrapper<Date> {
     this.dayOfMonth = newValue.getUTCDate();
   }
 
-  serialize(opts?: SerializeOptions) {
+  serialize(_opts?: SerializeOptions) {
     if (this.year < PDB_EPOCH.getUTCFullYear()) {
       throw new Error(`Invalid year: ${this.year}`);
     }
@@ -128,7 +128,7 @@ export class DatabaseDate extends SerializableWrapper<Date> {
     return this.getSerializedLength(opts);
   }
 
-  getSerializedLength(opts?: SerializeOptions) {
+  getSerializedLength(_opts?: SerializeOptions) {
     return 2;
   }
 
@@ -152,7 +152,7 @@ export class OptionalDatabaseDate extends SerializableWrapper<DatabaseDate | nul
     return this.value ? this.value.serialize(opts) : Buffer.of(0xff, 0xff);
   }
 
-  getSerializedLength(opts?: SerializeOptions) {
+  getSerializedLength(_opts?: SerializeOptions) {
     return 2;
   }
 }

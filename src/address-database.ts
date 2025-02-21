@@ -1,5 +1,4 @@
 import groupBy from 'lodash/groupBy';
-import pick from 'lodash/pick';
 import {
   bitfield,
   DeserializeOptions,
@@ -114,7 +113,7 @@ export type PhoneNumberFieldType =
 export function isPhoneNumberFieldType(
   fieldType: AddressFieldType
 ): fieldType is PhoneNumberFieldType {
-  return PHONE_NUMBER_FIELD_TYPES.includes(fieldType as any);
+  return PHONE_NUMBER_FIELD_TYPES.includes(fieldType as PhoneNumberFieldType);
 }
 
 /** Information about a field in AddressDB. */
@@ -337,9 +336,7 @@ export class AddressRecord extends PdbRecord {
     return {
       fieldType,
       ...(isPhoneNumberFieldType(fieldType)
-        ? {
-            phoneNumberType: this.phoneNumberTypeMapping[fieldType],
-          }
+        ? {phoneNumberType: this.phoneNumberTypeMapping[fieldType]}
         : {}),
       value,
     };

@@ -21,7 +21,7 @@ describe('ToDoDatabase', function () {
       expect(record.isCompleted).toStrictEqual(false);
     }
 
-    let dueDate0 = db.records[0].dueDate;
+    const dueDate0 = db.records[0].dueDate;
     expect(dueDate0?.year).toStrictEqual(2021);
     expect(dueDate0?.month).toStrictEqual(1);
     expect(dueDate0?.dayOfMonth).toStrictEqual(21);

@@ -1,12 +1,4 @@
-import pick from 'lodash/pick';
-import {
-  field,
-  SerializeOptions,
-  SObject,
-  SStringNT,
-  SUInt16BE,
-  SUInt8,
-} from 'serio';
+import {field, SerializeOptions, SStringNT, SUInt16BE, SUInt8} from 'serio';
 import {AppInfoType, DatabaseHdrType, PdbDatabase, PdbRecord} from '.';
 
 /** MemoDB sort order. */

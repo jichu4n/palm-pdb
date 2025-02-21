@@ -111,7 +111,7 @@ export const LocalId = SUInt32BE;
 export class RecordId extends SerializableWrapper<number> {
   value = 0;
 
-  deserialize(buffer: Buffer, opts?: DeserializeOptions) {
+  deserialize(buffer: Buffer, _opts?: DeserializeOptions) {
     // Reference: https://github.com/jichu4n/pilot-link/blob/master/libpisock/pi-file.c#L258
     this.value =
       (buffer.readUInt8(0) << 16) |
@@ -119,7 +119,7 @@ export class RecordId extends SerializableWrapper<number> {
       buffer.readUInt8(2);
     return 3;
   }
-  serialize(opts?: SerializeOptions) {
+  serialize(_opts?: SerializeOptions) {
     // Reference: https://github.com/jichu4n/pilot-link/blob/master/libpisock/pi-file.c#L1246
     return Buffer.of(
       (this.value >> 16) & 0xff,
@@ -127,7 +127,7 @@ export class RecordId extends SerializableWrapper<number> {
       this.value & 0xff
     );
   }
-  getSerializedLength(opts?: SerializeOptions) {
+  getSerializedLength(_opts?: SerializeOptions) {
     return 3;
   }
 }

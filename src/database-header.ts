@@ -11,7 +11,6 @@ import {
 } from 'serio';
 import {DatabaseTimestamp, PDB_EPOCH} from './date-time';
 import {LocalId, RecordId, SDynamicArray, TypeId} from './util';
-import pick from 'lodash/pick';
 
 /** Maximum length of database names - 31 chars + 1 NUL byte.
  *
