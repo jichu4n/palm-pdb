@@ -56,7 +56,7 @@ export class OptionalEventTime extends SerializableWrapper<EventTime | null> {
     return this.value ? this.value.serialize(opts) : Buffer.of(0xff, 0xff);
   }
 
-  getSerializedLength(opts?: SerializeOptions) {
+  getSerializedLength(_opts?: SerializeOptions) {
     return 2;
   }
 }

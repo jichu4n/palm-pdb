@@ -273,7 +273,7 @@ export class PalmDocMetadata extends Serializable {
   /** Current reading position, as an offset into the uncompressed text. */
   position = 0;
 
-  deserialize(buffer: Buffer, opts?: DeserializeOptions) {
+  deserialize(buffer: Buffer, _opts?: DeserializeOptions) {
     const reader = SmartBuffer.fromBuffer(buffer);
 
     const compressionLevel = reader.readUInt16BE();
@@ -313,7 +313,7 @@ export class PalmDocMetadata extends Serializable {
     return writer.toBuffer();
   }
 
-  getSerializedLength(opts?: SerializeOptions) {
+  getSerializedLength(_opts?: SerializeOptions) {
     return 16;
   }
 }

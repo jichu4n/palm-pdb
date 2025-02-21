@@ -7,9 +7,9 @@ export default tseslint.config(
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{js,mjs,cjs,ts}'],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.node,
+    languageOptions: {ecmaVersion: 2020, globals: globals.node},
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['error', {argsIgnorePattern: '^_'}],
     },
   }
 );
