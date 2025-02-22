@@ -5,6 +5,7 @@ import {
   SObject,
   Serializable,
   SerializeOptions,
+  json,
 } from 'serio';
 import {SmartBuffer} from 'smart-buffer';
 import {
@@ -35,8 +36,10 @@ export abstract class Database<
   /** Record type constructor, to be provided by child classes. */
   protected abstract readonly recordType: new () => RecordT;
   /** AppInfo type constructor, to be provided by child classes. */
+  @json(false)
   protected readonly appInfoType: (new () => AppInfoT) | null = null;
   /** SortInfo type constructor, to be provided by child classes. */
+  @json(false)
   protected readonly sortInfoType: (new () => SortInfoT) | null = null;
 
   /** Database header.
