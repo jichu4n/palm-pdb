@@ -7,6 +7,7 @@ import {
   Serializable,
   SerializableWrapper,
   SerializeOptions,
+  json,
 } from 'serio';
 
 /** An array encoded as a number N followed by N elements. */
@@ -90,7 +91,9 @@ function createSDynamicArray<
   ValueT extends Serializable,
 >(lengthType: new () => LengthT, valueType: new () => ValueT) {
   return class extends SDynamicArray<LengthT, ValueT> {
+    @json(false)
     lengthType = lengthType;
+    @json(false)
     valueType = valueType;
   };
 }
