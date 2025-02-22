@@ -2,6 +2,7 @@ import {
   decodeString,
   DeserializeOptions,
   encodeString,
+  json,
   Serializable,
   SerializeOptions,
   SObject,
@@ -86,10 +87,13 @@ export class PalmDoc extends SObject {
    *
    * Updated during serialize().
    */
+  @json(false)
   private readonly db = new PalmDocDatabase();
   /** Text corresponding to db. */
+  @json(false)
   private textInDb = '';
   /** Metadata stored in the first record of a PalmDOC database. */
+  @json(false)
   private metadata: PalmDocMetadata = new PalmDocMetadata();
 
   /** PalmDOC LZ77 decompression algorithm.

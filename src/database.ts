@@ -218,9 +218,13 @@ export abstract class PdbDatabase<
     sortInfoType?: new () => SortInfoT
   ) {
     return class extends PdbDatabase<RecordT, AppInfoT, SortInfoT> {
+      @json(false)
       recordType = recordType;
+      @json(false)
       appInfoType = appInfoType ?? null;
+      @json(false)
       sortInfoType = sortInfoType ?? null;
+
       appInfo = appInfoType ? new appInfoType() : null;
       sortInfo = sortInfoType ? new sortInfoType() : null;
     };
@@ -253,8 +257,11 @@ export abstract class PrcDatabase<
     sortInfoType?: new () => SortInfoT
   ) {
     return class extends PrcDatabase<RecordT, AppInfoT, SortInfoT> {
+      @json(false)
       recordType = recordType;
+      @json(false)
       appInfoType = appInfoType ?? null;
+      @json(false)
       sortInfoType = sortInfoType ?? null;
       appInfo = appInfoType ? new appInfoType() : null;
       sortInfo = sortInfoType ? new sortInfoType() : null;
