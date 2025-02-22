@@ -141,9 +141,11 @@ export class AddressAppInfo extends AppInfoType {
    * Always has exactly NUM_ADDRESS_FIELDS elements.
    */
   fields: Array<AddressField> = [];
+
   @field(SUInt32BE)
   @json(false)
   private renamedFields = 0;
+
   @field(
     SArray.of(SStringNT.ofLength(ADDRESS_FIELD_LABEL_LENGTH)).ofLength(
       NUM_ADDRESS_FIELDS
@@ -223,6 +225,7 @@ export class AddressRecord extends PdbRecord {
   set mainPhoneNumberType(newValue: PhoneNumberType) {
     this.phoneNumberTypeMappingBitmask.mainPhoneNumberType = newValue;
   }
+
   /** Phone number type mapping for this record. */
   @json(true)
   get phoneNumberTypeMapping() {
@@ -231,6 +234,7 @@ export class AddressRecord extends PdbRecord {
   set phoneNumberTypeMapping(newValue: PhoneNumberTypeMapping) {
     this.phoneNumberTypeMappingBitmask.phoneNumberTypeMapping = newValue;
   }
+
   @field()
   @json(false)
   private phoneNumberTypeMappingBitmask = new PhoneNumberTypeMappingBitmask();
@@ -243,12 +247,15 @@ export class AddressRecord extends PdbRecord {
    * This array can be manipulated directly or via the get() and set() methods.
    */
   cells: Array<AddressRecordCell> = [];
+
   @field(SUInt32BE)
   @json(false)
   private fieldsBitmask = 0;
+
   @field(SUInt8)
   @json(false)
   private companyCellValueOffset = 0;
+
   @field(SArray.of(SStringNT))
   @json(false)
   private values: Array<string> = [];
@@ -385,18 +392,23 @@ class PhoneNumberTypeMappingBitmask extends SBitmask.of(SUInt32BE) {
     this.phone4 = newValue[AddressFieldType.PHONE_4];
     this.phone5 = newValue[AddressFieldType.PHONE_5];
   }
+
   @bitfield(4)
   @json(false)
   private phone5 = 4;
+
   @bitfield(4)
   @json(false)
   private phone4 = 3;
+
   @bitfield(4)
   @json(false)
   private phone3 = 2;
+
   @bitfield(4)
   @json(false)
   private phone2 = 1;
+
   @bitfield(4)
   @json(false)
   private phone1 = 0;
