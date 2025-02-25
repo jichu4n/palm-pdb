@@ -218,6 +218,11 @@ Wherever possible, the names of classes and fields are derived from their equiva
 
 ## Changelog
 
+### 1.0.x
+
+- Breaking changes:
+  - Improve JSON representation of various object types. This potentially breaks any logic that relied on the specific JSON format of those object types.
+
 ### 0.3.0
 
 - Upgrade to serio 3.0
