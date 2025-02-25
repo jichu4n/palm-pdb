@@ -5,6 +5,7 @@ import {
   SObject,
   Serializable,
   SerializeOptions,
+  json,
 } from 'serio';
 import {SmartBuffer} from 'smart-buffer';
 import {
@@ -35,8 +36,10 @@ export abstract class Database<
   /** Record type constructor, to be provided by child classes. */
   protected abstract readonly recordType: new () => RecordT;
   /** AppInfo type constructor, to be provided by child classes. */
+  @json(false)
   protected readonly appInfoType: (new () => AppInfoT) | null = null;
   /** SortInfo type constructor, to be provided by child classes. */
+  @json(false)
   protected readonly sortInfoType: (new () => SortInfoT) | null = null;
 
   /** Database header.
@@ -215,9 +218,13 @@ export abstract class PdbDatabase<
     sortInfoType?: new () => SortInfoT
   ) {
     return class extends PdbDatabase<RecordT, AppInfoT, SortInfoT> {
+      @json(false)
       recordType = recordType;
+      @json(false)
       appInfoType = appInfoType ?? null;
+      @json(false)
       sortInfoType = sortInfoType ?? null;
+
       appInfo = appInfoType ? new appInfoType() : null;
       sortInfo = sortInfoType ? new sortInfoType() : null;
     };
@@ -250,8 +257,11 @@ export abstract class PrcDatabase<
     sortInfoType?: new () => SortInfoT
   ) {
     return class extends PrcDatabase<RecordT, AppInfoT, SortInfoT> {
+      @json(false)
       recordType = recordType;
+      @json(false)
       appInfoType = appInfoType ?? null;
+      @json(false)
       sortInfoType = sortInfoType ?? null;
       appInfo = appInfoType ? new appInfoType() : null;
       sortInfo = sortInfoType ? new sortInfoType() : null;

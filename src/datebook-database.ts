@@ -3,6 +3,7 @@ import {
   bitfield,
   DeserializeOptions,
   field,
+  json,
   SBitmask,
   SerializableWrapper,
   SerializeOptions,
@@ -69,6 +70,7 @@ export class DatebookAppInfo extends AppInfoType {
   firstDayOfWeek = 0;
 
   @field(SUInt8)
+  @json(false)
   private padding2 = 0;
 }
 
@@ -77,16 +79,22 @@ export class DatebookRecord extends PdbRecord {
   /** Start time of event. */
   @field(OptionalEventTime)
   startTime: EventTime | null = null;
+
   /** End time of event. */
   @field(OptionalEventTime)
   endTime: EventTime | null = null;
+
   /** Date of the event. */
   @field()
   date = new DatabaseDate();
+
   /** Attributes field. */
   @field()
+  @json(false)
   private attrs = new DatebookRecordAttrs();
+
   @field(SUInt8)
+  @json(false)
   private padding1 = 0;
 
   /** Alarm settings, or null if no alarm configured. */
@@ -201,23 +209,31 @@ export class DatebookRecord extends PdbRecord {
 /** Datebook record attribute flags. */
 export class DatebookRecordAttrs extends SBitmask.of(SUInt8) {
   @bitfield(1)
+  @json(false)
   private unused1 = 0;
+
   /** Whether this event should sound an alarm before the start time. */
   @bitfield(1)
   hasAlarmSettings = false;
+
   /** Whether this event is recurring. */
   @bitfield(1)
   hasRecurrenceSettings = false;
+
   /** Whether this event has an additional note. */
   @bitfield(1)
   hasNote = false;
+
   /** Whether this event has repetition exceptions. */
   @bitfield(1)
   hasExceptionDates = false;
+
   /** Whether this event has a description. */
   @bitfield(1)
   hasDescription = false;
+
   @bitfield(2)
+  @json(false)
   private unused2 = 0;
 }
 
@@ -300,6 +316,7 @@ export class RecurrenceSettings extends SObject {
   frequency = RecurrenceFrequency.DAILY;
 
   @field(SUInt8)
+  @json(false)
   private padding1 = 0;
 
   /** Recurrence end date. If null, the event repeats forever. */
@@ -324,11 +341,15 @@ export class RecurrenceSettings extends SObject {
   monthlyByDay: MonthlyByDayRecurrenceSettings | null = null;
 
   @field(SUInt8)
+  @json(false)
   private arg1 = 0;
+
   @field(SUInt8)
+  @json(false)
   private arg2 = 0;
 
   @field(SUInt8)
+  @json(false)
   private padding2 = 0;
 
   deserialize(buffer: Buffer, opts?: DeserializeOptions) {

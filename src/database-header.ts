@@ -1,6 +1,7 @@
 import {
   bitfield,
   field,
+  json,
   SBitmask,
   Serializable,
   SObject,
@@ -143,6 +144,7 @@ export class PdbRecordListType
    * page 17 of the Palm File Format Specification for more details.
    */
   @field(SUInt32BE)
+  @json(false)
   private readonly nextListId = 0;
 
   /** Array of record entries. */
@@ -150,6 +152,7 @@ export class PdbRecordListType
   values: Array<RecordEntryType> = [];
 
   @field(SUInt16BE)
+  @json(false)
   private readonly padding1 = 0;
 }
 
@@ -169,6 +172,7 @@ export class PrcRecordListType
    * page 17 of the Palm File Format Specification for more details.
    */
   @field(SUInt32BE)
+  @json(false)
   private readonly nextListId = 0;
 
   /** Array of resource entries. */
@@ -176,6 +180,7 @@ export class PrcRecordListType
   values: Array<RsrcEntryType> = [];
 
   @field(SUInt16BE)
+  @json(false)
   private readonly padding1 = 0;
 }
 
@@ -189,22 +194,28 @@ export class DatabaseAttrs extends SBitmask.of(SUInt16BE) {
   /** Database not closed properly. */
   @bitfield(1)
   open = false;
+
   @bitfield(3)
+  @json(false)
   private unused1 = 0;
+
   /** This database (resource or record) is associated with the application
    * with the same creator. It will be beamed and copied along with the
    * application. */
   @bitfield(1)
   bundle = false;
+
   /** This database (resource or record) is recyclable: it will be deleted Real
    * Soon Now, generally the next time the database is closed. */
   @bitfield(1)
   recyclable = false;
+
   /** This data database (not applicable for executables) can be "launched" by
    * passing its name to it's owner app ('appl' database with same creator)
    * using the sysAppLaunchCmdOpenNamedDB action code. */
   @bitfield(1)
   launchableData = false;
+
   /** This database should generally be hidden from view.
    *
    * Used to hide some apps from the main view of the launcher for example. For
@@ -212,33 +223,41 @@ export class DatabaseAttrs extends SBitmask.of(SUInt16BE) {
    * launcher info screen. */
   @bitfield(1)
   hidden = false;
+
   /** This database is used for file stream implementation. */
   @bitfield(1)
   stream = false;
+
   /** This database should not be copied to */
   @bitfield(1)
   copyPrevention = false;
+
   /** Device requires a reset after this database is installed. */
   @bitfield(1)
   resetAfterInstall = false;
+
   /** This tells the backup conduit that it's OK for it to install a newer version
    * of this database with a different name if the current database is open. This
    * mechanism is used to update the Graffiti Shortcuts database, for example.
    */
   @bitfield(1)
   okToInstallNewer = false;
+
   /** Set if database should be backed up to PC if no app-specific synchronization
    * conduit has been supplied. */
   @bitfield(1)
   backup = false;
+
   /** Set if Application Info block is dirty.
    *
    * Optionally supported by an App's conduit. */
   @bitfield(1)
   appInfoDirty = false;
+
   /** Read Only database. */
   @bitfield(1)
   readOnly = false;
+
   /** Whether this is a resource database (i.e. PRC). */
   @bitfield(1)
   resDB = false;
@@ -285,9 +304,11 @@ export class RecordAttrs extends SBitmask.of(SUInt8) {
   /** Record has been deleted. */
   @bitfield(1)
   delete = false;
+
   /** Record has been modified. */
   @bitfield(1)
   dirty = false;
+
   /** Record currently in use.
    *
    * This bit may also indicate the record has been deleted -- see comments in
@@ -295,17 +316,20 @@ export class RecordAttrs extends SBitmask.of(SUInt8) {
    */
   @bitfield(1)
   busy = false;
+
   /** "Secret" record - password protected. */
   @bitfield(1)
   secret = false;
 
   @bitfield(4)
+  @json(false)
   private lowest4bits = 0;
 
   /** Record is archived.
    *
    * Only available if deleted or busy.
    */
+  @json(true)
   get archive() {
     if (this.delete || this.busy) {
       return Boolean(this.lowest4bits & 0b1000);
@@ -329,6 +353,7 @@ export class RecordAttrs extends SBitmask.of(SUInt8) {
    *
    * Only available if NOT deleted or busy.
    */
+  @json(true)
   get category() {
     if (this.delete || this.busy) {
       return 0;

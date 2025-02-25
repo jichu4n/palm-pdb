@@ -1,6 +1,6 @@
 {
   "name": "palm-pdb",
-  "version": "0.3.0",
+  "version": "1.0.0-rc1",
   "description": "Work with Palm OS PDB and PRC files",
   "repository": {
     "type": "git",
