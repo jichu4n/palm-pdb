@@ -40,11 +40,11 @@ export abstract class PrcRecord
 /** PDB database record that simply stores record data in a Buffer. */
 export class RawPdbRecord extends PdbRecord {
   @field(SBuffer)
-  data = Buffer.of();
+  data: Buffer = Buffer.of();
 }
 
 /** PRC database record that simply stores record data in a Buffer. */
 export class RawPrcRecord extends PrcRecord {
   @field(SBuffer)
-  data = Buffer.of();
+  data: Buffer = Buffer.of();
 }
