@@ -1,4 +1,11 @@
-import {field, SerializeOptions, SStringNT, SUInt16BE, SUInt8} from 'serio';
+import {
+  field,
+  json,
+  SerializeOptions,
+  SStringNT,
+  SUInt16BE,
+  SUInt8,
+} from 'serio';
 import {AppInfoType, DatabaseHdrType, PdbDatabase, PdbRecord} from '.';
 
 /** MemoDB sort order. */
@@ -10,6 +17,7 @@ export enum MemoSortOrder {
 /** MemoDB AppInfo block. */
 export class MemoAppInfo extends AppInfoType {
   @field(SUInt16BE)
+  @json(false)
   private padding2 = 0;
 
   /** Memo sort order.
@@ -20,6 +28,7 @@ export class MemoAppInfo extends AppInfoType {
   sortOrder = MemoSortOrder.MANUAL;
 
   @field(SUInt8)
+  @json(false)
   private padding3 = 0;
 
   serialize(opts?: SerializeOptions) {

@@ -8,6 +8,7 @@ import {
   SUInt8,
   SerializeOptions,
   field,
+  json,
 } from 'serio';
 
 /** Maximum number of categories.
@@ -60,15 +61,21 @@ export class Category extends SObject {
 export class AppInfoType extends SObject {
   /** Array of category information (dmRecNumCategories = 16 elements). */
   categories: Array<Category> = [];
+
   @field(SUInt16BE)
+  @json(false)
   private renamedCategories = 0;
+
   @field(
     SArray.of(SStringNT.ofLength(CATEGORY_LABEL_LENGTH)).ofLength(
       NUM_CATEGORIES
     )
   )
+  @json(false)
   private categoryLabels: Array<string> = [];
+
   @field(SArray.of(SUInt8).ofLength(NUM_CATEGORIES))
+  @json(false)
   private categoryUniqIds: Array<number> = [];
 
   /** The last unique category ID assigned. */
@@ -76,6 +83,7 @@ export class AppInfoType extends SObject {
   lastUniqId = 0;
 
   @field(SUInt8)
+  @json(false)
   private readonly padding1 = 0;
 
   /** Finds the category with the given unique ID or label.
