@@ -221,11 +221,11 @@ Wherever possible, the names of classes and fields are derived from their equiva
 ### 1.0.x
 
 - Breaking changes:
-  - Improve JSON representation of various object types. This potentially breaks any logic that relied on the specific JSON format of those object types.
+  - Improve JSON representation of various object types. This potentially breaks logic relying on the JSON representation of those types.
 
 ### 0.3.0
 
-- Upgrade to serio 3.0
+- Upgrade to serio 3.0.x
 - Enable ESLint
 - Fix minor bug in DatebookRecord deserialization
 
