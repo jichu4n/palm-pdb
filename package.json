@@ -41,7 +41,7 @@
     "prettier": "^3.2.5",
     "serve": "^14.2.1",
     "ts-jest": "^29.1.2",
-    "typedoc": "^0.27.2",
+    "typedoc": "^0.28.0",
     "typescript": "^5.4.3",
     "typescript-eslint": "^8.24.1"
   },
